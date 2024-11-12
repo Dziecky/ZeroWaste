@@ -1,0 +1,40 @@
+/* main.css */
+
+/* Set navbar background color */
+.navbar {
+  background-color: #222 !important; /* Dark background */
+}
+
+/* Logo styling */
+.navbar-brand img {
+  height: 30px;
+  width: 30px;
+  margin-right: 8px;
+}
+
+/* Title text color */
+.navbar-brand {
+  color: #ffffff !important; /* White title text */
+}
+
+/* Login button styling */
+.btn-outline-success {
+  border-color: #28a745 !important;
+  color: #28a745 !important;
+}
+
+.btn-outline-success:hover {
+  background-color: #28a745 !important;
+  color: #ffffff !important;
+}
+
+/* Logout button styling */
+.btn-outline-danger {
+  border-color: #dc3545 !important;
+  color: #dc3545 !important;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545 !important;
+  color: #ffffff !important;
+}
