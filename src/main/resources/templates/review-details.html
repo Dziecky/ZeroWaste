@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Review Details</title>
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link th:href="@{/styles/main.css}" rel="stylesheet" />
+</head>
+<body class="d-flex flex-column h-100">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main role="main" class="flex-shrink-0">
+  <div class="container mt-5">
+    <h2>Review Details</h2>
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title" th:text="${review.user.firstName} + ' ' + ${review.user.lastName}">User Name</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Rating: <span th:text="${review.rating}">0</span> / 5</h6>
+        <p class="card-text" th:text="${review.content}">Review Content</p>
+        <small class="text-muted">Created on: <span th:text="${#dates.format(review.createdDate, 'yyyy-MM-dd HH:mm')}">Date</span></small>
+      </div>
+      <div class="card-footer">
+        <a th:href="@{/reviews/reviews/{userId}(userId=${review.user.id})}" class="btn btn-primary">Back to User Reviews</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

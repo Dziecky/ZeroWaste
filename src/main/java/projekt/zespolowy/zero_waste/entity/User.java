@@ -2,6 +2,8 @@ package projekt.zespolowy.zero_waste.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "user")
 @Getter
@@ -33,5 +35,8 @@ public class User {
 
     @Column(nullable = false)
     private String password; // zabezpieczone
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews;
 
 }
