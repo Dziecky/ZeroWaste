@@ -2,37 +2,64 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add/Edit Product</title>
     <link
             rel="stylesheet"
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
             integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
             crossorigin="anonymous"
     >
-    <title>Add Product</title>
+    <style>
+        .eco-btn {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+        .eco-btn:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            color: white;
+        }
+        body {
+            background-color: #f0f8f5;
+            color: #2e7d32;
+        }
+        h2 {
+            color: #1b5e20;
+        }
+    </style>
 </head>
 <body>
 
+<!-- Header Fragment -->
 <div th:replace="~{fragments/header :: header}"></div>
 
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h2 class="mb-4 text-center">Add New Product</h2>
 
-            <form th:action="@{/products/save}" th:object="${product}" method="POST">
+            <h2 class="mb-4 text-center" th:text="${product.id != null} ? 'Edit Product' : 'Add New Product'">Add/Edit Product</h2>
+
+            <form th:action="@{${product.id != null} ? '/products/update' : '/products/save'}" th:object="${product}" method="POST">
+                <!-- Hidden ID Field (only for editing) -->
+                <input type="hidden" th:if="${product.id != null}" th:field="*{id}" />
+
                 <div class="mb-3">
                     <label for="name" class="form-label">Product Name</label>
                     <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Enter product name" required>
                 </div>
+
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
                     <textarea th:field="*{description}" class="form-control" id="description" rows="4" placeholder="Enter product description" required></textarea>
                 </div>
+
                 <div class="mb-3">
                     <label for="price" class="form-label">Price (zł)</label>
                     <input type="number" th:field="*{price}" class="form-control" id="price" placeholder="Enter price" step="0.01" min="0" required>
                 </div>
+
                 <div class="mb-3">
                     <label for="productCategory" class="form-label">Product Category</label>
                     <select th:field="*{productCategory}" class="form-select" id="productCategory" required>
@@ -46,7 +73,7 @@
                     <label class="form-check-label" for="available">Available</label>
                 </div>
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Save Product</button>
+                    <button type="submit" class="btn eco-btn" th:text="${product.id != null} ? 'Update Product' : 'Save Product'">Save/Update Product</button>
                 </div>
 
             </form>

@@ -31,7 +31,7 @@ public class ProductController {
     public String showFormForAddProduct(Model model) {
         Product product = new Product();
         model.addAttribute("product", product);
-        return "showFormForAdd";
+        return "product-form";
     }
 
     @PostMapping("/save")
@@ -40,17 +40,24 @@ public class ProductController {
         return "redirect:/products/list";
     }
 
-    @PutMapping("/edit/{id}")
+    @GetMapping("/edit/{id}")
     public String showFormForUpdate(@PathVariable("id") Long id, Model model) {
         Product product = productService.getProductById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Nieprawidłowy ID produktu: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID: " + id));
         model.addAttribute("product", product);
         return "product-form";
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PostMapping("/update")
+    public String updateProduct(@ModelAttribute("product") Product product) {
+        productService.saveProduct(product);
+        return "redirect:/products/list";
+    }
+
+    @PostMapping("/delete/{id}")
     public String deleteProduct(@PathVariable("id") Long id) {
         productService.deleteProduct(id);
         return "redirect:/products/list";
     }
+
 }
