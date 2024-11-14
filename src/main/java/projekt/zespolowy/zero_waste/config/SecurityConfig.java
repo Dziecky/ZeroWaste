@@ -43,7 +43,10 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", true)
                 )
                 .logout(logout -> logout
+                        .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                 )
                 .csrf(AbstractHttpConfigurer::disable); // Wyłącz CSRF dla uproszczenia podczas produkcji
 
