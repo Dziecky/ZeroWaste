@@ -32,11 +32,11 @@ public class UserService implements UserDetailsService {
     }
 
     // Zapisywanie nowego użytkownika po zakodowaniu hasła
-    public User registerUser(User user) {
+    public void registerUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // Ustawienie domyślnego typu konta na BUSINESS podczas produkcji
         user.setAccountType(AccountType.BUSINESS);
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     // Znajdź użytkownika po nazwie użytkownika

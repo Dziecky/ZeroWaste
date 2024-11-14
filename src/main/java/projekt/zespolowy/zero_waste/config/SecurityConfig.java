@@ -1,5 +1,6 @@
 package projekt.zespolowy.zero_waste.config;
 
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import projekt.zespolowy.zero_waste.services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,7 +45,7 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")
                 )
-                .csrf(csrf -> csrf.disable()); // Wyłącz CSRF dla uproszczenia podczas produkcji
+                .csrf(AbstractHttpConfigurer::disable); // Wyłącz CSRF dla uproszczenia podczas produkcji
 
         return http.build();
     }
