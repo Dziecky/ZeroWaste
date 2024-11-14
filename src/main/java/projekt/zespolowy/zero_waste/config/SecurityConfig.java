@@ -34,13 +34,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, UserService userService) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/login", "/submitLogin", "/submitRegister", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/login", "/submitLogin", "/submitRegister", "/css/**", "/js/**").anonymous()
                         .anyRequest().permitAll() // Zezwól na wszystkie żądania podczas produkcji
                 )
                 .userDetailsService(userService)
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/", true)
+                        .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")

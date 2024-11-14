@@ -1,5 +1,8 @@
 package projekt.zespolowy.zero_waste.controller;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,11 @@ public class AuthController {
     // Wyświetlenie strony logowania/rejestracji
     @GetMapping("/login")
     public String loginPage() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
+            // Użytkownik jest zalogowany, przekieruj na stronę główną lub inną
+            return "redirect:/";
+        }
         return "login"; // Nazwa szablonu Thymeleaf
     }
 
