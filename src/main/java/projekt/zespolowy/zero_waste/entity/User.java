@@ -36,7 +36,9 @@ public class User {
     @Column(nullable = false)
     private String password; // zabezpieczone
 
+    @Column(name = "total_points", nullable = false)
+    private int totalPoints;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
-
 }
