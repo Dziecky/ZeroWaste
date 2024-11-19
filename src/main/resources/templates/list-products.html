@@ -74,8 +74,8 @@
                     <td>
                         <a th:href="@{'/products/edit/' + ${product.id}}" class="btn btn-primary btn-sm">Edit</a>
 
-                        <form th:action="@{'/products/delete/' + ${product.id}}" method="post" style="display:inline;">
-                            <input type="hidden" name="_method" value="post" />
+                        <form th:action="@{'/products/delete/' + ${product.id}}" th:method="delete" style="display:inline;">
+                            <input type="hidden" name="_method" value="delete" />
                             <button type="submit" class="btn eco-delete-btn btn-sm">
                                 Delete
                             </button>
