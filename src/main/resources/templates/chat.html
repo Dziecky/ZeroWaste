@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+    <script src="/scripts/chat.js" defer></script>
+</head>
+<body>
+<div>
+    <h1>Welcome, <span th:text="${username}"></span></h1>
+    <div id="chat-window">
+        <!-- Chat messages will be displayed here -->
+    </div>
+    <div>
+        <input type="text" id="receiverInput" placeholder="Enter recipient username">
+    </div>
+    <div>
+        <input type="text" id="messageInput" placeholder="Type your message">
+        <button id="sendButton">Send</button>
+    </div>
+</div>
+</body>
+</html>
