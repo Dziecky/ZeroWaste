@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 <div class="container">
     <h1 th:text="${article.id == null} ? 'Create Article' : 'Edit Article'"></h1>
     <form th:action="@{/articles/save}" th:object="${article}" method="post">

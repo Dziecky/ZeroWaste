@@ -2,10 +2,9 @@ package projekt.zespolowy.zero_waste.services;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import projekt.zespolowy.zero_waste.entity.EducationalEntities.Article;
-import projekt.zespolowy.zero_waste.entity.EducationalEntities.ArticleCategory;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ArticleService {

@@ -1,4 +1,4 @@
-package projekt.zespolowy.zero_waste.entity.EducationalEntities;
+package projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles;
 
 public enum ArticleCategory {
     ECOLOGY,

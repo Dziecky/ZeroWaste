@@ -4,10 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import projekt.zespolowy.zero_waste.entity.EducationalEntities.Article;
-import projekt.zespolowy.zero_waste.entity.EducationalEntities.ArticleCategory;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
 import projekt.zespolowy.zero_waste.repository.ArticleRepository;
-import projekt.zespolowy.zero_waste.services.ArticleService;
 
 import java.util.Optional;
 

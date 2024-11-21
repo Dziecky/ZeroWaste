@@ -5,14 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import projekt.zespolowy.zero_waste.entity.EducationalEntities.Article;
-import projekt.zespolowy.zero_waste.entity.EducationalEntities.ArticleCategory;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
 import projekt.zespolowy.zero_waste.services.ArticleService;
-import projekt.zespolowy.zero_waste.services.ProductService;
 
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -38,14 +35,14 @@ public class ArticleController {
         model.addAttribute("selectedCategory", category);
         model.addAttribute("categories", ArticleCategory.values());
         model.addAttribute("activePage", "articles");
-        return "/Educational/articles";
+        return "/Educational/Articles/articles";
     }
     // Show the form to create a new article
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("article", new Article());
         model.addAttribute("categories", ArticleCategory.values());
-        return "Educational/article_form";
+        return "Educational/Articles/article_form";
     }
 
     // Save the new article
@@ -61,7 +58,7 @@ public class ArticleController {
         if (optionalArticle.isPresent()) {
             model.addAttribute("article", optionalArticle.get());
             model.addAttribute("categories", ArticleCategory.values());
-            return "Educational/article_form";
+            return "Educational/Articles/article_form";
         } else {
             return "redirect:/articles";
         }
@@ -78,7 +75,7 @@ public class ArticleController {
         Optional<Article> optionalArticle = articleService.getArticleById(id);
         if (optionalArticle.isPresent()) {
             model.addAttribute("article", optionalArticle.get());
-            return "Educational/article_view";
+            return "Educational/Articles/article_view";
         } else {
             return "redirect:/articles";
         }

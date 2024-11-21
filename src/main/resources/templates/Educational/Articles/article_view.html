@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 <div class="container">
     <h1 th:text="${article.title}"></h1>
     <p><strong>Category:</strong> <span th:text="${article.articleCategory}"></span></p>

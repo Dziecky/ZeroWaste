@@ -3,9 +3,12 @@
 <head>
     <title>Articles</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link th:href="@{styles/main.css}" rel="stylesheet"/></head>
+<body class="d-flex flex-column h-100">
+<div th:replace="~{fragments/header :: header}"></div>
+
 <div class="container">
     <h1 class="my-4">Articles</h1>
 
@@ -62,5 +65,8 @@
         </ul>
     </nav>
 </div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
 </body>
 </html>
