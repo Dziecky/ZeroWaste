@@ -36,7 +36,7 @@ public class User implements UserDetails {
     @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
-    @Column(nullable = false)
+    @Column()
     private String password; // Zabezpieczone hasło
 
     @Enumerated(EnumType.STRING)

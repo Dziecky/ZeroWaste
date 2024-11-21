@@ -1,6 +1,7 @@
 package projekt.zespolowy.zero_waste.config;
 
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import projekt.zespolowy.zero_waste.services.CustomOAuth2UserService;
 import projekt.zespolowy.zero_waste.services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,13 +11,12 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+
 
 @Configuration
 public class SecurityConfig {
-
-    // Usuń pole autowired UserService
-    // private final UserService userService;
-
     // Bean kodera haseł
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -31,10 +31,10 @@ public class SecurityConfig {
 
     // Łańcuch filtrów bezpieczeństwa
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, UserService userService) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, UserService userService, CustomOAuth2UserService oAuth2UserService) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/login", "/submitLogin", "/submitRegister", "/css/**", "/js/**").anonymous()
+                        .requestMatchers("/login", "/oauth2/**","/submitLogin", "/submitRegister", "/css/**", "/js/**").anonymous()
                         .anyRequest().permitAll() // Zezwól na wszystkie żądania podczas produkcji
                 )
                 .userDetailsService(userService)
@@ -43,6 +43,12 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/", true)
                         .permitAll()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(oAuth2UserService)
+                        )
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
