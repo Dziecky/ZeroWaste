@@ -10,7 +10,13 @@ import java.security.Principal;
 
 @Controller
 public class UserController {
-    UserService userService;
+
+    private final UserService userService;
+
+    // Constructor Injection
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/accountDetails")
     public String accountDetails(Model model, Principal principal) {

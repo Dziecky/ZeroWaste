@@ -4,11 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Your Account</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link th:href="@{styles/main.css}" rel="stylesheet" />
 </head>
-<body>
+<body class="d-flex flex-column h-100">
 
-<div th:replace="~{fragments/header :: header}"></div>
+<div th:replace="~{fragments/header :: header}"> </div>
 
 <div class="container mt-5">
   <h1>Your Account Details</h1>
