@@ -26,7 +26,7 @@ public class AdviceController {
                               @RequestParam(defaultValue = "10") int size,
                               @RequestParam(required = false) AdviceCategory category,
                               Model model) {
-        Page<Advice> advicePage = adviceService.getAllAdvices(PageRequest.of(page, size));
+        Page<Advice> advicePage = adviceService.getAdvicesByCategory(category, PageRequest.of(page, size));
         model.addAttribute("advicePage", advicePage);
         model.addAttribute("activePage", "advices");
         model.addAttribute("selectedCategory", category);
@@ -43,7 +43,7 @@ public class AdviceController {
     }
     // Save the new advice
     @PostMapping("/save")
-    public String saveAdvice(@ModelAttribute("article") Advice advice) {
+    public String saveAdvice(@ModelAttribute("advice") Advice advice) {
         adviceService.saveAdvice(advice);
         return "redirect:/advices";
     }
@@ -67,12 +67,12 @@ public class AdviceController {
     }
 
     //View an advice
-    @GetMapping("/view/{id}")
+    @GetMapping("/{id}")
     public String viewAdvice(@PathVariable("id")Long id, Model model) {
         Optional<Advice> optionalAdvice = adviceService.getAdviceById(id);
         if (optionalAdvice.isPresent()) {
             model.addAttribute("advice", optionalAdvice.get());
-            return "Educational/Advices/advices";
+            return "Educational/Advices/advice_view";
         } else {
             return "redirect:/advices";
         }
