@@ -8,6 +8,9 @@
 <div class="container">
     <h1 th:text="${article.id == null} ? 'Create Article' : 'Edit Article'"></h1>
     <form th:action="@{/articles/save}" th:object="${article}" method="post">
+        <!-- Hidden ID field for Edit -->
+        <input type="hidden" th:field="*{id}">
+
         <!-- Title -->
         <div class="form-group">
             <label for="title">Title</label>

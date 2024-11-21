@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.ArticleCategory;
@@ -66,7 +67,7 @@ public class ArticleController {
         }
     }
     // Delete an article
-    @DeleteMapping("/delete/{id}")
+    @GetMapping("/delete/{id}") //do poprawny na DeleteMapping
     public String deleteArticle(@PathVariable("id") Long id) {
         articleService.deleteArticle(id);
         return "redirect:/articles";
