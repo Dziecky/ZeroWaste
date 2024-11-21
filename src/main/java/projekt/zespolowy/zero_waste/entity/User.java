@@ -30,7 +30,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String lastName;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Column(name = "phone_number", unique = true)
@@ -52,27 +52,6 @@ public class User implements UserDetails {
         return List.of(() -> "ROLE_ADMIN");
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    // Inne metody...
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }
