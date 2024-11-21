@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${article.id == null} ? 'Create Article' : 'Edit Article'">Article Form</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1 th:text="${article.id == null} ? 'Create Article' : 'Edit Article'"></h1>
+    <form th:action="@{/articles/save}" th:object="${article}" method="post">
+        <!-- Title -->
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" th:field="*{title}" class="form-control" id="title" required>
+        </div>
+        <!-- Content -->
+        <div class="form-group">
+            <label for="content">Content</label>
+            <textarea th:field="*{content}" class="form-control" id="content" rows="5" required></textarea>
+        </div>
+        <!-- Image URL -->
+        <div class="form-group">
+            <label for="imageUrl">Image URL</label>
+            <input type="url" th:field="*{imageUrl}" class="form-control" id="imageUrl">
+        </div>
+        <!-- Category -->
+        <div class="form-group">
+            <label for="articleCategory">Category</label>
+            <select th:field="*{articleCategory}" class="form-control" id="articleCategory" required>
+                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+            </select>
+        </div>
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a th:href="@{/articles}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+</body>
+</html>
