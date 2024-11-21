@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${article.title}">Article Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container">
+    <h1 th:text="${article.title}"></h1>
+    <p><strong>Category:</strong> <span th:text="${article.articleCategory}"></span></p>
+    <div th:if="${article.imageUrl}">
+        <img th:src="${article.imageUrl}" alt="Article Image" class="img-fluid">
+    </div>
+    <p th:text="${article.content}"></p>
+    <a th:href="@{/articles}" class="btn btn-secondary">Back to Articles</a>
+</div>
+</body>
+</html>
