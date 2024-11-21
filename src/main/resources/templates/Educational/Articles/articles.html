@@ -15,20 +15,33 @@
     <!-- Link to Create New Article -->
     <a th:href="@{/articles/new}" class="btn btn-primary mb-3">Create New Article</a>
 
-    <!-- Filter by Category -->
+    <!-- Filter by Category and Title-->
     <form method="get" th:action="@{/articles}" class="form-inline mb-3">
-        <label for="category" class="mr-2">Filter by Category:</label>
-        <select name="category" id="category" class="form-control mr-2">
-            <option value="" th:selected="${selectedCategory == null}">All</option>
-            <option th:each="cat : ${categories}"
-                    th:value="${cat}"
-                    th:text="${cat}"
-                    th:selected="${cat == selectedCategory}">
-                Category
-            </option>
-        </select>
-        <button type="submit" class="btn btn-secondary">Filter</button>
+        <!-- Filter by Category -->
+        <div class="form-group mr-3">
+            <label for="category" class="mr-2">Filter by Category:</label>
+            <select name="category" id="category" class="form-control mr-2">
+                <option value="" th:selected="${selectedCategory == null}">All</option>
+                <option th:each="cat : ${categories}"
+                        th:value="${cat}"
+                        th:text="${cat}"
+                        th:selected="${cat == selectedCategory}">
+                    Category
+                </option>
+            </select>
+            <button type="submit" class="btn btn-secondary">Filter</button>
+        </div>
     </form>
+    <form method="get" th:action="@{/articles}" class="form-inline mb-3">
+        <!-- Filter by Title -->
+        <div class="form-group mr-3">
+            <label for="title" class="mr-2">Filter by Title:</label>
+            <input type="text" name="title" id="title" class="form-control mr-2"
+                   th:value="${title}" placeholder="Enter Title"/>
+        <button type="submit" class="btn btn-secondary">Filter</button>
+        </div>
+    </form>
+
 
     <!-- Articles List -->
     <div>
