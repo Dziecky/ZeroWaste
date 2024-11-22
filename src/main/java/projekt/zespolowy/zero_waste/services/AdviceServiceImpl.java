@@ -31,7 +31,12 @@ public class AdviceServiceImpl implements AdviceService {
     }
     @Override
     public Page<Advice> getAdvicesByTitle(String title, Pageable pageable) {
-        return adviceRepository.findByTitleContainingIgnoreCase(title, pageable);
+        if(title != null && !title.trim().isEmpty()){
+            return adviceRepository.findByTitleContainingIgnoreCase(title, pageable);
+        }
+        else {
+            return adviceRepository.findAll(pageable);
+        }
     }
 
     @Override

@@ -25,8 +25,16 @@ public class AdviceController {
     public String listAdvices(@RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "10") int size,
                               @RequestParam(required = false) AdviceCategory category,
+                              @RequestParam(required = false) String title,
                               Model model) {
-        Page<Advice> advicePage = adviceService.getAdvicesByCategory(category, PageRequest.of(page, size));
+        Page<Advice> advicePage;
+        if(category != null) {
+            advicePage = adviceService.getAdvicesByCategory(category, PageRequest.of(page, size));
+        } else if(title != null && !title.trim().isEmpty()) {
+            advicePage = adviceService.getAdvicesByTitle(title, PageRequest.of(page, size));
+        } else {
+            advicePage = adviceService.getAllAdvices(PageRequest.of(page, size));
+        }
         model.addAttribute("advicePage", advicePage);
         model.addAttribute("activePage", "advices");
         model.addAttribute("selectedCategory", category);
