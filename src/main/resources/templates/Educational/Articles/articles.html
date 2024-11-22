@@ -6,6 +6,7 @@
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link th:href="@{styles/main.css}" rel="stylesheet"/></head>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <body class="d-flex flex-column h-100">
 <div th:replace="~{fragments/header :: header}"></div>
 
@@ -32,7 +33,7 @@
             <button type="submit" class="btn btn-secondary">Filter</button>
         </div>
     </form>
-    <!-- Filter by Title -->
+    <!-- Filter by Title mozna dodac dynamiczne szukanie-->
     <form method="get" th:action="@{/articles}" class="form-inline mb-3">
         <div class="form-group mr-3">
             <label for="title" class="mr-2">Filter by Title:</label>
