@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import projekt.zespolowy.zero_waste.security.CustomUser;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -28,7 +29,7 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("Nie znaleziono użytkownika: " + username);
         }
-        return user;
+        return new CustomUser(user);
     }
 
     // Zapisywanie nowego użytkownika po zakodowaniu hasła

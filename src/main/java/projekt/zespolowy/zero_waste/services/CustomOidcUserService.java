@@ -4,13 +4,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import projekt.zespolowy.zero_waste.entity.CustomOidcUser;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
+import projekt.zespolowy.zero_waste.security.CustomUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import java.util.Optional;
 
@@ -61,8 +61,8 @@ public class CustomOidcUserService extends OidcUserService {
             userRepository.save(user);
         }
 
-
-        return new CustomOidcUser(oidcUser, user);
+        // Zwróć CustomUser z atrybutami OIDC
+        return new CustomUser(user, oidcUser.getAttributes(), oidcUser.getIdToken(), oidcUser.getUserInfo());
     }
 
     private String generateUsername(String firstName, String lastName) {

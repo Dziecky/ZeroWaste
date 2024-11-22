@@ -3,12 +3,9 @@ package projekt.zespolowy.zero_waste.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 
 import java.util.Collection;
-import java.util.List;
-
 import java.util.List;
 
 @Entity
@@ -16,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements UserDetails {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,35 +40,14 @@ public class User implements UserDetails {
     private AccountType accountType;
 
     @Column(name = "total_points")
-    private int totalPoints;// BUSINESS lub NORMAL
-
-    // Implementacja metod z interfejsu UserDetails
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Dla uproszczenia, wszyscy użytkownicy są adminami podczas produkcji
-        return List.of(() -> "ROLE_ADMIN");
-    }
+    private int totalPoints; // BUSINESS lub NORMAL
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public String getUsername() {
-        return username; // Użyj pola username
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
+    // Metoda getAuthorities() do użycia w CustomUser
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Dla uproszczenia, wszyscy użytkownicy mają rolę ADMIN podczas produkcji
+        return List.of(() -> "ROLE_ADMIN");
     }
 }

@@ -1,6 +1,5 @@
 package projekt.zespolowy.zero_waste.config;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,7 +45,7 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
                         .userInfoEndpoint(userInfo -> userInfo
-                                .oidcUserService(customOidcUserService) // Użyj oauth2UserService
+                                .oidcUserService(customOidcUserService)
                         )
                 )
                 .logout(logout -> logout
