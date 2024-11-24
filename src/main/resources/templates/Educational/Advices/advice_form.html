@@ -8,7 +8,7 @@
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container">
     <h1 th:text="${advice.id == null} ? 'Create Advice' : 'Edit Advice'"></h1>
-    <form th:action="@{/advices/save}" th:object="${advice}" method="post">
+    <form th:action="@{/advices/save}" th:object="${adviceDTO}" method="post">
         <!-- Hidden ID field for Edit -->
         <input type="hidden" th:field="*{id}">
 
