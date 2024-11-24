@@ -6,6 +6,7 @@ function connect(username) {
 
     stompClient.connect({}, () => {
         console.log('Connected to WebSocket');
+        console.log(username)
 
         // Subscribe to user's message queue
         stompClient.subscribe('/user/queue/messages', (message) => {
@@ -24,7 +25,7 @@ function sendMessage() {
 
     if (messageContent && stompClient) {
         const chatMessage = {
-            sender: document.querySelector('span').textContent, // Use the logged-in username
+            sender: document.getElementById('username-span').textContent, // Use the logged-in username
             receiver: document.getElementById('receiverInput').value, // Dynamic receiver
             content: messageContent
         };
@@ -42,6 +43,7 @@ function displayMessage(sender, content) {
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
     const timestamp = new Date().toLocaleTimeString(); // Format time
+    console.log(sender);
     messageElement.textContent = `[${timestamp}] ${sender}: ${content}`;
     chatWindow.appendChild(messageElement);
 }
