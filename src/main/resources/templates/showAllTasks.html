@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container mt-5">
+    <h1>Task List</h1>
+    <a href="/tasks/newTask" class="btn btn-success">Add New Task</a>
+    <table class="table mt-3">
+        <thead>
+        <tr>
+            <th>Task Name</th>
+            <th>Description</th>
+            <th>Point Awarded</th>
+            <th>Type</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="task : ${tasks}">
+            <td th:text="${task.task_name}"></td>
+            <td th:text="${task.taskDescription}"></td>
+            <td th:text="${task.pointsAwarded}"></td>
+            <td th:text="${task.taskType}"></td>
+            <td>
+                <a href="#" class="btn btn-primary">Edit</a>
+                <a th:href="@{/tasks/delete/{id}(id=${task.id})}" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

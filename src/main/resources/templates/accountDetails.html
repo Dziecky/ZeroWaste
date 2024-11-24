@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Account</title>
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link th:href="@{styles/main.css}" rel="stylesheet" />
+</head>
+<body class="d-flex flex-column h-100">
+
+<div th:replace="~{fragments/header :: header}"> </div>
+
+<div class="container mt-5">
+  <h1>Your Account Details</h1>
+  <p>Username: <span sec:authentication="name"></span></p>
+  <!-- Dodaj dodatkowe informacje o użytkowniku -->
+</div>
+
+</body>
+</html>

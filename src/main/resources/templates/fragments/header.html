@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
     <title>Zero Waste</title>
@@ -36,19 +37,46 @@
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/products/showFormForAddProduct}">Add Product</a>
             </li>
+            <li class="nav-item" th:class="${activePage == 'articles'} ? 'nav-item active' : 'nav-item'">
+                <a class="nav-link" th:href="@{/articles}">Articles</a>
+            </li>
+            <li class="nav-item" th:class="${activePage == 'advices'} ? 'nav-item active' : 'nav-item'">
+                <a class="nav-link" th:href="@{/advices}">Advices</a>
+            </li>
+            <li class="nav-item" th:class="${activePage == 'tasks'} ? 'nav-item active' : 'nav-item'">
+                <a class="nav-link" th:href="@{/tasks/showAllTasks}">Tasks</a>
+            </li>
         </ul>
 
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item" th:class="${activePage == 'login'} ? 'nav-item active' : 'nav-item'">
+            <!-- Jeśli użytkownik NIE jest zalogowany -->
+            <li class="nav-item" sec:authorize="isAnonymous()">
                 <a class="btn btn-outline-light" th:href="@{/login}">Login</a>
+            </li>
+
+            <!-- Jeśli użytkownik jest zalogowany -->
+            <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                <a class="nav-link dropdown-toggle btn btn-outline-light" href="#" id="userDropdown" role="button"
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span sec:authentication="name"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                    <a class="dropdown-item" th:href="@{/accountDetails}">Your Account</a>
+                    <div class="dropdown-divider"></div>
+                    <form th:action="@{/logout}" method="post" style="margin: 0;">
+                        <!-- TODO Token CSRF -->
+                        <!-- TODO <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/> -->
+                        <button type="submit" class="dropdown-item">Logout</button>
+                    </form>
+                </div>
             </li>
         </ul>
     </div>
 </nav>
 
-<!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"-->
-<!--        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="-->
-<!--        crossorigin="anonymous"></script>-->
-<!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>-->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

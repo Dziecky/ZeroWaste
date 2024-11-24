@@ -1,79 +1,104 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="en">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--    <title>Login and Register</title>-->
-<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">-->
-<!--</head>-->
-<!--<body>-->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Register</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
 
-<!--<div th:replace="~{fragments/header :: header}"></div>-->
+<div th:replace="~{fragments/header :: header}"></div>
 
-<!--<div class="container d-flex justify-content-center mt-5">-->
-<!--    <div class="card shadow-lg" style="width: 28rem;">-->
-<!--        <div class="card-body">-->
-<!--            &lt;!&ndash; Nav pills for Login and Register Tabs &ndash;&gt;-->
-<!--            <ul class="nav nav-pills nav-justified mb-4" id="login-register-tabs" role="tablist">-->
-<!--                <li class="nav-item" role="presentation">-->
-<!--                    <a class="nav-link active" id="tab-login" data-toggle="pill" href="#pills-login" role="tab"-->
-<!--                       aria-controls="pills-login" aria-selected="true">Login</a>-->
-<!--                </li>-->
-<!--                <li class="nav-item" role="presentation">-->
-<!--                    <a class="nav-link" id="tab-register" data-toggle="pill" href="#pills-register" role="tab"-->
-<!--                       aria-controls="pills-register" aria-selected="false">Register</a>-->
-<!--                </li>-->
-<!--            </ul>-->
+<div class="container d-flex justify-content-center mt-5">
+    <div class="card shadow-lg" style="width: 28rem;">
+        <div class="card-body">
+            <!-- Nav pills for Login and Register Tabs -->
+            <ul class="nav nav-pills nav-justified mb-4" id="login-register-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="tab-login" data-toggle="pill" href="#pills-login" role="tab"
+                       aria-controls="pills-login" aria-selected="true">Login</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="tab-register" data-toggle="pill" href="#pills-register" role="tab"
+                       aria-controls="pills-register" aria-selected="false">Register</a>
+                </li>
+            </ul>
 
-<!--            &lt;!&ndash; Tab content &ndash;&gt;-->
-<!--            <div class="tab-content">-->
-<!--                &lt;!&ndash; Login Form &ndash;&gt;-->
-<!--                <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">-->
-<!--                    <h5 class="card-title text-center mb-4">Sign In</h5>-->
-<!--                    <form action="/submitLogin" method="POST">-->
-<!--                        <div class="form-outline mb-4">-->
-<!--                            <input type="text" id="loginName" name="login" class="form-control" required />-->
-<!--                            <label class="form-label" for="loginName">User Name</label>-->
-<!--                        </div>-->
-<!--                        <div class="form-outline mb-4">-->
-<!--                            <input type="password" id="loginPassword" name="password" class="form-control" required />-->
-<!--                            <label class="form-label" for="loginPassword">Password</label>-->
-<!--                        </div>-->
-<!--                        <button type="submit" class="btn btn-primary btn-block mb-4 w-100">Sign in</button>-->
-<!--                    </form>-->
-<!--                </div>-->
+            <!-- Tab content -->
+            <div class="tab-content">
+                <!-- Login Form -->
+                <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
+                    <h5 class="card-title text-center mb-4">Sign In</h5>
+                    <form th:action="@{/login}" method="post">
+                        <!-- Token CSRF -->
+                        <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
 
-<!--                &lt;!&ndash; Register Form &ndash;&gt;-->
-<!--                <div class="tab-pane fade" id="pills-register" role="tabpanel" aria-labelledby="tab-register">-->
-<!--                    <h5 class="card-title text-center mb-4">Register</h5>-->
-<!--                    <form action="/submitRegister" method="POST">-->
-<!--                        <div class="form-outline mb-4">-->
-<!--                            <input type="text" id="firstName" name="firstName" class="form-control" required />-->
-<!--                            <label class="form-label" for="firstName">First Name</label>-->
-<!--                        </div>-->
-<!--                        <div class="form-outline mb-4">-->
-<!--                            <input type="text" id="lastName" name="lastName" class="form-control" required />-->
-<!--                            <label class="form-label" for="lastName">Last Name</label>-->
-<!--                        </div>-->
-<!--                        <div class="form-outline mb-4">-->
-<!--                            <input type="text" id="registerLoginName" name="login" class="form-control" required />-->
-<!--                            <label class="form-label" for="registerLoginName">User Name</label>-->
-<!--                        </div>-->
-<!--                        <div class="form-outline mb-4">-->
-<!--                            <input type="password" id="registerPassword" name="password" class="form-control" required />-->
-<!--                            <label class="form-label" for="registerPassword">Password</label>-->
-<!--                        </div>-->
-<!--                        <button type="submit" class="btn btn-primary btn-block mb-4 w-100">Register</button>-->
-<!--                    </form>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
+                        <div class="form-outline mb-4">
+                            <input type="text" id="username" name="username" class="form-control" required />
+                            <label class="form-label" for="username">User Name</label>
+                        </div>
+                        <div class="form-outline mb-4">
+                            <input type="password" id="password" name="password" class="form-control" required />
+                            <label class="form-label" for="password">Password</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block mb-4 w-100">Sign in</button>
+                    </form>
+                </div>
 
-<!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"-->
-<!--        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="-->
-<!--        crossorigin="anonymous"></script>-->
-<!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>-->
-<!--</body>-->
-<!--</html>-->
+                <!-- Register Form -->
+                <div class="tab-pane fade" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
+                    <h5 class="card-title text-center mb-4">Register</h5>
+                    <form th:action="@{/submitRegister}" method="post">
+                        <!-- Token CSRF -->
+                        <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+
+                        <div class="form-outline mb-4">
+                            <input type="text" id="firstName" name="firstName" class="form-control" required />
+                            <label class="form-label" for="firstName">First Name</label>
+                        </div>
+                        <div class="form-outline mb-4">
+                            <input type="text" id="lastName" name="lastName" class="form-control" required />
+                            <label class="form-label" for="lastName">Last Name</label>
+                        </div>
+                        <div class="form-outline mb-4">
+                            <input type="email" id="email" name="email" class="form-control" required />
+                            <label class="form-label" for="email">Email</label>
+                        </div>
+                        <div class="form-outline mb-4">
+                            <input type="text" id="usernameRegister" name="username" class="form-control" required />
+                            <label class="form-label" for="usernameRegister">User Name</label>
+                        </div>
+                        <div class="form-outline mb-4">
+                            <input type="password" id="registerPassword" name="password" class="form-control" required />
+                            <label class="form-label" for="registerPassword">Password</label>
+                        </div>
+                        <!-- Opcjonalnie pole numeru telefonu -->
+                        <!--
+                        <div class="form-outline mb-4">
+                            <input type="text" id="phoneNumber" name="phoneNumber" class="form-control" />
+                            <label class="form-label" for="phoneNumber">Phone Number</label>
+                        </div>
+                        -->
+                        <button type="submit" class="btn btn-primary btn-block mb-4 w-100">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Wyświetlanie komunikatów o błędach -->
+<div class="container mt-3" th:if="${error}">
+    <div class="alert alert-danger" th:text="${error}"></div>
+</div>
+<div class="container mt-3" th:if="${message}">
+    <div class="alert alert-success" th:text="${message}"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
