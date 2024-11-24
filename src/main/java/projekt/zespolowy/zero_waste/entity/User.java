@@ -9,8 +9,6 @@ import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import java.util.Collection;
 import java.util.List;
 
-import java.util.List;
-
 @Entity
 @Table(name = "user")
 @Data
