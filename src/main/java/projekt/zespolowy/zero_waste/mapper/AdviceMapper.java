@@ -8,6 +8,7 @@ import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.Advice;
 import projekt.zespolowy.zero_waste.entity.Tag;
 import projekt.zespolowy.zero_waste.services.TagService;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,7 +37,9 @@ public interface AdviceMapper {
     @AfterMapping
     default void afterToEntity(AdviceDTO dto, @MappingTarget Advice advice, @Context TagService tagService) {
         Set<Tag> tags = mapTags(dto.getTags(), tagService);
-        advice.setTags(tags);
+        for (Tag tag : tags) {
+            advice.addTag(tag); // Use the addTag method to maintain bidirectional relationship
+        }
     }
 
     // Converts the entity's set of Tag entities into a list of tag names.
@@ -48,7 +51,22 @@ public interface AdviceMapper {
         dto.setTags(tagNames);
     }
 
-    @Mapping(target = "tags", ignore = true) // We'll handle tags in after-mapping
-    void updateAdviceFromDTO(AdviceDTO dto, @MappingTarget Advice advice, @Context TagService tagService);
+    @AfterMapping
+    default void afterUpdateAdviceFromDTO(AdviceDTO dto, @MappingTarget Advice advice, @Context TagService tagService) {
+        Set<Tag> newTags = mapTags(dto.getTags(), tagService);
+        // Remove tags that are no longer associated
+        Set<Tag> tagsToRemove = new HashSet<>(advice.getTags());
+        tagsToRemove.removeAll(newTags);
+        for (Tag tag : tagsToRemove) {
+            advice.removeTag(tag);
+        }
+        // Add new tags
+        for (Tag tag : newTags) {
+            if (!advice.getTags().contains(tag)) {
+                advice.addTag(tag);
+            }
+        }
+    }
+
 
 }

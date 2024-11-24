@@ -38,8 +38,8 @@ public class Article {
     private LocalDateTime updatedAt;
 
     @ManyToMany
-    @JoinTable(name = "advice_tags",
-            joinColumns = @JoinColumn(name = "advice_id"),
+    @JoinTable(name = "article_tags",
+            joinColumns = @JoinColumn(name = "article_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
 

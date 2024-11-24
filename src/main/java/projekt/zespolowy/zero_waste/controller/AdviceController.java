@@ -43,6 +43,7 @@ public class AdviceController {
         model.addAttribute("activePage", "advices");
         model.addAttribute("selectedCategory", category);
         model.addAttribute("categories", AdviceCategory.values());
+        model.addAttribute("title", title);
         return "Educational/Advices/advices";
     }
 
@@ -67,6 +68,8 @@ public class AdviceController {
             AdviceDTO adviceDTO = adviceMapper.toDTO(optionalAdvice.get());
             model.addAttribute("adviceDTO", adviceDTO);
             model.addAttribute("categories", AdviceCategory.values());
+            //model.addAttribute("tags", adviceDTO.getTags());
+            model.addAttribute("adviceId", id);
             return "Educational/Advices/advice_form";
         } else {
             return "redirect:/advices";
@@ -76,6 +79,11 @@ public class AdviceController {
     @GetMapping("/delete/{id}") //do poprawienia na DeleteMapping
     public String deleteAdvice(@PathVariable("id")Long id) {
         adviceService.deleteAdvice(id);
+        return "redirect:/advices";
+    }
+    @PostMapping("/update/{id}")
+    public String updateAdvice(@PathVariable("id") Long id, @ModelAttribute("adviceDTO") AdviceDTO adviceDTO) {
+        adviceService.updateAdvice(id, adviceDTO);
         return "redirect:/advices";
     }
 

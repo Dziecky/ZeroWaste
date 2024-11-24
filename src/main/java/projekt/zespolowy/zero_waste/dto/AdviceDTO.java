@@ -10,12 +10,14 @@ import java.util.List;
 @Getter
 @Setter
 public class AdviceDTO {
+    private Long id;
 
     private String title;
 
     private String content;
-
-    private List<String> tags;
+    private String imageUrl;
 
     private AdviceCategory adviceCategory;
+    private List<String> tags;
+
 }
