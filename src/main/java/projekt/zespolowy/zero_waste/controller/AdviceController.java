@@ -68,8 +68,6 @@ public class AdviceController {
             AdviceDTO adviceDTO = adviceMapper.toDTO(optionalAdvice.get());
             model.addAttribute("adviceDTO", adviceDTO);
             model.addAttribute("categories", AdviceCategory.values());
-            //model.addAttribute("tags", adviceDTO.getTags());
-            model.addAttribute("adviceId", id);
             return "Educational/Advices/advice_form";
         } else {
             return "redirect:/advices";

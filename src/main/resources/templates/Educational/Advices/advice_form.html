@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${adviceDTO.id == null} ? 'Create Advice' : 'Edit Advice'">Advice Form</title>
+    <title th:text="${adviceDTO.id != null} ? 'Edit Advice' : 'Create Advice'">Advice Form</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Tagify CSS -->
@@ -10,9 +10,9 @@
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container">
-    <h1 th:text="${adviceDTO.id == null} ? 'Create Advice' : 'Edit Advice'">Advice Form</h1>
+    <h1 th:text="${adviceDTO.id != null} ? 'Edit Advice' : 'Create Advice'">Advice Form</h1>
     <!-- Dynamic Form Action -->
-    <form th:action="${adviceId != null} ? @{'/advices/update/' + ${adviceId}} : @{/advices/save}" th:object="${adviceDTO}" method="post">
+    <form th:action="|/advices/${adviceDTO.id != null ? 'update/' + adviceDTO.id : 'save'}|" th:object="${adviceDTO}" method="post">
         <!-- Hidden ID field for Edit -->
         <input type="hidden" th:field="*{id}" />
 
@@ -44,8 +44,14 @@
         <div class="form-group">
             <label for="tags">Tags</label>
             <!-- Tagify Input Field -->
-            <input type="text" name="tags" id="tags" class="form-control" placeholder="Type and press enter to add tags" />
+            <input type="text"
+                   name="tags[]"
+                   id="tags"
+                   class="form-control"
+                   placeholder="Type and press enter to add tags"
+                   th:value="${adviceDTO.tags != null ? #strings.arrayJoin(adviceDTO.tags, ',') : ''}" />
         </div>
+
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary">Save</button>
         <a th:href="@{/advices}" class="btn btn-secondary">Cancel</a>
@@ -61,37 +67,31 @@
 
 <script>
     // Initialize Tagify on the tags input field
-    var input = document.querySelector('input[name=tags]');
+    var input = document.querySelector('#tags');
     var tagify = new Tagify(input, {
-        delimiters: ", ", // Separate tags by comma and space
-        pattern: /^#?[\w-]+$/, // Optional: enforce tag format starting with #
-        enforceWhitelist: false, // Allow new tags
-        keepInvalidTags: false,
+        delimiters: ",", // Use commas to separate tags
+        pattern: /^[^\s]+$/, // Disallow whitespace in tags
+        enforceWhitelist: false, // Allow custom tags
+        keepInvalidTags: false, // Prevent invalid tags
         dropdown: {
-            enabled: 0, // Show suggestions on focus
-            classname: "tags-look",
-            maxItems: 20,
-            position: "text",
-            closeOnSelect: false
+            enabled: 0, // No suggestions dropdown
+            position: "text", // Position the dropdown relative to the text
+            closeOnSelect: false // Keep dropdown open after selecting
         }
     });
 
-    // Convert Tagify tags into a comma-separated string before form submission
+    // Handle form submission
     var form = input.closest('form');
-    form.addEventListener('submit', function(e) {
-        var tags = tagify.value.map(function(tag) {
-            return tag.value.startsWith('#') ? tag.value.substring(1) : tag.value;
+    form.addEventListener('submit', function (e) {
+        var tags = tagify.value.map(function (tag) {
+            return tag.value; // Get tag values
         });
-        input.value = tags.join(','); // Convert array to comma-separated string
+        input.value = tags.join(','); // Convert tags array to comma-separated string
     });
 
-    // Optional: Add prefix '#' automatically
-    tagify.on('add', function(e) {
-        var tag = e.detail.data.value;
-        if (!tag.startsWith('#')) {
-            tagify.removeTag(tag);
-            tagify.addTags('#' + tag);
-        }
+    // Enable single-tag deletion by clicking the "x" button provided by Tagify
+    tagify.on('remove', function (e) {
+        console.log('Tag removed:', e.detail.data.value);
     });
 </script>
 </body>
