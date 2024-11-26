@@ -64,15 +64,18 @@ public class ProductController {
     @PostMapping("/update")
     public String updateProduct(@ModelAttribute("product") Product product, Authentication authentication) {
         Product existingProduct = productService.getProductById(product.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Product ID: " + product.getId()));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID: " + product.getId()));
+
         String currentUsername = authentication.getName();
         if (!existingProduct.getOwner().getUsername().equals(currentUsername)) {
-            throw new AccessDeniedException("You do not have permission to edit this product.");
+            throw new AccessDeniedException("You are not authorized to edit this product.");
         }
+        product.setCreatedAt(existingProduct.getCreatedAt());
         product.setOwner(existingProduct.getOwner());
         productService.saveProduct(product);
         return "redirect:/products/list";
     }
+
 
     @DeleteMapping("/delete/{id}")
     public String deleteProduct(@PathVariable("id") Long id, Authentication authentication) {

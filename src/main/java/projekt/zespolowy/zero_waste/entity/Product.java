@@ -25,7 +25,7 @@ public class Product {
     private String name;
     private String description;
 
-    private String imageUrl; // Pole do przechowywania linku do zdjęcia
+    private String imageUrl;
 
     @Column(name = "is_available")
     private boolean available;
