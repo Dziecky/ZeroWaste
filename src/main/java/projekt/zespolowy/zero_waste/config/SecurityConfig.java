@@ -32,6 +32,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, UserService userService, CustomOidcUserService customOidcUserService) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/products/showFormForAddProduct", "/products/save").authenticated()
                         .requestMatchers("/login", "/oauth2/**", "/submitRegister", "/css/**", "/js/**").permitAll()
                         .anyRequest().authenticated()
                 )
