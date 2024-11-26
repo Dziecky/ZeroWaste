@@ -13,10 +13,7 @@
 
 <main role="main" class="flex-shrink-0">
     <div class="container mt-5">
-        <div class="jumbotron">
-            <h1 class="display-4">Announcements</h1>
-            <p class="lead">Submit a new announcement below:</p>
-        </div>
+        <h2>Create an announcement</h2>
 
         <!-- Announcement Form -->
         <form th:action="@{/announcements}" method="post" class="mb-3">
@@ -31,15 +28,6 @@
             <button type="submit" class="btn btn-primary">Submit Announcement</button>
         </form>
 
-        <!-- Placeholder for announcements list -->
-        <div>
-            <h2>Recent Announcements</h2>
-            <ul>
-                <li th:each="announcement : ${announcements}">
-                    <strong th:text="${announcement.title}"></strong>: <span th:text="${announcement.description}"></span>
-                </li>
-            </ul>
-        </div>
     </div>
 </main>
 

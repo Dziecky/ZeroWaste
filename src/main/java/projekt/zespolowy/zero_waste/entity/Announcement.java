@@ -1,12 +1,14 @@
 package projekt.zespolowy.zero_waste.entity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -19,7 +21,27 @@ public class Announcement {
     private Long id;
 
     private String title;
-
     private String description;
 
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @ManyToMany
+    @JoinTable(
+            name = "announcement_products",
+            joinColumns = @JoinColumn(name = "announcement_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private Set<Product> products = new HashSet<>();
+
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
