@@ -16,12 +16,16 @@
         <h1 th:text="${announcement.title}">Announcement Title</h1>
         <p th:text="${announcement.description}">Announcement Description</p>
         <hr>
-        <p><strong>Created At:</strong> <span th:text="${#dates.format(announcement.createdAt, 'yyyy-MM-dd HH:mm:ss')}">Date</span></p>
-        <p><strong>Updated At:</strong> <span th:text="${#dates.format(announcement.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">Date</span></p>
+
+        <!-- Display associated products -->
+        <h2>Associated Products</h2>
+        <ul>
+            <li th:each="product : ${announcement.products}" th:text="${product.name}">Product Name</li>
+        </ul>
+
         <a class="btn btn-primary" th:href="@{/announcements}">Back to Announcements</a>
     </div>
 </main>
-
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 

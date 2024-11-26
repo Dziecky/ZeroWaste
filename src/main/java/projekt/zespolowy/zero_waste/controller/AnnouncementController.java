@@ -6,7 +6,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.entity.Announcement;
+import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.repository.AnnouncementRepository;
+import projekt.zespolowy.zero_waste.services.ProductService;
+
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -14,7 +19,9 @@ import projekt.zespolowy.zero_waste.repository.AnnouncementRepository;
 public class AnnouncementController {
 
     @Autowired
-    private AnnouncementRepository announcementRepository;
+    private final AnnouncementRepository announcementRepository;
+    @Autowired
+    private final ProductService productService; // Inject ProductService
 
     // Display all announcements
     @GetMapping
@@ -25,13 +32,17 @@ public class AnnouncementController {
 
     // Render the form for creating a new announcement
     @GetMapping("/create")
-    public String createAnnouncementView() {
+    public String createAnnouncementView(Model model) {
+        model.addAttribute("announcement", new Announcement());
+        model.addAttribute("products", productService.getAllProducts()); // Assuming ProductService exists
         return "/Announcement/createAnnouncement";
     }
 
     // Handle form submission for new announcements
     @PostMapping
-    public String submitAnnouncement(@ModelAttribute Announcement announcement) {
+    public String submitAnnouncement(@ModelAttribute Announcement announcement, @RequestParam("productIds") List<Long> productIds) {
+        List<Product> selectedProducts = productService.getProductsByIds(productIds);
+        announcement.setProducts(selectedProducts);
         announcementRepository.save(announcement);
         return "redirect:/announcements";
     }
@@ -41,8 +52,17 @@ public class AnnouncementController {
     public String showAnnouncementDetails(@PathVariable Long id, Model model) {
         Announcement announcement = announcementRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid announcement ID: " + id));
+
+        // Format dates as strings
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String createdAtFormatted = announcement.getCreatedAt().format(formatter);
+        String updatedAtFormatted = announcement.getUpdatedAt().format(formatter);
+
         model.addAttribute("announcement", announcement);
-        return "/Announcement/details"; // Path to the details template
+        model.addAttribute("createdAtFormatted", createdAtFormatted);
+        model.addAttribute("updatedAtFormatted", updatedAtFormatted);
+
+        return "/Announcement/details";
     }
 
 

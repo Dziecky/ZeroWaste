@@ -38,5 +38,9 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
 
     }
+    @Override
+    public List<Product> getProductsByIds(List<Long> ids) {
+        return productRepository.findAllById(ids);
+    }
 
 }

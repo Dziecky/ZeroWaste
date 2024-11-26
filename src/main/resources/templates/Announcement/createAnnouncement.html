@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-100">
 <head>
     <meta charset="UTF-8">
-    <title>Announcements</title>
+    <title>Create Announcement</title>
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link th:href="@{styles/main.css}" rel="stylesheet"/>
@@ -13,7 +13,7 @@
 
 <main role="main" class="flex-shrink-0">
     <div class="container mt-5">
-        <h2>Create an announcement</h2>
+        <h2>Create an Announcement</h2>
 
         <!-- Announcement Form -->
         <form th:action="@{/announcements}" method="post" class="mb-3">
@@ -25,9 +25,18 @@
                 <label for="description">Description</label>
                 <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
             </div>
+
+            <!-- Product Selection -->
+            <div class="form-group">
+                <label for="products">Attach Products</label>
+                <select id="products" name="productIds" class="form-control" multiple>
+                    <option th:each="product : ${products}" th:value="${product.id}" th:text="${product.name}"></option>
+                </select>
+                <small class="form-text text-muted">Hold Ctrl (or Cmd on Mac) to select multiple products.</small>
+            </div>
+
             <button type="submit" class="btn btn-primary">Submit Announcement</button>
         </form>
-
     </div>
 </main>
 
@@ -37,8 +46,6 @@
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
         crossorigin="anonymous">
 </script>
-<script
-        src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js">
-</script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
