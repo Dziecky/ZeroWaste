@@ -34,6 +34,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, UserService userService) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/products/showFormForAddProduct", "/products/save").authenticated()
                         .requestMatchers("/login", "/submitLogin", "/submitRegister", "/css/**", "/js/**").anonymous()
                         .anyRequest().permitAll() // Zezwól na wszystkie żądania podczas produkcji
                 )

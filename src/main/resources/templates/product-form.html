@@ -42,7 +42,6 @@
             <h2 class="mb-4 text-center" th:text="${product.id != null} ? 'Edit Product' : 'Add New Product'">Add/Edit Product</h2>
 
             <form th:action="@{${product.id != null} ? '/products/update' : '/products/save'}" th:object="${product}" method="POST">
-                <!-- Hidden ID Field (only for editing) -->
                 <input type="hidden" th:if="${product.id != null}" th:field="*{id}" />
 
                 <div class="mb-3">
@@ -68,10 +67,20 @@
                                 th:value="${category}" th:text="${category}"></option>
                     </select>
                 </div>
+
+                <div class="mb-3">
+                    <label for="imageUrl" class="form-label">Image URL</label>
+                    <input type="text" th:field="*{imageUrl}" class="form-control" id="imageUrl" placeholder="Enter image URL">
+                    <div th:if="${product.imageUrl}">
+                        <img th:src="${product.imageUrl}" alt="Product Image" class="img-thumbnail mt-2" style="max-width: 200px;">
+                    </div>
+                </div>
+
                 <div class="mb-3 form-check">
                     <input type="checkbox" th:field="*{available}" class="form-check-input" id="available">
                     <label class="form-check-label" for="available">Available</label>
                 </div>
+
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn eco-btn" th:text="${product.id != null} ? 'Update Product' : 'Save Product'">Save/Update Product</button>
                 </div>
