@@ -44,6 +44,12 @@
                         </div>
                         <button type="submit" class="btn btn-primary btn-block mb-4 w-100">Sign in</button>
                     </form>
+                    <div class="text-center">
+                        <p>or</p>
+                        <a th:href="@{/oauth2/authorization/google}" class="btn btn-danger btn-block mb-4 w-100">
+                            <i class="fab fa-google"></i> Sign in with Google
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Register Form -->
@@ -82,6 +88,12 @@
                         -->
                         <button type="submit" class="btn btn-primary btn-block mb-4 w-100">Register</button>
                     </form>
+                    <div class="text-center">
+                        <p>or</p>
+                        <a th:href="@{/oauth2/authorization/google}" class="btn btn-danger btn-block mb-4 w-100">
+                            <i class="fab fa-google"></i> Register with Google
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
