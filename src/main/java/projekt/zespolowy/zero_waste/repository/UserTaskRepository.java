@@ -11,10 +11,10 @@ import java.util.Optional;
 
 @Repository
 public interface UserTaskRepository extends JpaRepository<UserTask, Long> {
-//
-//    // Znajdź wszystkie zadania przypisane do użytkownika
-//    List<UserTask> findByUser(User user);
-//
+
+    // Znajdź wszystkie zadania przypisane do użytkownika
+    List<UserTask> findByUser(User user);
+
 //    // Znajdź wszystkie zadania przypisane do użytkownika i określonego zadania
 //    Optional<UserTask> findByUserAndTask(User user, Task task);
 //
@@ -27,5 +27,7 @@ public interface UserTaskRepository extends JpaRepository<UserTask, Long> {
 //    // Znajdź wszystkie zadania z określonym postępem dla danego użytkownika
 //    List<UserTask> findByUserAndProgressGreaterThan(User user, int progress);
 
+    // Usuwanie powiązanych rekordów w tabeli user_task
+    void deleteByTaskId(Long taskId);
 }
 
