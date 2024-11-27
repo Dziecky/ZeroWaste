@@ -1,6 +1,7 @@
 package projekt.zespolowy.zero_waste.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import projekt.zespolowy.zero_waste.dto.UserRegistrationDto;
 import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
@@ -46,10 +47,14 @@ public class UserService implements UserDetailsService {
     }
 
     // Zapisywanie nowego użytkownika po zakodowaniu hasła
-    public void registerUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // Ustawienie domyślnego typu konta na BUSINESS podczas produkcji
-        user.setAccountType(AccountType.BUSINESS);
+    public void registerUser(UserRegistrationDto userDto) {
+        User user = new User();
+        user.setUsername(userDto.getUsername());
+        user.setEmail(userDto.getEmail());
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setAccountType(userDto.isBusinessAccount() ? AccountType.BUSINESS : AccountType.NORMAL);
         userRepository.save(user);
 
         // Pobierz wszystkie istniejące zadania
