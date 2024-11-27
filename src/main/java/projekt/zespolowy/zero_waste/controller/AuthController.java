@@ -4,8 +4,6 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import projekt.zespolowy.zero_waste.dto.UserRegistrationDto;
-import projekt.zespolowy.zero_waste.entity.User;
-import projekt.zespolowy.zero_waste.security.CustomUser;
 import projekt.zespolowy.zero_waste.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
