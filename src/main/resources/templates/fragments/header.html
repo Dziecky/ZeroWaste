@@ -44,10 +44,14 @@
             <li class="nav-item" th:class="${activePage == 'tasks'} ? 'nav-item active' : 'nav-item'">
                 <a class="nav-link" th:href="@{/tasks/showAllTasks}">Tasks</a>
             </li>
-        </ul>
+            <!-- <li class="nav-item" th:class="${activePage == 'eco-impact'} ? 'nav-item active' : 'nav-item'">
+                 <a class="nav-link" th:href="@{/eco-impact}">Eco Impact</a>
+             </li>-->
 
-        <ul class="navbar-nav ml-auto">
-            <!-- Jeśli użytkownik NIE jest zalogowany -->
+         </ul>
+
+         <ul class="navbar-nav ml-auto">
+             <!-- Jeśli użytkownik NIE jest zalogowany -->
             <li class="nav-item" sec:authorize="isAnonymous()">
                 <a class="btn btn-outline-light" th:href="@{/login}">Login</a>
             </li>
