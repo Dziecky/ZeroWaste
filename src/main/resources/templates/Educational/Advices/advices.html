@@ -16,6 +16,14 @@
     <!-- Link to Create New Advice -->
     <a th:href="@{/advices/new}" class="btn btn-primary mb-3">Create New Advice</a>
 
+    <!-- Filters -->
+    <form method="get" th:action="@{/advices}" class="form-inline mb-3">
+        <div class = "form-group mr-3">
+            <label for="title" class="mr-2">Filter by Title:</label>
+            <input type="text" name="title" id="title" class="form-control mr-2"
+                   th:value="${title}" placeholder="Enter Title"/>
+            <button type="submit" class="btn btn-secondary">Filter</button>
+        </div>
     <!-- Filter by Category -->
     <form method="get" th:action="@{/advices}" class="form-inline mb-3">
         <label for="category" class="mr-2">Filter by Category:</label>

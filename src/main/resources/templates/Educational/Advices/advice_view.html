@@ -1,19 +1,28 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${advice.title}">Advice Details</title>
+    <title th:text="${adviceDTO.title}">Advice Details</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container">
-    <h1 th:text="${advice.title}"></h1>
-    <p><strong>Category:</strong> <span th:text="${advice.adviceCategory}"></span></p>
-    <div th:if="${advice.imageUrl}">
-        <img th:src="${advice.imageUrl}" alt="Article Image" class="img-fluid">
+    <h1 th:text="${adviceDTO.title}">Advice Title</h1>
+    <p><strong>Category:</strong> <span th:text="${adviceDTO.adviceCategory}"></span></p>
+    <div th:if="${adviceDTO.imageUrl}">
+        <img th:src="${adviceDTO.imageUrl}" alt="Advice Image" class="img-fluid">
     </div>
-    <p th:text="${advice.content}"></p>
-    <a th:href="@{/advices}" class="btn btn-secondary">Back to Articles</a>
+    <p th:text="${adviceDTO.content}">Advice Content</p>
+    <!-- Display Tags -->
+    <p>
+        <strong>Tags:</strong>
+        <span th:each="tagName, iterStat : ${adviceDTO.tags}">
+        <span th:text="'#' + ${tagName}">#TagName</span>
+        <span th:if="${!iterStat.last}">, </span>
+    </span>
+    </p>
+    <a th:href="@{/advices}" class="btn btn-secondary">Back to Advices</a>
+
 </div>
 </body>
 </html>
