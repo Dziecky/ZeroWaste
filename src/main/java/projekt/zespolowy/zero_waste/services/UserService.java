@@ -1,11 +1,13 @@
 package projekt.zespolowy.zero_waste.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import projekt.zespolowy.zero_waste.dto.UserRegistrationDto;
+import projekt.zespolowy.zero_waste.dto.user.UserRegistrationDto;
+import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
 import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
+import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 import projekt.zespolowy.zero_waste.repository.TaskRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,6 +53,7 @@ public class UserService implements UserDetailsService {
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setEmail(userDto.getEmail());
+        user.setProvider(AuthProvider.LOCAL);
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
@@ -86,5 +89,36 @@ public class UserService implements UserDetailsService {
     // Znajdź użytkownika po emailu
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+
+    public User updateUser(UserUpdateDto userUpdateDto, String currentUsername) {
+        User user = findByUsername(currentUsername);
+        if (user == null) {
+            throw new UsernameNotFoundException("Nie znaleziono użytkownika: " + currentUsername);
+        }
+        if (!user.getUsername().equals(userUpdateDto.getUsername())) {
+            if (findByUsername(userUpdateDto.getUsername()) != null) {
+                throw new IllegalArgumentException("Nazwa użytkownika już istnieje");
+            }
+            user.setUsername(userUpdateDto.getUsername());
+        }
+
+        user.setFirstName(userUpdateDto.getFirstName());
+        user.setLastName(userUpdateDto.getLastName());
+        user.setPhoneNumber(userUpdateDto.getPhoneNumber());
+
+        if (userUpdateDto.getNewPassword() != null && !userUpdateDto.getNewPassword().isEmpty()) {
+            if (userUpdateDto.getCurrentPassword() == null || userUpdateDto.getCurrentPassword().isEmpty()) {
+                throw new IllegalArgumentException("Obecne hasło jest wymagane do zmiany hasła");
+            }
+            if (!passwordEncoder.matches(userUpdateDto.getCurrentPassword(), user.getPassword())) {
+                throw new IllegalArgumentException("Obecne hasło jest nieprawidłowe");
+            }
+            if (!userUpdateDto.getNewPassword().equals(userUpdateDto.getConfirmNewPassword())) {
+                throw new IllegalArgumentException("Nowe hasła nie są zgodne");
+            }
+            user.setPassword(passwordEncoder.encode(userUpdateDto.getNewPassword()));
+        }
+        return userRepository.save(user);
     }
 }

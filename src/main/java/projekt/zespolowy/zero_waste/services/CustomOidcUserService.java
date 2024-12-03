@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
+import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
 import projekt.zespolowy.zero_waste.security.CustomUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -51,6 +52,7 @@ public class CustomOidcUserService extends OidcUserService {
             user.setLastName(lastName);
             user.setUsername(username);
             user.setEmail(email);
+            user.setProvider(AuthProvider.GOOGLE);
             user.setPhoneNumber(null); // Google domyślnie nie udostępnia numeru telefonu
             user.setAccountType(AccountType.BUSINESS); // Domyślnie ustaw typ konta na BUSINESS
 

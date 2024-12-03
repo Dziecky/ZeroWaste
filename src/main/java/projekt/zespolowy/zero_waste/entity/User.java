@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
+import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,6 +39,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
+
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
 
     @Column(name = "total_points")
     private int totalPoints; // BUSINESS lub NORMAL
