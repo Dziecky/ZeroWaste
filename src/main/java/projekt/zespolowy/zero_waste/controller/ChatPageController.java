@@ -25,4 +25,11 @@ public class ChatPageController {
         model.addAttribute("username", user.getUsername());
         return "chat";
     }
+
+    @GetMapping("/chat-room")
+    public String chatRoomPage(Model model, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        model.addAttribute("username", user.getUsername());
+        return "chat-room";
+    }
 }

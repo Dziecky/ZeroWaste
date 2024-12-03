@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 
 import java.util.List;
+
 import projekt.zespolowy.zero_waste.security.CustomUser;
 
 @Service
