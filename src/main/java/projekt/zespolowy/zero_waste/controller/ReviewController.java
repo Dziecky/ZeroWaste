@@ -6,8 +6,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
 import projekt.zespolowy.zero_waste.entity.Review;
+import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.services.ReviewService;
+import projekt.zespolowy.zero_waste.services.UserService;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,13 +19,19 @@ import java.util.List;
 @AllArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
+    private final UserService userService;
 
     @PostMapping
-    public String createReview(@ModelAttribute Review review, Model model) {
-        review.setCreatedDate(LocalDateTime.now()); // Ustawienie bieżącej daty jako daty utworzenia
-        Review createdReview = reviewService.createReview(review);
-        model.addAttribute("review", createdReview);
-        return "redirect:/reviews"; // przekierowanie do listy recenzji
+    public String createReview(@ModelAttribute Review review, Principal principal) {
+        // Pobierz zalogowanego użytkownika
+        User user = userService.findByUsername(principal.getName());
+
+        // Powiąż recenzję z użytkownikiem
+        review.setUser(user);
+        review.setCreatedDate(LocalDateTime.now()); // Ustaw datę utworzenia
+
+        reviewService.createReview(review);
+        return "redirect:/accountDetails"; // Powrót do strony szczegółów konta
     }
 
 

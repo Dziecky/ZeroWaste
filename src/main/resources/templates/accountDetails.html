@@ -16,7 +16,35 @@
   <h1>Your Account Details</h1>
   <p>Username: <span sec:authentication="name"></span></p>
   <!-- Dodaj dodatkowe informacje o użytkowniku -->
+  <p>User ID: <span th:text="${user.id}"></span></p>
+
+
+  <h2>Your Reviews</h2>
+  <div th:if="${reviews != null}">
+    <ul>
+      <li th:each="review : ${reviews}">
+        <p><strong>Date:</strong> <span th:text="${review.createdDateFormatted}"></span></p>
+        <p><strong>Content:</strong> <span th:text="${review.content}"></span></p>
+        <hr>
+      </li>
+    </ul>
+  </div>
+  <div th:if="${reviews == null}">
+    <p>No reviews found.</p>
+  </div>
+
+  <!-- Formularz dodawania recenzji -->
+  <h2>Add a Review</h2>
+  <form th:action="@{/reviews}" th:object="${newReview}" method="post">
+    <div class="form-group">
+      <label for="content">Content</label>
+      <textarea id="content" name="content" class="form-control" th:field="*{content}" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Review</button>
+  </form>
 </div>
+
+
 
 </body>
 </html>
