@@ -42,11 +42,21 @@ function sendMessage() {
 function displayMessage(sender, content) {
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
-    const timestamp = new Date().toLocaleTimeString(); // Format time
-    console.log(sender);
-    messageElement.textContent = `[${timestamp}] ${sender}: ${content}`;
+    const timestamp = new Date().toLocaleTimeString();
+    const username = document.getElementById('username-span').textContent;
+
+    if (sender === username) {
+        messageElement.classList.add('text-right', 'text-primary');
+        messageElement.textContent = `[${timestamp}] You: ${content}`;
+    } else {
+        messageElement.classList.add('text-left', 'text-secondary');
+        messageElement.textContent = `[${timestamp}] ${sender}: ${content}`;
+    }
+
     chatWindow.appendChild(messageElement);
+    chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to the latest message
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const username = document.querySelector('span').textContent; // Logged-in username

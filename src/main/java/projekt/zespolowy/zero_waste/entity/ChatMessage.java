@@ -10,5 +10,4 @@ public class ChatMessage {
     private String receiver;  // Receiver's username or ID
     private String content;   // Message content
     private String timestamp; // Optional: timestamp of the message
-
 }

@@ -16,10 +16,17 @@ public class ChatController {
 
     @MessageMapping("/chat")
     public void processMessage(ChatMessage chatMessage) {
-        System.out.println("Received message: " + chatMessage);
 
+        // Send to receiver's queue
         messagingTemplate.convertAndSendToUser(
                 chatMessage.getReceiver(),
+                "/queue/messages",
+                chatMessage
+        );
+
+        // Send to sender's queue
+        messagingTemplate.convertAndSendToUser(
+                chatMessage.getSender(),
                 "/queue/messages",
                 chatMessage
         );

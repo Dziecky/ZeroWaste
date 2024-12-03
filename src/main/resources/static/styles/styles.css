@@ -29,3 +29,19 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+.text-right {
+    text-align: right;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-primary {
+    color: blue;
+}
+
+.text-secondary {
+    color: gray;
+}
