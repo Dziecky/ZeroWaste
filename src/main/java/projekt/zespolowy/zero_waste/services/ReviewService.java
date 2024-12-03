@@ -39,7 +39,7 @@ public class ReviewService implements IReviewService{
 
 
     public double calculateAverageRating(User user) {
-        List<Review> reviews = reviewRepository.findByUser(user);
+        List<Review> reviews = reviewRepository.findByUserId(user.getId());
         if (reviews.isEmpty()) return 0.0;
 
         double totalRating = reviews.stream()

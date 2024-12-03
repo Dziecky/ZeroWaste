@@ -45,6 +45,9 @@ public class User implements UserDetails {
     @Column(name = "total_points")
     private int totalPoints;// BUSINESS lub NORMAL
 
+    @Column(name = "average_rating", columnDefinition = "double default 0")
+    private double averageRating;
+
     // Implementacja metod z interfejsu UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

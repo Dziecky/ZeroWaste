@@ -25,7 +25,11 @@ public class Review {
     private LocalDateTime createdDate;
 
     @Column(name = "rating", nullable = false)
-    private int rating; // Assuming a scale from 1 to 5
+    private int rating; // Assuming a scale from 1 to
+
+    // Do zrobienia kiedy będzie strona Usera
+//    @Column(name = "about_user_id", nullable = false)
+//    private Long aboutUserId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
