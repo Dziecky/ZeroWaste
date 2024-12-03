@@ -1,21 +1,19 @@
 package projekt.zespolowy.zero_waste.config;
 
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import projekt.zespolowy.zero_waste.services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import projekt.zespolowy.zero_waste.services.CustomOidcUserService;
+import projekt.zespolowy.zero_waste.services.UserService;
 
 @Configuration
 public class SecurityConfig {
-
-    // Usuń pole autowired UserService
-    // private final UserService userService;
 
     // Bean kodera haseł
     @Bean
@@ -31,11 +29,12 @@ public class SecurityConfig {
 
     // Łańcuch filtrów bezpieczeństwa
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, UserService userService) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, UserService userService, CustomOidcUserService customOidcUserService) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/login", "/submitLogin", "/submitRegister", "/css/**", "/js/**").anonymous()
-                        .anyRequest().permitAll() // Zezwól na wszystkie żądania podczas produkcji
+                        .requestMatchers("/products/showFormForAddProduct", "/products/save").authenticated()
+                        .requestMatchers("/login", "/oauth2/**", "/submitRegister", "/css/**", "/js/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .userDetailsService(userService)
                 .formLogin(form -> form
@@ -43,6 +42,12 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/", true)
                         .permitAll()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .oidcUserService(customOidcUserService)
+                        )
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")

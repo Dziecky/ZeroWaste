@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import projekt.zespolowy.zero_waste.entity.Tag;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "article")
@@ -34,12 +37,26 @@ public class Article {
     //to moze byc null
     private LocalDateTime updatedAt;
 
+    @ManyToMany
+    @JoinTable(name = "article_tags",
+            joinColumns = @JoinColumn(name = "article_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<Tag> tags = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     private ArticleCategory articleCategory;
     //@ManyToOne(fetch = FetchType.LAZY)
     //@JoinColumn(name = "user_id", nullable = false)
     //private User author;
+    public void addTag(Tag tag) {
+        this.tags.add(tag);
+        tag.getArticles().add(this);
+    }
+
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
+        tag.getArticles().remove(this);
+    }
 
     @PrePersist
     public void onCreate() {

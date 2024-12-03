@@ -23,20 +23,17 @@ public class Product {
     private Long id;
 
     private String name;
-
     private String description;
 
     private String imageUrl;
 
     @Column(name = "is_available")
-    private boolean isAvailable;
+    private boolean available;
 
     private double price;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-
 
     @Enumerated(EnumType.STRING)
     private ProductCategory productCategory;
@@ -49,12 +46,13 @@ public class Product {
     )
     private Set<Tag> tags= new HashSet<>();
 
-    //@ManyToOne(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "user_id", nullable = false)
-    //private User owner;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User owner;
+
     @PrePersist
     public void onCreate() {
         createdAt = LocalDateTime.now();
-        isAvailable = true;
+        available = true;
     }
 }

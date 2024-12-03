@@ -27,10 +27,22 @@ public class ArticleController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) ArticleCategory category,
+            @RequestParam(required = false) String title,
             Model model) {
-
-        Page<Article> articlePage = articleService.getArticlesByCategory(category, PageRequest.of(page, size));
-
+        Page<Article> articlePage;
+        if (title != null && !title.trim().isEmpty()) {
+            // If title is provided, search by title
+            articlePage = articleService.getArticlesByTitle(title, PageRequest.of(page, size));
+            model.addAttribute("searchMode", "title");
+        } else if (category != null) {
+            // If category is provided, filter by category
+            articlePage = articleService.getArticlesByCategory(category, PageRequest.of(page, size));
+            model.addAttribute("searchMode", "category");
+        } else {
+            // If no filters, display all articles
+            articlePage = articleService.getAllArticles(PageRequest.of(page, size));
+            model.addAttribute("searchMode", "none");
+        }
         model.addAttribute("articlePage", articlePage);
         model.addAttribute("selectedCategory", category);
         model.addAttribute("categories", ArticleCategory.values());
