@@ -16,7 +16,6 @@ import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.List;
 
 @Controller
 public class UserController {

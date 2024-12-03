@@ -46,7 +46,6 @@ public class User {
     private double averageRating;
 
     // Implementacja metod z interfejsu UserDetails
-    @Override
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
