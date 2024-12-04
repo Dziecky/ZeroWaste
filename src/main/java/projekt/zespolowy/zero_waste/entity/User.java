@@ -42,8 +42,8 @@ public class User {
     @Column(name = "total_points")
     private int totalPoints; // BUSINESS lub NORMAL
 
-    @Column(name = "average_rating", columnDefinition = "double default 0")
-    private double averageRating;
+    @Column(name = "average_rating", columnDefinition = "Double default 0")
+    private Double averageRating;
 
     // Implementacja metod z interfejsu UserDetails
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -91,4 +91,12 @@ public class UserService implements UserDetailsService {
     public void save(User user) {
         userRepository.save(user);
     }
+
+    public User findById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
+
+    public void updateUser(User user) {
+        userRepository.save(user);
+    }
 }

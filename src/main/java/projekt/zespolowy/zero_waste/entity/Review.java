@@ -27,9 +27,8 @@ public class Review {
     @Column(name = "rating", nullable = false)
     private int rating; // Assuming a scale from 1 to
 
-    // Do zrobienia kiedy będzie strona Usera
-//    @Column(name = "about_user_id", nullable = false)
-//    private Long aboutUserId;
+    @Column(name = "target_user_id")
+    private Long targetUserId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

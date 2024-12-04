@@ -2,6 +2,7 @@ package projekt.zespolowy.zero_waste.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
 import projekt.zespolowy.zero_waste.entity.Review;
 import projekt.zespolowy.zero_waste.entity.User;
@@ -10,12 +11,14 @@ import projekt.zespolowy.zero_waste.repository.ReviewRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class ReviewService implements IReviewService{
 
     private final ReviewRepository reviewRepository;
+    private final UserService userService;
 
     @Override
     public Review createReview(Review review) {
@@ -46,6 +49,12 @@ public class ReviewService implements IReviewService{
                 .mapToInt(Review::getRating)
                 .sum();
         return totalRating / reviews.size();
+    }
+    public List<ReviewDto> getReviewsByTargetUserId(Long targetUserId) {
+        List<Review> reviews = reviewRepository.findByTargetUserId(targetUserId);
+        return reviews.stream()
+                .map(ReviewMapper::mapToReviewDto)
+                .collect(Collectors.toList());
     }
 
     public List<Review> getReviewsByUser(User user) {

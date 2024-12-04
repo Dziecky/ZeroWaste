@@ -1,12 +1,15 @@
 package projekt.zespolowy.zero_waste.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
 import projekt.zespolowy.zero_waste.entity.Review;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.security.CustomUser;
 import projekt.zespolowy.zero_waste.services.ReviewService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
@@ -22,49 +25,25 @@ public class ReviewController {
     private final UserService userService;
 
     @PostMapping
-    public String createReview(@ModelAttribute Review review, Principal principal) {
-        // Pobierz zalogowanego użytkownika
+    public String addReview(@ModelAttribute Review review, Principal principal) {
         User user = userService.findByUsername(principal.getName());
-
-        // Powiąż recenzję z użytkownikiem
         review.setUser(user);
-
-        // Ustaw datę utworzenia
         review.setCreatedDate(LocalDateTime.now());
-
-        // Obsługa oceny (rating)
-        if (review.getRating() < 0 || review.getRating() > 5) {
-            throw new IllegalArgumentException("Rating must be between 0 and 5");
-        }
-
-        // Zapisz recenzję
+        review.setTargetUserId((long) 7); // Ustaw ID użytkownika, którego dotyczy recenzja
         reviewService.createReview(review);
 
-        // Oblicz nową średnią ocenę użytkownika
-        double newAverageRating = reviewService.calculateAverageRating(user);
-        user.setAverageRating(newAverageRating);
-        userService.save(user);
-        return "redirect:/accountDetails"; // Powrót do strony szczegółów konta
+        return "redirect:/reviews";
     }
 
-
-    //    @GetMapping
-//    public String getAllReviews(Model model) {
-//        List<ReviewDto> reviews = reviewService.getAllReviews(); // Pobranie wszystkich recenzji
-//
-//        model.addAttribute("reviews", reviews);
-//        model.addAttribute("review", new Review()); // Pusty obiekt dla formularza dodawania recenzji
-//        return "reviews"; // widok Thymeleaf do wyświetlania wszystkich recenzji i formularzy
-//    }
     @GetMapping
     public String getReviewsByUserId(Model model, Principal principal) {
         User user = userService.findByUsername(principal.getName());
-
         List<ReviewDto> reviews = reviewService.getReviewsByUserId(user.getId());
 
         model.addAttribute("user", user);
         model.addAttribute("reviews", reviews);
-        model.addAttribute("newReview", new Review());
+        model.addAttribute("newReview", new Review()); // Dodaj tę linię
+
         return "reviews";
     }
 
@@ -84,7 +63,7 @@ public class ReviewController {
         double newAverageRating = reviewService.calculateAverageRating(user);
         user.setAverageRating(newAverageRating);
         userService.save(user);
-        return "redirect:/accountDetails";
+        return "redirect:/user";
     }
 
     @PostMapping("/delete/{id}")
@@ -101,7 +80,7 @@ public class ReviewController {
         double newAverageRating = reviewService.calculateAverageRating(user);
         user.setAverageRating(newAverageRating);
         userService.save(user);
-        return "redirect:/accountDetails";
+        return "redirect:/user";
     }
 
 }
