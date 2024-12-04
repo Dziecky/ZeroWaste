@@ -50,4 +50,15 @@ public class User {
         // Dla uproszczenia, wszyscy użytkownicy mają rolę ADMIN podczas produkcji
         return List.of(() -> "ROLE_ADMIN");
     }
+
+    @Transient // Nie zapisuj tego pola w bazie
+    private int rank;
+
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
 }
