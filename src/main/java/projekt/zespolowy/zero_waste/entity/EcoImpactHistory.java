@@ -28,6 +28,7 @@ public class EcoImpactHistory {
     private double wasteReduced;
 
     private LocalDate date;
+    private int totalPoints;
 
 }
 
