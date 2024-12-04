@@ -51,12 +51,8 @@ public class User {
         return List.of(() -> "ROLE_ADMIN");
     }
 
-    @Transient // Nie zapisuj tego pola w bazie
+    @Transient
     private int rank;
-
-    public int getRank() {
-        return rank;
-    }
 
     public void setRank(int rank) {
         this.rank = rank;

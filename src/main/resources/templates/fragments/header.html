@@ -44,6 +44,9 @@
             <li class="nav-item" th:class="${activePage == 'tasks'} ? 'nav-item active' : 'nav-item'">
                 <a class="nav-link" th:href="@{/tasks/showAllTasks}">Tasks</a>
             </li>
+            <li class="nav-item" th:class="${activePage == 'ranking'} ? 'nav-item active' : 'nav-item'">
+                <a class="nav-link" th:href="@{/ranking}">Ranking</a>
+            </li>
         </ul>
 
         <ul class="navbar-nav ml-auto">

@@ -119,6 +119,10 @@ public class UserService implements UserDetailsService {
         return allUsers;
     }
 
+    public List<User> getAllUsers() {
+        return userRepository.findAll(); // Pobiera wszystkich użytkowników z bazy danych
+    }
+
     // Znajdź użytkownika po nazwie użytkownika
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElse(null);
