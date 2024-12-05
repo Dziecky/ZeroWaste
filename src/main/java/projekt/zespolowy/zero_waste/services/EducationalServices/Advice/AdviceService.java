@@ -1,4 +1,4 @@
-package projekt.zespolowy.zero_waste.services;
+package projekt.zespolowy.zero_waste.services.EducationalServices.Advice;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +16,7 @@ public interface AdviceService {
     void deleteAdvice(Long id);
     Page<Advice> getAdvicesByCategory(AdviceCategory category, Pageable pageable);
     Page<Advice> getAdvicesByTitle(String title, Pageable pageable);
+    Page<Advice> findByTags_NameIgnoreCase(String tagName, Pageable pageable);
+    Page<Advice> findAdvices(AdviceCategory category, String title, String tagName, Pageable pageable);
+
 }

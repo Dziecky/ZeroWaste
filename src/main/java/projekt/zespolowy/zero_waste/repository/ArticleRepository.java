@@ -11,6 +11,6 @@ import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleC
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findByArticleCategory(ArticleCategory category, Pageable pageable);
     Page<Article> findByTitleContainingIgnoreCase(String title, Pageable pageable);
-
+    Page<Article> findByTags_Name(String tagName, Pageable pageable);
 
 }
