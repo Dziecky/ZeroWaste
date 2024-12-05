@@ -3,6 +3,7 @@ package projekt.zespolowy.zero_waste.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +11,7 @@ import projekt.zespolowy.zero_waste.dto.AdviceDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.Advice;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.AdviceCategory;
 import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
-import projekt.zespolowy.zero_waste.services.AdviceService;
+import projekt.zespolowy.zero_waste.services.EducationalServices.Advice.AdviceService;
 
 import java.util.Optional;
 
@@ -30,22 +31,20 @@ public class AdviceController {
                               @RequestParam(defaultValue = "10") int size,
                               @RequestParam(required = false) AdviceCategory category,
                               @RequestParam(required = false) String title,
+                              @RequestParam(required = false) String tagName,
                               Model model) {
-        Page<Advice> advicePage;
-        if(category != null) {
-            advicePage = adviceService.getAdvicesByCategory(category, PageRequest.of(page, size));
-        } else if(title != null && !title.trim().isEmpty()) {
-            advicePage = adviceService.getAdvicesByTitle(title, PageRequest.of(page, size));
-        } else {
-            advicePage = adviceService.getAllAdvices(PageRequest.of(page, size));
-        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Advice> advicePage = adviceService.findAdvices(category, title, tagName, pageable);
+
         model.addAttribute("advicePage", advicePage);
         model.addAttribute("activePage", "advices");
         model.addAttribute("selectedCategory", category);
         model.addAttribute("categories", AdviceCategory.values());
+        model.addAttribute("selectedTagName", tagName);
         model.addAttribute("title", title);
         return "Educational/Advices/advices";
     }
+
 
     // Show the form to create a new advice
     @GetMapping("/new")
@@ -97,5 +96,6 @@ public class AdviceController {
             return "redirect:/advices";
         }
     }
+
 
 }

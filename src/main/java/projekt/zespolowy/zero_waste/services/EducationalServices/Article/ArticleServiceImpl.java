@@ -1,4 +1,4 @@
-package projekt.zespolowy.zero_waste.services;
+package projekt.zespolowy.zero_waste.services.EducationalServices.Article;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
