@@ -41,7 +41,7 @@
     </form>
     <!-- Search by Tag -->
         <form method="get" th:action="@{/advices}" class="form-inline mb-3">
-            <label for="tag" class="mr-2">Search by Tag:</label>
+            <label for="tagName" class="mr-2">Search by Tag:</label>
             <input type="text" name="tagName" id="tagName" class="form-control mr-2" th:value="${selectedTagName}" placeholder="Enter Tag"/>
             <button type="submit" class="btn btn-secondary">Search</button>
         </form>
