@@ -1,6 +1,5 @@
 package projekt.zespolowy.zero_waste.services.EducationalServices.Advice;
 
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,11 +8,9 @@ import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.dto.AdviceDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.Advice;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.AdviceCategory;
-import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
 import projekt.zespolowy.zero_waste.repository.AdviceRepository;
 import projekt.zespolowy.zero_waste.services.TagService;
-import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.Optional;
 
@@ -22,7 +19,6 @@ public class AdviceServiceImpl implements AdviceService {
     private final AdviceRepository adviceRepository;
     private final TagService tagService;
     private final AdviceMapper adviceMapper;
-
     @Autowired
     public AdviceServiceImpl(AdviceRepository adviceRepository, TagService tagService, AdviceMapper adviceMapper) {
         this.adviceRepository = adviceRepository;
@@ -32,14 +28,12 @@ public class AdviceServiceImpl implements AdviceService {
     @Override
     public Advice createAdvice(AdviceDTO adviceDTO) {
         Advice advice = adviceMapper.toEntity(adviceDTO, tagService);
-        advice.setAuthor(UserService.getUser());
         return adviceRepository.save(advice);
     }
     @Override
-    @Transactional
     public Advice updateAdvice(Long id, AdviceDTO adviceDTO) {
         return adviceRepository.findById(id).map(existingAdvice -> {
-            adviceMapper.updateAdviceFromDTO(adviceDTO, existingAdvice, tagService);
+            adviceMapper.afterUpdateAdviceFromDTO(adviceDTO, existingAdvice, tagService);
             return adviceRepository.save(existingAdvice);
         }).orElseThrow(() -> new RuntimeException("Advice not found with id " + id));
     }

@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import projekt.zespolowy.zero_waste.entity.Tag;
-import projekt.zespolowy.zero_waste.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -26,7 +25,7 @@ public class Article {
 
     private String title;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private String imageUrl;
@@ -46,16 +45,14 @@ public class Article {
 
     @Enumerated(EnumType.STRING)
     private ArticleCategory articleCategory;
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "user_id", nullable = false)
+    //private User author;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User author;
-
-    @ManyToMany(mappedBy = "likedArticles")
-    private Set<User> likedByUsers;
 
     @PrePersist
     public void onCreate() {
+        //author = User.getCurrentUser();
         createdAt = LocalDateTime.now();
     }
     @PreUpdate

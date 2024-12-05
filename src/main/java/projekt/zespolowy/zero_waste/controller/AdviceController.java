@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,20 +36,17 @@ public class AdviceController {
         Pageable pageable = PageRequest.of(page, size);
         Page<Advice> advicePage = adviceService.findAdvices(category, title, tagName, pageable);
 
-        Page<AdviceDTO> adviceDTOPage = advicePage.map(adviceMapper::toDTO);
-        model.addAttribute("advicePage", adviceDTOPage);
-        //model.addAttribute("activePage", "advices");
+        model.addAttribute("advicePage", advicePage);
+        model.addAttribute("activePage", "advices");
         model.addAttribute("selectedCategory", category);
         model.addAttribute("categories", AdviceCategory.values());
         model.addAttribute("selectedTagName", tagName);
         model.addAttribute("title", title);
-
         return "Educational/Advices/advices";
     }
 
 
     // Show the form to create a new advice
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("adviceDTO", new AdviceDTO());
@@ -58,14 +54,12 @@ public class AdviceController {
         return "Educational/Advices/advice_form";
     }
     // Save the new advice
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/save")
     public String createAdvice(@ModelAttribute("adviceDTO") AdviceDTO adviceDTO) {
         adviceService.createAdvice(adviceDTO);
         return "redirect:/advices";
     }
     // Show the form to edit an advice
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/edit/{id}")
     public String showEditForm (@PathVariable("id")Long id, Model model) {
         Optional<Advice> optionalAdvice = adviceService.getAdviceById(id);
@@ -79,14 +73,11 @@ public class AdviceController {
         }
     }
     // Delete an advice
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{id}") //do poprawienia na DeleteMapping
     public String deleteAdvice(@PathVariable("id")Long id) {
         adviceService.deleteAdvice(id);
         return "redirect:/advices";
     }
-
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/update/{id}")
     public String updateAdvice(@PathVariable("id") Long id, @ModelAttribute("adviceDTO") AdviceDTO adviceDTO) {
         adviceService.updateAdvice(id, adviceDTO);
