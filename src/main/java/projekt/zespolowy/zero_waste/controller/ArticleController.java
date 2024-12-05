@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
-import projekt.zespolowy.zero_waste.services.ArticleService;
+import projekt.zespolowy.zero_waste.services.EducationalServices.Article.ArticleService;
 
 import java.util.Optional;
 

@@ -11,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
 import projekt.zespolowy.zero_waste.repository.ArticleRepository;
-import projekt.zespolowy.zero_waste.services.ArticleService;
+import projekt.zespolowy.zero_waste.services.EducationalServices.Article.ArticleService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

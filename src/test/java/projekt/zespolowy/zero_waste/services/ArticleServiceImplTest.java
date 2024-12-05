@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.repository.ArticleRepository;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
+import projekt.zespolowy.zero_waste.services.EducationalServices.Article.ArticleServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;

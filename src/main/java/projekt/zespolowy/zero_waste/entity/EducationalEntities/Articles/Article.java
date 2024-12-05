@@ -48,15 +48,7 @@ public class Article {
     //@ManyToOne(fetch = FetchType.LAZY)
     //@JoinColumn(name = "user_id", nullable = false)
     //private User author;
-    public void addTag(Tag tag) {
-        this.tags.add(tag);
-        tag.getArticles().add(this);
-    }
 
-    public void removeTag(Tag tag) {
-        this.tags.remove(tag);
-        tag.getArticles().remove(this);
-    }
 
     @PrePersist
     public void onCreate() {
