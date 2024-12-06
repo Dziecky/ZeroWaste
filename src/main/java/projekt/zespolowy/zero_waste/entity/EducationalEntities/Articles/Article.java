@@ -25,7 +25,7 @@ public class Article {
 
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Lob
     private String content;
 
     private String imageUrl;

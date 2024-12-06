@@ -11,11 +11,8 @@ public class ArticleDTO {
     private String title;
     private String content;
     private String imageUrl;
-    private String createdAt;
-    private String updatedAt;
+/*    private String createdAt;
+    private String updatedAt;*/
     private List<String> tags;
     private ArticleCategory articleCategory;
-    private String authorUsername;
-    private boolean likedByCurrentUser; // Nowe pole
-    private int likesCount; // Nowe pole
 }

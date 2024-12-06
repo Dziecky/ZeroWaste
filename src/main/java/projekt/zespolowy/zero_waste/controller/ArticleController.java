@@ -3,11 +3,14 @@ package projekt.zespolowy.zero_waste.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
+import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.services.EducationalServices.Article.ArticleService;
 
 import java.util.Optional;
@@ -17,9 +20,11 @@ import java.util.Optional;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final ArticleMapper articleMapper;
     @Autowired
-    public ArticleController(ArticleService articleService) {
+    public ArticleController(ArticleService articleService, ArticleMapper articleMapper) {
         this.articleService = articleService;
+        this.articleMapper = articleMapper;
     }
 
     @GetMapping
@@ -28,39 +33,32 @@ public class ArticleController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) ArticleCategory category,
             @RequestParam(required = false) String title,
+            @RequestParam(required = false) String tagName,
             Model model) {
-        Page<Article> articlePage;
-        if (title != null && !title.trim().isEmpty()) {
-            // If title is provided, search by title
-            articlePage = articleService.getArticlesByTitle(title, PageRequest.of(page, size));
-            model.addAttribute("searchMode", "title");
-        } else if (category != null) {
-            // If category is provided, filter by category
-            articlePage = articleService.getArticlesByCategory(category, PageRequest.of(page, size));
-            model.addAttribute("searchMode", "category");
-        } else {
-            // If no filters, display all articles
-            articlePage = articleService.getAllArticles(PageRequest.of(page, size));
-            model.addAttribute("searchMode", "none");
-        }
-        model.addAttribute("articlePage", articlePage);
-        model.addAttribute("selectedCategory", category);
-        model.addAttribute("categories", ArticleCategory.values());
-        model.addAttribute("activePage", "articles");
-        return "/Educational/Articles/articles";
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Article> articlePage = articleService.findArticles(category, title, tagName, pageable);
+
+            model.addAttribute("articlePage", articlePage);
+            model.addAttribute("activePage", "articles");
+            model.addAttribute("selectedCategory", category);
+            model.addAttribute("categories", ArticleCategory.values());
+            model.addAttribute("selectedTagName", tagName);
+            model.addAttribute("title", title);
+            return "Educational/Articles/articles";
+
     }
     // Show the form to create a new article
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("article", new Article());
+        model.addAttribute("articleDTO", new ArticleDTO());
         model.addAttribute("categories", ArticleCategory.values());
         return "Educational/Articles/article_form";
     }
 
     // Save the new article
     @PostMapping("/save")
-    public String saveArticle(@ModelAttribute("article") Article article) {
-        articleService.saveArticle(article);
+    public String createArticle(@ModelAttribute("articleDTO") ArticleDTO articleDTO) {
+        articleService.createArticle(articleDTO);
         return "redirect:/articles";
     }
     // Show the form to edit an article
@@ -68,7 +66,8 @@ public class ArticleController {
     public String showEditForm(@PathVariable("id") Long id, Model model) {
         Optional<Article> optionalArticle = articleService.getArticleById(id);
         if (optionalArticle.isPresent()) {
-            model.addAttribute("article", optionalArticle.get());
+            ArticleDTO articleDTO = articleMapper.toDTO(optionalArticle.get());
+            model.addAttribute("articleDTO", articleDTO);
             model.addAttribute("categories", ArticleCategory.values());
             return "Educational/Articles/article_form";
         } else {
@@ -81,12 +80,19 @@ public class ArticleController {
         articleService.deleteArticle(id);
         return "redirect:/articles";
     }
+    // Update an article
+    @PostMapping("/update/{id}")
+    public String updateArticle(@PathVariable("id") Long id, @ModelAttribute("articleDTO") ArticleDTO articleDTO) {
+        articleService.updateArticle(id, articleDTO);
+        return "redirect:/articles";
+    }
     // View an article
     @GetMapping("/{id}")
     public String viewArticle(@PathVariable("id") Long id, Model model) {
         Optional<Article> optionalArticle = articleService.getArticleById(id);
         if (optionalArticle.isPresent()) {
-            model.addAttribute("article", optionalArticle.get());
+            ArticleDTO articleDTO = articleMapper.toDTO(optionalArticle.get());
+            model.addAttribute("articleDTO", articleDTO);
             return "Educational/Articles/article_view";
         } else {
             return "redirect:/articles";

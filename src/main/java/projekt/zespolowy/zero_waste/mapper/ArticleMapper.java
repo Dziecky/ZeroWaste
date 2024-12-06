@@ -14,15 +14,12 @@ import java.util.stream.Collectors;
 public interface ArticleMapper {
 
     @Mapping(target = "tags", ignore = true)
-    @Mapping(target = "author", ignore = true) // Autor ustawiany w serwisie
     Article toEntity(ArticleDTO dto, @Context TagService tagService);
 
     @Mapping(target = "tags", ignore = true)
-    @Mapping(source = "author.username", target = "authorUsername")
     ArticleDTO toDTO(Article Article);
 
     @Mapping(target = "tags", ignore = true)
-
     void updateArticleFromDTO(ArticleDTO dto, @MappingTarget Article Article, @Context TagService tagService);
 
     @AfterMapping
