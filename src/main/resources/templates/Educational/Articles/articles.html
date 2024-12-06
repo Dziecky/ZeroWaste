@@ -18,7 +18,6 @@
 
     <!-- Filter by Category and Title-->
     <form method="get" th:action="@{/articles}" class="form-inline mb-3">
-        <!-- Filter by Category -->
         <div class="form-group mr-3">
             <label for="category" class="mr-2">Filter by Category:</label>
             <select name="category" id="category" class="form-control mr-2">
@@ -42,7 +41,12 @@
         <button type="submit" class="btn btn-secondary">Filter</button>
         </div>
     </form>
-
+    <!-- Search by Tag -->
+    <form method="get" th:action="@{/articles}" class="form-inline mb-3">
+        <label for="tagName" class="mr-2">Search by Tag:</label>
+        <input type="text" name="tagName" id="tagName" class="form-control mr-2" th:value="${selectedTagName}" placeholder="Enter Tag"/>
+        <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
 
     <!-- Articles List -->
     <div>
