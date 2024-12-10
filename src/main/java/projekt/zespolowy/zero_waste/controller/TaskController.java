@@ -17,7 +17,7 @@ public class TaskController {
     @GetMapping("/newTask")
     public String createTaskForm(Model model) {
         model.addAttribute("task", new Task());
-        return "newTask";
+        return "Tasks/newTask";
     }
 
     @PostMapping("/newTask")
@@ -29,7 +29,7 @@ public class TaskController {
     @GetMapping("/showAllTasks")
     public String listTasks(Model model) {
         model.addAttribute("tasks", taskService.getAllTasks());
-        return "showAllTasks";
+        return "Tasks/showAllTasks";
     }
 
     @GetMapping("/delete/{id}")
