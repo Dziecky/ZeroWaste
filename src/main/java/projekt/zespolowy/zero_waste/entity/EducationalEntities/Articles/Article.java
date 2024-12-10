@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import projekt.zespolowy.zero_waste.entity.Tag;
+import projekt.zespolowy.zero_waste.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -45,9 +46,10 @@ public class Article {
 
     @Enumerated(EnumType.STRING)
     private ArticleCategory articleCategory;
-    //@ManyToOne(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "user_id", nullable = false)
-    //private User author;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User author;
 
 
     @PrePersist
