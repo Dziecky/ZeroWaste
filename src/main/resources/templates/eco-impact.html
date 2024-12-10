@@ -24,11 +24,12 @@
             <div class="col-md-6">
                 <h3>Summary</h3>
                 <ul>
-                    <li><strong>Water Saved:</strong> <span th:text="${waterSaved}"></span> liters</li>
-                    <li><strong>CO₂ Reduced:</strong> <span th:text="${co2Saved}"></span> kg</li>
-                    <li><strong>Energy Saved:</strong> <span th:text="${energySaved}"></span> kWh</li>
-                    <li><strong>Waste Reduced:</strong> <span th:text="${wasteReduced}"></span> kg</li>
+                    <li><strong>Water Saved:</strong> <span th:text="${#numbers.formatDecimal(waterSaved, 0, 2)}"></span> liters</li>
+                    <li><strong>CO₂ Reduced:</strong> <span th:text="${#numbers.formatDecimal(co2Saved, 0, 2)}"></span> kg</li>
+                    <li><strong>Energy Saved:</strong> <span th:text="${#numbers.formatDecimal(energySaved, 0, 2)}"></span> kWh</li>
+                    <li><strong>Waste Reduced:</strong> <span th:text="${#numbers.formatDecimal(wasteReduced, 0, 2)}"></span> kg</li>
                 </ul>
+
             </div>
             <div class="col-md-6">
                 <h3>Historical Data</h3>
@@ -45,11 +46,12 @@
                     <tbody>
                     <tr th:each="history, iterStat : ${historyDates}">
                         <td th:text="${history}"></td>
-                        <td th:text="${waterSavedHistory[iterStat.index]}"></td>
-                        <td th:text="${co2SavedHistory[iterStat.index]}"></td>
-                        <td th:text="${energySavedHistory[iterStat.index]}"></td>
-                        <td th:text="${wasteReducedHistory[iterStat.index]}"></td>
+                        <td th:text="${#numbers.formatDecimal(waterSavedHistory[iterStat.index], 0, 2)}"></td>
+                        <td th:text="${#numbers.formatDecimal(co2SavedHistory[iterStat.index], 0, 2)}"></td>
+                        <td th:text="${#numbers.formatDecimal(energySavedHistory[iterStat.index], 0, 2)}"></td>
+                        <td th:text="${#numbers.formatDecimal(wasteReducedHistory[iterStat.index], 0, 2)}"></td>
                     </tr>
+
                     </tbody>
                 </table>
             </div>
