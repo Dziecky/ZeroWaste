@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,8 +35,8 @@ public class User {
     @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
-    @Column()
-    private String password; // Zabezpieczone hasło
+    @Column(nullable = false)
+    private String password; // Зашифрованный пароль
 
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
@@ -44,14 +45,33 @@ public class User {
     private AuthProvider provider;
 
     @Column(name = "total_points")
-    private int totalPoints; // BUSINESS lub NORMAL
+    private int totalPoints = 0;  // Количество очков пользователя
 
+    @Column(name = "average_rating", columnDefinition = "Double default 0")
+    private Double averageRating;
+
+    // Implementacja metod z interfejsu UserDetails
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews;
+    private List<Review> reviews; // Связь с отзывами (если есть)
 
-    // Metoda getAuthorities() do użycia w CustomUser
+
+    public int getTotalPoints() {
+        return totalPoints;
+    }
+
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints = totalPoints;
+    }
+
+    // Метод getAuthorities() для использования в Spring Security
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Dla uproszczenia, wszyscy użytkownicy mają rolę ADMIN podczas produkcji
-        return List.of(() -> "ROLE_ADMIN");
+        return List.of(() -> "ROLE_ADMIN");  // Все пользователи имеют роль ADMIN
+    }
+
+    @Transient
+    private int rank;
+
+    public void setRank(int rank) {
+        this.rank = rank;
     }
 }

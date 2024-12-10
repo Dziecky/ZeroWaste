@@ -21,11 +21,15 @@ public class Review {
     @Column(name = "content", nullable = false)
     private String content;
 
+
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
 
     @Column(name = "rating", nullable = false)
-    private int rating; // Assuming a scale from 1 to 5
+    private int rating; // Assuming a scale from 1 to
+
+    @Column(name = "target_user_id")
+    private Long targetUserId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
