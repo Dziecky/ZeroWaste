@@ -67,6 +67,6 @@ public class UserController {
         model.addAttribute("completedTasks", completedTasks);
         model.addAttribute("incompleteTasks", incompleteTasks);
 
-        return "userTasks";
+        return "Tasks/userTasks";
     }
 }

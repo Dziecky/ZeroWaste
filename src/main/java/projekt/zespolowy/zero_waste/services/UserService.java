@@ -1,6 +1,7 @@
 package projekt.zespolowy.zero_waste.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import projekt.zespolowy.zero_waste.dto.UserRegistrationDto;
 import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
@@ -15,7 +16,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 import projekt.zespolowy.zero_waste.security.CustomUser;
 
 @Service
@@ -76,6 +81,46 @@ public class UserService implements UserDetailsService {
 
     public List<UserTask> getUserTasksForUser(User user) {
         return userTaskRepository.findByUser(user);
+    }
+
+    public List<User> getRankedAndFilteredUsers(String search, String sortBy) {
+        // Pobierz użytkowników
+        List<User> allUsers = userRepository.findAll();
+
+        // Przypisz miejsce w rankingu
+        AtomicInteger rankCounter = new AtomicInteger(1);
+        allUsers.sort(Comparator.comparingInt(User::getTotalPoints).reversed()); // Domyślne sortowanie
+        allUsers.forEach(user -> user.setRank(rankCounter.getAndIncrement()));
+
+        // Sortowanie według wybranego kryterium
+        if (sortBy != null) {
+            switch (sortBy) {
+                case "username":
+                    allUsers.sort(Comparator.comparing(User::getUsername));
+                    break;
+                case "name":
+                    allUsers.sort(Comparator.comparing(user -> user.getFirstName().toLowerCase()));
+                    break;
+                case "totalPoints":
+                    allUsers.sort(Comparator.comparingInt(User::getTotalPoints).reversed());
+                    break;
+            }
+        }
+
+        // Filtruj według wyszukiwania
+        if (search != null && !search.isEmpty()) {
+            return allUsers.stream()
+                    .filter(user -> user.getUsername().toLowerCase().contains(search.toLowerCase()) ||
+                            user.getFirstName().toLowerCase().contains(search.toLowerCase()) ||
+                            user.getLastName().toLowerCase().contains(search.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        return allUsers;
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll(); // Pobiera wszystkich użytkowników z bazy danych
     }
 
     // Znajdź użytkownika po nazwie użytkownika

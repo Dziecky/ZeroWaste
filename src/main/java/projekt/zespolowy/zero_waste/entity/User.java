@@ -63,4 +63,11 @@ public class User {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(() -> "ROLE_ADMIN");  // Все пользователи имеют роль ADMIN
     }
+
+    @Transient
+    private int rank;
+
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
 }
