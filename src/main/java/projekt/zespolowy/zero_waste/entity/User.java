@@ -43,6 +43,10 @@ public class User {
     @Column(name = "total_points")
     private int totalPoints = 0;  // Количество очков пользователя
 
+    @Column(name = "average_rating", columnDefinition = "Double default 0")
+    private Double averageRating;
+
+    // Implementacja metod z interfejsu UserDetails
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews; // Связь с отзывами (если есть)
 

@@ -14,6 +14,71 @@
 
 <div class="container mt-5">
   <h1>Your Account Details</h1>
+  <p>Username: <span sec:authentication="name"></span></p>
+  <!-- Dodaj dodatkowe informacje o użytkowniku -->
+  <p>User ID: <span th:text="${user.id}"></span></p>
+  <!-- Wyświetlanie średniej oceny -->
+  <h2>Average Rating</h2>
+  <div th:if="${user.averageRating > 0}">
+    <p>Your average rating is: <strong th:text="${#numbers.formatDecimal(user.averageRating, 1, 2)}"></strong></p>
+  </div>
+  <div th:if="${user.averageRating == 0}">
+    <p>No reviews available to calculate an average rating.</p>
+  </div>
+
+  <!-- Wyświetlanie recenzji użytkownika -->
+  <h2>Your Reviews</h2>
+  <div th:if="${reviews != null}">
+    <ul>
+      <li th:each="review : ${reviews}">
+        <p><strong>Date:</strong> <span th:text="${review.createdDateFormatted}"></span></p>
+        <p><strong>Rating:</strong>
+          <span th:text="${review.rating}"></span>/5
+          <span th:if="${review.rating == 0}">(No rating)</span>
+        </p>
+        <p><strong>Content:</strong> <span th:text="${review.content}"></span></p>
+
+        <!-- Formularz edycji recenzji -->
+        <form th:action="@{/reviews/edit/{id}(id=${review.id})}" class="form-group" method="post">
+          <input type="text" name="content" class="form-control" th:value="${review.content}" />
+          <input type="number" name="rating" class="form-control" th:value="${review.rating}" min="0" max="5" />
+          <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+
+        <!-- Formularz usunięcia recenzji -->
+        <form th:action="@{/reviews/delete/{id}(id=${review.id})}" method="post">
+          <button type="submit" class="btn btn-primary" >Delete</button>
+        </form>
+
+        <hr>
+      </li>
+    </ul>
+  </div>
+  <div th:if="${reviews == null}">
+    <p>No reviews found.</p>
+  </div>
+
+  <!-- Formularz dodawania recenzji -->
+  <h2>Add a Review</h2>
+  <form th:action="@{/reviews}" th:object="${newReview}" method="post">
+    <div class="form-group">
+      <label for="content">Content</label>
+      <textarea id="content" name="content" class="form-control" th:field="*{content}" required></textarea>
+    </div>
+    <div class="form-group">
+      <label for="rating">Rating (1-5)</label>
+      <select id="rating" name="rating" class="form-control" th:field="*{rating}" required>
+        <option value="1" th:selected="*{rating == 1}">1</option>
+        <option value="2" th:selected="*{rating == 2}">2</option>
+        <option value="3" th:selected="*{rating == 3}">3</option>
+        <option value="4" th:selected="*{rating == 4}">4</option>
+        <option value="5" th:selected="*{rating == 5}">5</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Review</button>
+  </form>
+
+</div>
   <div class="card" style="max-width: 500px;">
     <div class="card-body">
       <h5 class="card-title" th:text="${user.firstName} + ' ' + ${user.lastName}"></h5>
