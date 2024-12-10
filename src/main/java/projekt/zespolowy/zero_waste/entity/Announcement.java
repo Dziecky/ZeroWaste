@@ -45,4 +45,5 @@ public class Announcement {
     public void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
 }
