@@ -16,7 +16,7 @@
         <!-- Button for creating a new announcement -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Recent Announcements</h2>
-            <div class="d-flex justify-content-between mb-3">
+            <div th:if="${accountType == 'BUSINESS'}" class="d-flex justify-content-between mb-3">
                 <a class="btn btn-success" th:href="@{/announcements/new}">Create Announcement</a>
                 <a class="btn btn-primary" th:href="@{/my-announcements}">My Announcements</a>
             </div>

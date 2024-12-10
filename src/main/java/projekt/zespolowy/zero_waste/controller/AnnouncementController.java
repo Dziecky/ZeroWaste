@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.entity.Announcement;
 import projekt.zespolowy.zero_waste.entity.Product;
+import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.repository.AnnouncementRepository;
 import projekt.zespolowy.zero_waste.services.ProductService;
 
@@ -26,7 +27,10 @@ public class AnnouncementController {
     // Display all announcements
     @GetMapping
     public String showAnnouncements(Model model) {
+        User user = UserController.getUser();
         model.addAttribute("announcements", announcementRepository.findAll());
+        model.addAttribute("accountType", user.getAccountType().toString());
+
         return "/Announcement/announcements";
     }
 
