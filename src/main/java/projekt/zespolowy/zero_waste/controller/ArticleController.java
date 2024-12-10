@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,7 @@ public class ArticleController {
 
     }
     // Show the form to create a new article
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("articleDTO", new ArticleDTO());
@@ -56,12 +58,14 @@ public class ArticleController {
     }
 
     // Save the new article
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/save")
     public String createArticle(@ModelAttribute("articleDTO") ArticleDTO articleDTO) {
         articleService.createArticle(articleDTO);
         return "redirect:/articles";
     }
     // Show the form to edit an article
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
         Optional<Article> optionalArticle = articleService.getArticleById(id);
@@ -75,12 +79,14 @@ public class ArticleController {
         }
     }
     // Delete an article
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{id}") //do poprawny na DeleteMapping
     public String deleteArticle(@PathVariable("id") Long id) {
         articleService.deleteArticle(id);
         return "redirect:/articles";
     }
     // Update an article
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/update/{id}")
     public String updateArticle(@PathVariable("id") Long id, @ModelAttribute("articleDTO") ArticleDTO articleDTO) {
         articleService.updateArticle(id, articleDTO);

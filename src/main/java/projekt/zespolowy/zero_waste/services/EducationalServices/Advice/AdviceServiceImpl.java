@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.dto.AdviceDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.Advice;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.AdviceCategory;
+import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
 import projekt.zespolowy.zero_waste.repository.AdviceRepository;
 import projekt.zespolowy.zero_waste.services.TagService;
+import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.Optional;
 
@@ -19,15 +21,18 @@ public class AdviceServiceImpl implements AdviceService {
     private final AdviceRepository adviceRepository;
     private final TagService tagService;
     private final AdviceMapper adviceMapper;
+    private final UserService userService;
     @Autowired
-    public AdviceServiceImpl(AdviceRepository adviceRepository, TagService tagService, AdviceMapper adviceMapper) {
+    public AdviceServiceImpl(AdviceRepository adviceRepository, TagService tagService, AdviceMapper adviceMapper, UserService userService) {
         this.adviceRepository = adviceRepository;
         this.tagService = tagService;
         this.adviceMapper = adviceMapper;
+        this.userService = userService;
     }
     @Override
     public Advice createAdvice(AdviceDTO adviceDTO) {
         Advice advice = adviceMapper.toEntity(adviceDTO, tagService);
+        advice.setAuthor(userService.getCurrentUser());
         return adviceRepository.save(advice);
     }
     @Override

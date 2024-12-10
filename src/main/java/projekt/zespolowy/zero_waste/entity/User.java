@@ -3,6 +3,8 @@ package projekt.zespolowy.zero_waste.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.Advice;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 
@@ -77,4 +79,9 @@ public class User {
     public void setRank(int rank) {
         this.rank = rank;
     }
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Advice> advices;
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Article> articles;
 }
