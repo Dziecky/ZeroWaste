@@ -9,85 +9,199 @@
             integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
             crossorigin="anonymous"
     >
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+            integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMqSxGZl9rN0WcHRj/6ZPOb9Uet2+rljJr27Db"
+            crossorigin="anonymous"
+    >
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link th:href="@{/styles/main.css}" rel="stylesheet"/>
     <style>
-        .eco-btn {
-            background-color: #28a745;
-            border-color: #28a745;
-            color: white;
+        :root {
+            --primary-color: #28a745;
+            --secondary-color: #218838;
+            --background-color: #f4f6f8;
+            --text-color: #2c3e50;
         }
-        .eco-btn:hover {
-            background-color: #218838;
-            border-color: #1e7e34;
-            color: white;
-        }
+
         body {
-            background-color: #f0f8f5;
-            color: #2e7d32;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Inter', 'Arial', sans-serif;
+            line-height: 1.6;
         }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
         h2 {
-            color: #1b5e20;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-label i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .form-control,
+        .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+
+        .eco-btn {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .eco-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-preview {
+            margin-top: 15px;
+            border-radius: 12px;
+            max-width: 250px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .icon-preview:hover {
+            transform: scale(1.05);
+        }
+
+        .form-check-label {
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-check-label i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 1.5rem !important;
+            }
         }
     </style>
 </head>
 <body>
 
-<!-- Header Fragment -->
 <div th:replace="~{fragments/header :: header}"></div>
 
-<div class="container mt-5">
+<div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-
-            <h2 class="mb-4 text-center" th:text="${product.id != null} ? 'Edit Product' : 'Add New Product'">Add/Edit Product</h2>
-
-            <form th:action="@{${product.id != null} ? '/products/update' : '/products/save'}" th:object="${product}" method="POST">
-                <input type="hidden" th:if="${product.id != null}" th:field="*{id}" />
-
-                <div class="mb-3">
-                    <label for="name" class="form-label">Product Name</label>
-                    <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Enter product name" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea th:field="*{description}" class="form-control" id="description" rows="4" placeholder="Enter product description" required></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price (zł)</label>
-                    <input type="number" th:field="*{price}" class="form-control" id="price" placeholder="Enter price" step="0.01" min="0" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="productCategory" class="form-label">Product Category</label>
-                    <select th:field="*{productCategory}" class="form-select" id="productCategory" required>
-                        <option value="" disabled selected>Select category</option>
-                        <option th:each="category : ${T(projekt.zespolowy.zero_waste.entity.ProductCategory).values()}"
-                                th:value="${category}" th:text="${category}"></option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="imageUrl" class="form-label">Image URL</label>
-                    <input type="text" th:field="*{imageUrl}" class="form-control" id="imageUrl" placeholder="Enter image URL">
-                    <div th:if="${product.imageUrl}">
-                        <img th:src="${product.imageUrl}" alt="Product Image" class="img-thumbnail mt-2" style="max-width: 200px;">
+        <div class="col-lg-6 col-md-8 col-sm-12">
+            <div class="card p-4">
+                <h2 class="text-center mb-4" th:text="${product.id != null} ? 'Edit Product' : 'Add New Product'">
+                    Add/Edit Product
+                </h2>
+                <form th:action="@{${product.id != null} ? '/products/update' : '/products/save'}" th:object="${product}" method="POST">
+                    <input type="hidden" th:if="${product.id != null}" th:field="*{id}" />
+                    <div class="mb-3">
+                        <label for="name" class="form-label">
+                            <i class="fas fa-tag"></i> Product Name
+                        </label>
+                        <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Enter product name" required>
                     </div>
-                </div>
-
-                <div class="mb-3 form-check">
-                    <input type="checkbox" th:field="*{available}" class="form-check-input" id="available">
-                    <label class="form-check-label" for="available">Available</label>
-                </div>
-
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn eco-btn" th:text="${product.id != null} ? 'Update Product' : 'Save Product'">Save/Update Product</button>
-                </div>
-
-            </form>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">
+                            <i class="fas fa-align-left"></i> Description
+                        </label>
+                        <textarea th:field="*{description}" class="form-control" id="description" rows="4" placeholder="Enter product description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">
+                            <i class="fas fa-dollar-sign"></i> Price (zł)
+                        </label>
+                        <input type="number" th:field="*{price}" class="form-control" id="price" placeholder="Enter price" step="0.01" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="productCategory" class="form-label">
+                            <i class="fas fa-list-alt"></i> Product Category
+                        </label>
+                        <select th:field="*{productCategory}" class="form-select" id="productCategory" required>
+                            <option value="" disabled selected>Select category</option>
+                            <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="imageUrl" class="form-label">
+                            <i class="fas fa-image"></i> Image URL
+                        </label>
+                        <input type="text" th:field="*{imageUrl}" class="form-control" id="imageUrl" placeholder="Enter image URL">
+                        <div th:if="${product.imageUrl}">
+                            <img th:src="${product.imageUrl}" alt="Product Image" class="img-thumbnail icon-preview">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">
+                            <i class="fas fa-cogs"></i> Quantity
+                        </label>
+                        <input type="number" th:field="*{quantity}" class="form-control" id="quantity" placeholder="Enter quantity" step="0.01" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="unitOfMeasure" class="form-label">
+                            <i class="fas fa-weight-hanging"></i> Unit of Measure
+                        </label>
+                        <select th:field="*{unitOfMeasure}" class="form-select" id="unitOfMeasure" required>
+                            <option value="" disabled selected>Select unit of measure</option>
+                            <option th:each="unit : ${units}" th:value="${unit}" th:text="${unit}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" th:field="*{available}" class="form-check-input" id="available">
+                        <label class="form-check-label" for="available">
+                            <i class="fas fa-check-circle"></i> Available
+                        </label>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn eco-btn" th:text="${product.id != null} ? 'Update Product' : 'Save Product'">
+                            Save/Update Product
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -98,7 +212,7 @@
 </script>
 <script
         src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js">
-</script>
 
+</script>
 </body>
 </html>

@@ -50,6 +50,13 @@ public class Product {
     @JoinColumn(name = "user_id", nullable = false)
     private User owner;
 
+    @Column(name = "quantity")
+    private double quantity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "unit_of_measure")
+    private UnitOfMeasure unitOfMeasure;
+
     @PrePersist
     public void onCreate() {
         createdAt = LocalDateTime.now();
