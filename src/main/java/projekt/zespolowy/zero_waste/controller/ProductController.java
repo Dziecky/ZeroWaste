@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.entity.Product;
+import projekt.zespolowy.zero_waste.entity.ProductCategory;
+import projekt.zespolowy.zero_waste.entity.UnitOfMeasure;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.services.ProductService;
 import projekt.zespolowy.zero_waste.services.UserService;
@@ -37,6 +39,8 @@ public class ProductController {
     public String showFormForAddProduct(Model model) {
         Product product = new Product();
         model.addAttribute("product", product);
+        model.addAttribute("categories", ProductCategory.values());
+        model.addAttribute("units", UnitOfMeasure.values());
         return "product-form";
     }
 
@@ -58,6 +62,8 @@ public class ProductController {
             throw new AccessDeniedException("You do not have permission to edit this product.");
         }
         model.addAttribute("product", product);
+        model.addAttribute("categories", ProductCategory.values());
+        model.addAttribute("units", UnitOfMeasure.values());
         return "product-form";
     }
 
