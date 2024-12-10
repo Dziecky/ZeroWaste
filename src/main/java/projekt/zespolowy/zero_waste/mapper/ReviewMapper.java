@@ -14,8 +14,8 @@ public class ReviewMapper {
 
         return new ReviewDto(
                 review.getId(),
-                review.getUser().getId(),
                 review.getTargetUserId(),
+                review.getUser().getId(),
                 review.getContent(),
                 review.getCreatedDate(),
                 review.getRating(),

@@ -30,7 +30,7 @@ public class UserController {
         this.reviewService = reviewService;
     }
 
-    @GetMapping("/accountDetails")
+    @GetMapping("/accountDetails") 
     public String accountDetails(Model model) {
         // Pobierz aktualnie zalogowanego użytkownika
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

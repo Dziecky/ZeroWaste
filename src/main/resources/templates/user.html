@@ -36,37 +36,73 @@
 
     <!-- Formularz dodawania recenzji -->
     <h2>Add New Review</h2>
-    <form th:action="@{/user/{id}/reviews(id=${user.id})}" method="post" th:object="${newReview}">
+    <form th:if="${newReview != null}" th:action="@{/user/{id}/reviews(id=${user.id})}" method="post" th:object="${newReview}">
         <input type="hidden" th:field="*{user.id}" />
         <input type="text" th:field="*{content}" placeholder="Review content" required />
         <input type="number" th:field="*{rating}" min="1" max="5" required />
         <input type="submit" value="Add Review" />
     </form>
 
-    <!-- Wyświetlanie recenzji użytkownika -->
+    <!-- Formularz do filtrowania -->
+    <form action="#" th:action="@{/user/{id}/filter-reviews(id=${user.id})}" method="get">
+        <label for="rating">Filter by rating:</label>
+        <select id="rating" name="rating">
+            <option value="">All ratings</option>
+            <option th:selected="${selectedRating == 1}" value="1">1 star</option>
+            <option th:selected="${selectedRating == 2}" value="2">2 stars</option>
+            <option th:selected="${selectedRating == 3}" value="3">3 stars</option>
+            <option th:selected="${selectedRating == 4}" value="4">4 stars</option>
+            <option th:selected="${selectedRating == 5}" value="5">5 stars</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+    <!-- Lista recenzji -->
     <h2>User Reviews</h2>
     <div th:if="${reviewsAboutUser != null and not #lists.isEmpty(reviewsAboutUser)}">
         <ul>
             <li th:each="review : ${reviewsAboutUser}">
-                <p><strong>Wystawione przez: </strong><span th:text="${review.user_id}"></span></p>
+                <p><strong>Wystawione przez: </strong><span th:text="${review.userId}"></span></p>
                 <p><strong>Date:</strong> <span th:text="${review.createdDateFormatted}"></span></p>
                 <p><strong>Rating:</strong>
                     <span th:text="${review.rating}"></span>/5
                     <span th:if="${review.rating == 0}">(No rating)</span>
                 </p>
-                <p><strong>Content:</strong> <span th:text="${review.content}"></span></p>
+                <p><strong>Content:</strong>
+                    <span th:if="${reviewToEdit == null or reviewToEdit.id != review.id}" th:text="${review.content}"></span>
+                <form th:if="${reviewToEdit != null and reviewToEdit.id == review.id}"
+                      th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${review.id})}"
+                      method="post"
+                      th:object="${reviewToEdit}">
+                    <input type="text" th:field="*{content}" required />
+                    <input type="number" th:field="*{rating}" min="1" max="5" required />
+                    <button type="submit">Save</button>
+                </form>
+
+                </p>
+
+                <!-- Wyświetl przycisk edycji tylko dla recenzji napisanych przez zalogowanego użytkownika -->
+                <div th:with="isOwner=${reviewOwnership != null and reviewOwnership.get(review.id)? true : false}">
+                    <form th:if="${isOwner and (reviewToEdit == null or reviewToEdit.id != review.id)}"
+                          th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${review.id})}"
+                          method="get">
+                        <button type="submit">Edit</button>
+                    </form>
+                    <form th:if="${isOwner}"
+                          th:action="@{/user/{id}/reviews/{reviewId}/delete(id=${user.id}, reviewId=${review.id})}"
+                          method="post">
+                        <input type="hidden" name="_method" value="POST"/>
+                        <button type="submit">Delete</button>
+                    </form>
+                </div>
+
                 <hr>
             </li>
         </ul>
     </div>
-    <div th:if="${reviewsAboutUser == null or #lists.isEmpty(reviewsAboutUser)}">
-        <p>No reviews found for this user.</p>
-    </div>
-
-</div>
 
 
-<a href="/user/tasks" class="btn btn-primary" style="margin-bottom: 10px;">Go to User Tasks</a>
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

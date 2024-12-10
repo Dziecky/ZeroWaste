@@ -21,17 +21,29 @@ public class ReviewService implements IReviewService{
     private final UserService userService;
 
     @Override
+    @Transactional
     public Review createReview(Review review) {
-        return reviewRepository.save(review);
+        Review newReview = new Review();
+        // Kopiuj pola z przekazanego obiektu review do newReview
+        newReview.setContent(review.getContent());
+        newReview.setCreatedDate(review.getCreatedDate());
+        newReview.setRating(review.getRating());
+        newReview.setTargetUserId(review.getTargetUserId());
+        newReview.setUser(review.getUser());
+
+        return reviewRepository.save(newReview);
     }
 
     @Override
     public Review updateReview(Review review) {
         Review existingReview = reviewRepository.findById(review.getId())
                 .orElseThrow(() -> new RuntimeException("Review not found"));
-        existingReview.setContent(review.getContent());
+
+        if (review.getContent() != null) {
+            existingReview.setContent(review.getContent());
+        }
         existingReview.setRating(review.getRating());
-        // Możesz zaktualizować inne pola, jeśli są potrzebne
+
         return reviewRepository.save(existingReview);
     }
 
@@ -42,12 +54,17 @@ public class ReviewService implements IReviewService{
 
 
     public double calculateAverageRating(User user) {
-        List<Review> reviews = reviewRepository.findByUserId(user.getId());
-        if (reviews.isEmpty()) return 0.0;
+        List<ReviewDto> reviews = getReviewsByTargetUserId(user.getId());
+        if (reviews.isEmpty()) {
+            System.out.println("AverageRating dla: "+ user.getId() + " - PUSTA");
+            return 0.0;
+        }
+
 
         double totalRating = reviews.stream()
-                .mapToInt(Review::getRating)
+                .mapToInt(ReviewDto::getRating)
                 .sum();
+        System.out.println("AverageRating dla: "+ user.getId() + " - " + totalRating / reviews.size());
         return totalRating / reviews.size();
     }
     public List<ReviewDto> getReviewsByTargetUserId(Long targetUserId) {
@@ -84,5 +101,18 @@ public class ReviewService implements IReviewService{
             reviewDtos.add(ReviewMapper.mapToReviewDto(review));
         }
         return reviewDtos;
+    }
+    public List<ReviewDto> getReviewsByTargetUserIdAndRating(Long targetUserId, int rating) {
+        return reviewRepository.findByTargetUserIdAndRating(targetUserId, rating)
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+    private ReviewDto convertToDto(Review review) {
+        return ReviewMapper.mapToReviewDto(review);
+    }
+
+    public Review findById(Long reviewId) {
+        return reviewRepository.findById(reviewId).orElse(null);
     }
 }

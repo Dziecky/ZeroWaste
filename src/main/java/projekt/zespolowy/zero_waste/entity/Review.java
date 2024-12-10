@@ -21,6 +21,7 @@ public class Review {
     @Column(name = "content", nullable = false)
     private String content;
 
+
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
 

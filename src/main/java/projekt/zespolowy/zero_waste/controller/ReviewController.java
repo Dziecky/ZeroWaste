@@ -42,7 +42,23 @@ public class ReviewController {
 
         model.addAttribute("user", user);
         model.addAttribute("reviews", reviews);
-        model.addAttribute("newReview", new Review()); // Dodaj tę linię
+        model.addAttribute("newReview", new Review());
+
+        return "reviews";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditReviewForm(@PathVariable Long id, Model model, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        Review review = reviewService.getReviewById(id);
+
+        if (!review.getUser().getId().equals(user.getId())) {
+            throw new IllegalStateException("Nie masz uprawnień do edycji tej recenzji.");
+        }
+
+        model.addAttribute("reviewToEdit", review);
+        model.addAttribute("user", user);
+        model.addAttribute("reviews", reviewService.getReviewsByUserId(user.getId()));
 
         return "reviews";
     }
@@ -63,7 +79,8 @@ public class ReviewController {
         double newAverageRating = reviewService.calculateAverageRating(user);
         user.setAverageRating(newAverageRating);
         userService.save(user);
-        return "redirect:/user";
+
+        return "redirect:/reviews";
     }
 
     @PostMapping("/delete/{id}")
@@ -76,11 +93,10 @@ public class ReviewController {
         }
 
         reviewService.deleteReview(review);
-        // Oblicz nową średnią ocenę użytkownika
         double newAverageRating = reviewService.calculateAverageRating(user);
         user.setAverageRating(newAverageRating);
         userService.save(user);
-        return "redirect:/user";
-    }
 
+        return "redirect:/reviews";
+    }
 }

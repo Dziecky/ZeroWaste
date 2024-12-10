@@ -29,4 +29,8 @@ public class ReviewDto {
         this.rating = rating;
         this.createdDateFormatted = createdDateFormatted;
     }
+
+    public Object getUserId() {
+        return user_id;
+    }
 }
