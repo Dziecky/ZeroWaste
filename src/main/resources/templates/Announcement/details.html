@@ -17,10 +17,14 @@
         <p th:text="${announcement.description}">Announcement Description</p>
         <hr>
 
-        <!-- Display associated products -->
-        <h2>Associated Products</h2>
-        <ul>
-            <li th:each="product : ${announcement.products}" th:text="${product.name}">Product Name</li>
+        <ul class="list-unstyled">
+            <li th:each="product : ${announcement.products}" class="media mb-3">
+                <img th:src="${product.imageUrl}" class="mr-3" alt="Product Image" style="width: 64px; height: 64px; object-fit: cover;">
+                <div class="media-body">
+                    <h5 th:text="${product.name}" class="mt-0 mb-1">Product Name</h5>
+                    <p th:text="${product.description}">Product Description</p>
+                </div>
+            </li>
         </ul>
 
         <a class="btn btn-primary" th:href="@{/announcements}">Back to Announcements</a>

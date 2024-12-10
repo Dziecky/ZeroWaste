@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <title>Eco Impact</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link th:href="@{styles/main.css}" rel="stylesheet"/>
+</head>
+<body class="d-flex flex-column h-100">
+
+<!-- Включение шапки -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main role="main" class="flex-shrink-0">
+    <div class="container mt-5">
+        <div class="jumbotron">
+            <h1 class="display-4">Eco Impact</h1>
+            <p class="lead">Your environmental contribution overview.</p>
+        </div>
+
+        <!-- Пример вывода данных -->
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Summary</h3>
+                <ul>
+                    <li><strong>Water Saved:</strong> <span th:text="${#numbers.formatDecimal(waterSaved, 0, 2)}"></span> liters</li>
+                    <li><strong>CO₂ Reduced:</strong> <span th:text="${#numbers.formatDecimal(co2Saved, 0, 2)}"></span> kg</li>
+                    <li><strong>Energy Saved:</strong> <span th:text="${#numbers.formatDecimal(energySaved, 0, 2)}"></span> kWh</li>
+                    <li><strong>Waste Reduced:</strong> <span th:text="${#numbers.formatDecimal(wasteReduced, 0, 2)}"></span> kg</li>
+                </ul>
+
+            </div>
+            <div class="col-md-6">
+                <h3>Historical Data</h3>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Water (L)</th>
+                        <th>CO₂ (kg)</th>
+                        <th>Energy (kWh)</th>
+                        <th>Waste (kg)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="history, iterStat : ${historyDates}">
+                        <td th:text="${history}"></td>
+                        <td th:text="${#numbers.formatDecimal(waterSavedHistory[iterStat.index], 0, 2)}"></td>
+                        <td th:text="${#numbers.formatDecimal(co2SavedHistory[iterStat.index], 0, 2)}"></td>
+                        <td th:text="${#numbers.formatDecimal(energySavedHistory[iterStat.index], 0, 2)}"></td>
+                        <td th:text="${#numbers.formatDecimal(wasteReducedHistory[iterStat.index], 0, 2)}"></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Включение подвала -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous">
+</script>
+<script
+        src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js">
+</script>
+</body>
+</html>

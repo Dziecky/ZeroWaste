@@ -9,38 +9,38 @@
 <div th:replace="~{fragments/header :: header}"></div>
 
 <main class="container mt-5">
-    <h2>All Reviews</h2>
+<!--    <h2>All Reviews</h2>-->
 
-    <!-- Formularz dodawania nowej recenzji -->
-    <form th:action="@{/reviews}" th:object="${review}" method="post" class="mb-4">
-        <div class="form-group">
-            <label for="content">Review Content</label>
-            <textarea id="content" class="form-control" th:field="*{content}" required></textarea>
-        </div>
-        <div class="form-group">
-            <label for="rating">Rating</label>
-            <input type="number" id="rating" class="form-control" th:field="*{rating}" min="1" max="5" required>
-        </div>
-        <div class="form-group">
-            <label for="userId">User ID</label>
-            <input type="number" id="userId" class="form-control" th:field="*{user.id}" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Add Review</button>
-    </form>
+<!--    &lt;!&ndash; Formularz dodawania nowej recenzji &ndash;&gt;-->
+<!--    <form th:action="@{/reviews}" th:object="${review}" method="post" class="mb-4">-->
+<!--        <div class="form-group">-->
+<!--            <label for="content">Review Content</label>-->
+<!--            <textarea id="content" class="form-control" th:field="*{content}" required></textarea>-->
+<!--        </div>-->
+<!--        <div class="form-group">-->
+<!--            <label for="rating">Rating</label>-->
+<!--            <input type="number" id="rating" class="form-control" th:field="*{rating}" min="1" max="5" required>-->
+<!--        </div>-->
+<!--        <div class="form-group">-->
+<!--            <label for="userId">User ID</label>-->
+<!--            <input type="number" id="userId" class="form-control" th:field="*{user.id}" required>-->
+<!--        </div>-->
+<!--        <button type="submit" class="btn btn-primary">Add Review</button>-->
+<!--    </form>-->
 
-    <!-- Formularz wyszukiwania recenzji użytkownika -->
-    <form th:action="@{/reviews/user/}" method="get" class="mb-4">
-        <div class="form-group">
-            <label for="userIdSearch">Enter User ID to View Reviews</label>
-            <input type="number" id="userIdSearch" class="form-control" name="userId" placeholder="User ID" required>
-        </div>
-        <button type="submit" class="btn btn-secondary">Search</button>
-    </form>
+<!--    &lt;!&ndash; Formularz wyszukiwania recenzji użytkownika &ndash;&gt;-->
+<!--    <form th:action="@{/reviews/user/}" method="get" class="mb-4">-->
+<!--        <div class="form-group">-->
+<!--            <label for="userIdSearch">Enter User ID to View Reviews</label>-->
+<!--            <input type="number" id="userIdSearch" class="form-control" name="userId" placeholder="User ID" required>-->
+<!--        </div>-->
+<!--        <button type="submit" class="btn btn-secondary">Search</button>-->
+<!--    </form>-->
 
-    <!-- Wyświetlenie komunikatu, jeśli nie znaleziono recenzji -->
-    <div th:if="${errorMessage}" class="alert alert-warning" role="alert">
-        <p th:text="${errorMessage}"></p>
-    </div>
+<!--    &lt;!&ndash; Wyświetlenie komunikatu, jeśli nie znaleziono recenzji &ndash;&gt;-->
+<!--    <div th:if="${errorMessage}" class="alert alert-warning" role="alert">-->
+<!--        <p th:text="${errorMessage}"></p>-->
+<!--    </div>-->
 
     <!-- Wyświetlanie recenzji -->
     <div th:if="${#lists.isEmpty(reviews)}">

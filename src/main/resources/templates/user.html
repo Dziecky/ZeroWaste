@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>user</title>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link th:href="@{/styles/main.css}" rel="stylesheet" />
+</head>
+<body class="d-flex flex-column h-100">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+<div class="container mt-5">
+    <div class="card" style="max-width: 500px;">
+        <div class="card-body">
+            <h5 class="card-title" th:text="${user.firstName} + ' ' + ${user.lastName}"></h5>
+            <h6 class="card-subtitle mb-2 text-muted">Username: <span th:text="${user.username}"></span></h6>
+            <p class="card-text">
+                <strong>Email:</strong> <span th:text="${user.email}"></span><br>
+                <strong>Phone Number:</strong> <span th:text="${user.phoneNumber} ?: 'N/A'"></span>
+            </p>
+        </div>
+    </div>
+    <!-- Wyświetlanie średniej oceny -->
+    <!-- Wyświetlanie średniej oceny -->
+    <h2>Average Rating</h2>
+    <div th:if="${user.averageRating > 0}">
+        <p>Your average rating is: <strong th:text="${#numbers.formatDecimal(user.averageRating, 1, 2)}"></strong></p>
+    </div>
+    <div th:if="${user.averageRating == 0}">
+        <p>No reviews available to calculate an average rating.</p>
+    </div>
+
+    <!-- Formularz dodawania recenzji -->
+    <h2>Add New Review</h2>
+    <form th:if="${newReview != null}" th:action="@{/user/{id}/reviews(id=${user.id})}" method="post" th:object="${newReview}">
+        <input type="hidden" th:field="*{user.id}" />
+        <input type="text" th:field="*{content}" placeholder="Review content" required />
+        <input type="number" th:field="*{rating}" min="1" max="5" required />
+        <input type="submit" value="Add Review" />
+    </form>
+
+    <!-- Formularz do filtrowania -->
+    <form action="#" th:action="@{/user/{id}/filter-reviews(id=${user.id})}" method="get">
+        <label for="rating">Filter by rating:</label>
+        <select id="rating" name="rating">
+            <option value="">All ratings</option>
+            <option th:selected="${selectedRating == 1}" value="1">1 star</option>
+            <option th:selected="${selectedRating == 2}" value="2">2 stars</option>
+            <option th:selected="${selectedRating == 3}" value="3">3 stars</option>
+            <option th:selected="${selectedRating == 4}" value="4">4 stars</option>
+            <option th:selected="${selectedRating == 5}" value="5">5 stars</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+    <!-- Lista recenzji -->
+    <h2>User Reviews</h2>
+    <div th:if="${reviewsAboutUser != null and not #lists.isEmpty(reviewsAboutUser)}">
+        <ul>
+            <li th:each="review : ${reviewsAboutUser}">
+                <p><strong>Wystawione przez: </strong><span th:text="${review.userId}"></span></p>
+                <p><strong>Date:</strong> <span th:text="${review.createdDateFormatted}"></span></p>
+                <p><strong>Rating:</strong>
+                    <span th:text="${review.rating}"></span>/5
+                    <span th:if="${review.rating == 0}">(No rating)</span>
+                </p>
+                <p><strong>Content:</strong>
+                    <span th:if="${reviewToEdit == null or reviewToEdit.id != review.id}" th:text="${review.content}"></span>
+                <form th:if="${reviewToEdit != null and reviewToEdit.id == review.id}"
+                      th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${review.id})}"
+                      method="post"
+                      th:object="${reviewToEdit}">
+                    <input type="text" th:field="*{content}" required />
+                    <input type="number" th:field="*{rating}" min="1" max="5" required />
+                    <button type="submit">Save</button>
+                </form>
+
+                </p>
+
+                <!-- Wyświetl przycisk edycji tylko dla recenzji napisanych przez zalogowanego użytkownika -->
+                <div th:with="isOwner=${reviewOwnership != null and reviewOwnership.get(review.id)? true : false}">
+                    <form th:if="${isOwner and (reviewToEdit == null or reviewToEdit.id != review.id)}"
+                          th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${review.id})}"
+                          method="get">
+                        <button type="submit">Edit</button>
+                    </form>
+                    <form th:if="${isOwner}"
+                          th:action="@{/user/{id}/reviews/{reviewId}/delete(id=${user.id}, reviewId=${review.id})}"
+                          method="post">
+                        <input type="hidden" name="_method" value="POST"/>
+                        <button type="submit">Delete</button>
+                    </form>
+                </div>
+
+                <hr>
+            </li>
+        </ul>
+    </div>
+
+
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
