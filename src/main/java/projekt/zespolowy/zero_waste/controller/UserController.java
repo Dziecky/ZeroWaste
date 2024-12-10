@@ -97,13 +97,11 @@ public class UserController {
             refreshAuthentication(updatedUser, authentication);
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            CustomUser customUserInner = (CustomUser) auth.getPrincipal();
-            User userInner = customUserInner.getUser();
-            model.addAttribute("authProvider1", userInner.getProvider());
+            User userInner = customUser.getUser();
+            AuthProvider authProvider = userInner.getProvider();
+            model.addAttribute("authProvider", authProvider.toString());
             return "User/editAccount";
         }
-
         model.addAttribute("success", "Konto zaktualizowane pomyślnie");
         redirectAttributes.addFlashAttribute("success", "Konto zaktualizowane pomyślnie");
         return "redirect:/accountDetails";
@@ -189,7 +187,7 @@ public class UserController {
         }
 
         // Assuming your UserService fetches user details
-        User user = userService.findByUsername(principal.getName());
+        User user = UserService.findByUsername(principal.getName());
         return ResponseEntity.ok(user);
     }
 }
