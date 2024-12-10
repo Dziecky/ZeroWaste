@@ -58,4 +58,8 @@ public class TaskService {
         // Usuń zadanie z tabeli task
         taskRepository.deleteById(id);
     }
+
+    public List<UserTask> getAllTasksForUser(User user) {
+        return userTaskRepository.findByUser(user);
+    }
 }

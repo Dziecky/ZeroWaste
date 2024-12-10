@@ -45,7 +45,11 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Page<Article> getArticlesByTitle(String title, Pageable pageable) {
-        return articleRepository.findByTitleContainingIgnoreCase(title, pageable);
+        if(title != null && !title.trim().isEmpty()){
+            return articleRepository.findByTitleContainingIgnoreCase(title, pageable);
+        } else {
+            return articleRepository.findAll(pageable);
+        }
     }
 
     @Override

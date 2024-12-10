@@ -74,6 +74,10 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    public List<UserTask> getUserTasksForUser(User user) {
+        return userTaskRepository.findByUser(user);
+    }
+
     // Znajdź użytkownika po nazwie użytkownika
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElse(null);

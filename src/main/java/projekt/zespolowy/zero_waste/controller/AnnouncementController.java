@@ -64,7 +64,17 @@ public class AnnouncementController {
 
         return "/Announcement/details";
     }
+    @GetMapping("/my-announcements")
+    public String viewMyAnnouncements(Model model) {
+        // Fetch announcements for the logged-in user
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        User currentUser = (User) auth.getPrincipal();
+//
+//        List<Announcement> myAnnouncements = announcementService.findByOwner(currentUser);
+//        model.addAttribute("announcements", myAnnouncements);
 
+        return "my-announcements"; // Thymeleaf view for displaying user's announcements
+    }
 
 
 }
