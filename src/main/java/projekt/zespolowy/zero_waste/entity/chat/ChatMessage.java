@@ -1,8 +1,10 @@
-package projekt.zespolowy.zero_waste.entity;
+package projekt.zespolowy.zero_waste.entity.chat;
 
 import jakarta.persistence.*;
-import lombok.*;
-import projekt.zespolowy.zero_waste.entity.chat.ChatRoom;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import projekt.zespolowy.zero_waste.entity.User;
 
 import java.time.LocalDateTime;
 

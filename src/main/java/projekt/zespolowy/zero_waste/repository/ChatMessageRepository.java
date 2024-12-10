@@ -1,7 +1,7 @@
 package projekt.zespolowy.zero_waste.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import projekt.zespolowy.zero_waste.entity.ChatMessage;
+import projekt.zespolowy.zero_waste.entity.chat.ChatMessage;
 
 import java.util.List;
 

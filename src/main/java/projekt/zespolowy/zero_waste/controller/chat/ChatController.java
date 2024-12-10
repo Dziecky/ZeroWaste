@@ -1,20 +1,21 @@
-package projekt.zespolowy.zero_waste.controller;
+package projekt.zespolowy.zero_waste.controller.chat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import projekt.zespolowy.zero_waste.dto.ChatMessageDTO;
-import projekt.zespolowy.zero_waste.dto.ChatRoomDTO;
+import projekt.zespolowy.zero_waste.dto.chat.ChatMessageDTO;
+import projekt.zespolowy.zero_waste.dto.chat.ChatRoomDTO;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.services.ChatMessageService;
 import projekt.zespolowy.zero_waste.services.ChatRoomService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -37,8 +38,10 @@ public class ChatController {
     }
 
     @GetMapping("/api/chat/rooms")
-    public List<ChatRoomDTO> getChatRooms() {
-        return chatMessageService.getAllChatRooms();
+    public List<ChatRoomDTO> getChatRooms(Authentication authentication) {
+        User user = userService.findByUsername(authentication.getName());
+
+        return chatMessageService.getAllChatRoomsForUser(user);
     }
 
     @MessageMapping("/chat")

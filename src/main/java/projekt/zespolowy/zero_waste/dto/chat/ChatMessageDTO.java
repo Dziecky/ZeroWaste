@@ -1,4 +1,4 @@
-package projekt.zespolowy.zero_waste.dto;
+package projekt.zespolowy.zero_waste.dto.chat;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

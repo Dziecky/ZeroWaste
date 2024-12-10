@@ -53,8 +53,8 @@
             </li>
 
             <!-- Jeśli użytkownik jest zalogowany -->
-            <li class="nav-item" sec:authorize="isAuthenticated()" th:class="${activePage == 'chat'} ? 'nav-item active' : 'nav-item'">
-                <a class="nav-link" th:href="@{/chat}">
+            <li class="nav-item" sec:authorize="isAuthenticated()" th:class="${activePage == 'chat-room'} ? 'nav-item active' : 'nav-item'">
+                <a class="nav-link" th:href="@{/chat-room}">
                     <i class="bi bi-chat-dots"></i> Messages
                 </a>
             </li>

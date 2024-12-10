@@ -2,10 +2,10 @@ package projekt.zespolowy.zero_waste.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import projekt.zespolowy.zero_waste.dto.ChatMessageDTO;
-import projekt.zespolowy.zero_waste.dto.ChatRoomDTO;
-import projekt.zespolowy.zero_waste.entity.ChatMessage;
+import projekt.zespolowy.zero_waste.dto.chat.ChatMessageDTO;
+import projekt.zespolowy.zero_waste.dto.chat.ChatRoomDTO;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.chat.ChatMessage;
 import projekt.zespolowy.zero_waste.entity.chat.ChatRoom;
 import projekt.zespolowy.zero_waste.repository.ChatMessageRepository;
 import projekt.zespolowy.zero_waste.repository.ChatRoomRepository;
@@ -24,9 +24,9 @@ public class ChatMessageService {
     private ChatRoomRepository chatRoomRepository;
 
     public void saveMessage(ChatMessageDTO chatMessageDTO, User sender, User receiver) {
-        System.out.println("elo");
+
         ChatRoom chatRoom = chatRoomService.getOrCreateChatRoom(sender, receiver);
-        System.out.println("elo2");
+
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setChatRoom(chatRoom);
         chatMessage.setSender(sender);
@@ -50,13 +50,12 @@ public class ChatMessageService {
                 .collect(Collectors.toList());
     }
 
-    public List<ChatRoomDTO> getAllChatRooms() {
-        // Retrieve all chat rooms from the database
-        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
+    public List<ChatRoomDTO> getAllChatRoomsForUser(User user) {
+        List<ChatRoom> chatRooms = chatRoomRepository.findAllFetchUsers();
 
-        // Convert chat rooms to DTOs
         return chatRooms.stream()
-                .map(room -> new ChatRoomDTO(room.getId(), room.getUser1().getId(), room.getUser2().getId()))
+                .filter(room -> room.getUser1().getId().equals(user.getId()) || room.getUser2().getId().equals(user.getId()))
+                .map(room -> new ChatRoomDTO(room.getId(), room.getUser1().getId(), room.getUser2().getId(), room.getUser1().getUsername(), room.getUser2().getUsername()))
                 .collect(Collectors.toList());
     }
 }

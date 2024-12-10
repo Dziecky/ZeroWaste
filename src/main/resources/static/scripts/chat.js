@@ -1,5 +1,6 @@
 let stompClient = null;
 let currentChatRoomId = null;
+let currentUser = null;
 
 // Connect to WebSocket
 function connect() {
@@ -19,7 +20,23 @@ function connect() {
     });
 }
 
-// Load chat rooms from backend (replace this with real API if needed)
+function fetchCurrentUser() {
+    return fetch('/api/user/current')
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Failed to fetch current user');
+        })
+        .then(user => {
+            currentUser = user;
+            document.getElementById('username-span').textContent = user.username; // Example: update UI with username
+        })
+        .catch(error => {
+            console.error('Error fetching user:', error);
+        });
+}
+
 function loadChatRooms() {
     fetch('/api/chat/rooms')
         .then(response => response.json())
@@ -27,45 +44,61 @@ function loadChatRooms() {
             const chatRoomsList = document.getElementById('chat-rooms');
             chatRoomsList.innerHTML = '';
 
-            console.log(chatRooms)
             chatRooms.forEach(room => {
                 const listItem = document.createElement('li');
-                listItem.textContent = `Chat Room with user: ${room.user1} and ${room.user2Id}`;
-                listItem.onclick = () => openChatRoom(room.id);
+                if(currentUser.id === room.user1Id) {
+                    listItem.textContent = `Chat Room with user ${room.user2Name}`;
+                } else {
+                    listItem.textContent = `Chat Room with user ${room.user1Name}`;
+                }
+                listItem.onclick = () => openChatRoom(room);
                 chatRoomsList.appendChild(listItem);
             });
         });
 }
 
 // Open a chat room and load its messages
-function openChatRoom(chatRoomId) {
-    currentChatRoomId = chatRoomId;
+function openChatRoom(chatRoom) {
+    currentChatRoomId = chatRoom.id;
     document.getElementById('chat-window').innerHTML = '';  // Clear previous messages
 
     // Fetch messages for the selected chat room
-    fetch(`/api/chat/rooms/${chatRoomId}/messages`)
+    fetch(`/api/chat/rooms/${chatRoom.id}/messages`)
         .then(response => response.json())
         .then(messages => {
             messages.forEach(msg => {
-                displayMessage(msg);
+                displayMessage(msg, chatRoom);
             });
         });
 }
 
 // Display a message in the chat window
-function displayMessage(message) {
+function displayMessage(message, chatRoom) {
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
     const timestamp = new Date(message.timestamp).toLocaleTimeString();
-    const sender = message.senderId === 1 ? 'You' : 'Other';  // Adjust sender check based on actual logic
 
-    messageElement.classList.add('message', sender === 'You' ? 'you' : 'other');
+    const senderId = +message.sender;
+
+    let sender;
+    if (senderId === chatRoom.user1Id) {
+        sender = chatRoom.user1Name || 'User 1';
+    } else if (senderId === chatRoom.user2Id) {
+        sender = chatRoom.user2Name || 'User 2';
+    } else {
+        sender = 'Unknown';
+    }
+
+    const isCurrentUser = senderId === chatRoom.user1Id;
+    messageElement.classList.add('message', isCurrentUser ? 'you' : 'other');
+
     messageElement.textContent = `[${timestamp}] ${sender}: ${message.content}`;
     chatWindow.appendChild(messageElement);
 
-    // Auto-scroll to the bottom of the chat window
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
+
+
 
 // Send a message to the selected chat room
 function sendMessage() {
@@ -90,7 +123,7 @@ function sendMessage() {
 // Initialize connection on page load
 document.addEventListener('DOMContentLoaded', () => {
     connect();  // Connect to WebSocket
-
+    fetchCurrentUser();
     // Set up event listener for sending messages
     document.getElementById('sendButton').addEventListener('click', sendMessage);
 });
