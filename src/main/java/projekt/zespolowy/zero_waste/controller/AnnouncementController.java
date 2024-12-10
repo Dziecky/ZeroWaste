@@ -24,12 +24,22 @@ public class AnnouncementController {
     @Autowired
     private final ProductService productService; // Inject ProductService
 
-    // Display all announcements
     @GetMapping
-    public String showAnnouncements(Model model) {
+    public String showAnnouncements(@RequestParam(name = "myAnnouncementsOnly", required = false, defaultValue = "false") boolean myAnnouncementsOnly,
+                                    Model model) {
         User user = UserController.getUser();
-        model.addAttribute("announcements", announcementRepository.findAll());
+
+        List<Announcement> announcements;
+        if (myAnnouncementsOnly) {
+            announcements = announcementRepository.findByOwner(user);
+        } else {
+            announcements = announcementRepository.findAll();
+        }
+
+        model.addAttribute("announcements", announcements);
         model.addAttribute("accountType", user.getAccountType().toString());
+        model.addAttribute("myAnnouncementsOnly", myAnnouncementsOnly);
+        model.addAttribute("currentUser", user); // Add this line
 
         return "/Announcement/announcements";
     }
@@ -44,10 +54,20 @@ public class AnnouncementController {
 
     // Handle form submission for new announcements
     @PostMapping
-    public String submitAnnouncement(@ModelAttribute Announcement announcement, @RequestParam("productIds") List<Long> productIds) {
+    public String submitAnnouncement(@ModelAttribute Announcement announcement,
+                                     @RequestParam("productIds") List<Long> productIds) {
+        User currentUser = UserController.getUser(); // Retrieve the current logged-in user
+
+        // Set the owner of the announcement
+        announcement.setOwner(currentUser);
+
+        // Set selected products
         List<Product> selectedProducts = productService.getProductsByIds(productIds);
         announcement.setProducts(selectedProducts);
+
+        // Save announcement
         announcementRepository.save(announcement);
+
         return "redirect:/announcements";
     }
 
@@ -80,6 +100,20 @@ public class AnnouncementController {
         return "my-announcements"; // Thymeleaf view for displaying user's announcements
     }
 
+    @DeleteMapping("/{id}")
+    public String deleteAnnouncement(@PathVariable Long id) {
+        User currentUser = UserController.getUser();
+        Announcement announcement = announcementRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid announcement ID: " + id));
+
+        // Ensure that only the owner can delete the announcement
+        if (!announcement.getOwner().getId().equals(currentUser.getId())) {
+            throw new SecurityException("You are not allowed to delete this announcement.");
+        }
+
+        announcementRepository.delete(announcement);
+        return "redirect:/announcements";
+    }
 
 }
 
