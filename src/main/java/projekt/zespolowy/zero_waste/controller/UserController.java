@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Controller
 public class UserController {
 
-    private static UserService userService = null;
+    public static UserService userService = null;
 
     private final ReviewService reviewService;
 
@@ -143,11 +143,5 @@ public class UserController {
         model.addAttribute("incompleteTasks", incompleteTasks);
 
         return "Tasks/userTasks";
-    }
-
-    public static User getUser(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUser customUser = (CustomUser) authentication.getPrincipal();
-        return userService.findByUsername(customUser.getUsername());
     }
 }

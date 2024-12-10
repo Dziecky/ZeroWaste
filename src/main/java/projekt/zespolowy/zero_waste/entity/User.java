@@ -36,7 +36,10 @@ public class User {
     private String phoneNumber;
 
     @Column(nullable = false)
-    private String password; // Зашифрованный пароль
+    private String password;
+
+    @Column
+    private String imageUrl;
 
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
@@ -45,7 +48,7 @@ public class User {
     private AuthProvider provider;
 
     @Column(name = "total_points")
-    private int totalPoints = 0;  // Количество очков пользователя
+    private int totalPoints = 0;
 
     @Column(name = "average_rating", columnDefinition = "Double default 0")
     private Double averageRating;

@@ -22,13 +22,6 @@
                 </label>
                 <button type="submit" class="btn btn-secondary ml-2">Filter</button>
             </div>
-            <div th:unless="${accountType == 'BUSINESS'}">
-                <label class="mr-2">
-                    <input type="checkbox" name="myAnnouncementsOnly" th:checked="${myAnnouncementsOnly ? 'checked' : ''}"/>
-                    Show only my announcements
-                </label>
-                <button type="submit" class="btn btn-secondary ml-2">Filter</button>
-            </div>
         </form>
 
         <!-- Button for creating a new announcement if the user is BUSINESS -->

@@ -21,27 +21,36 @@
 <div class="alert alert-success" th:if="${success}">
     <p th:text="${success}"></p>
 </div>
-
-<div class="container mt-5">
-  <h1>Your Account Details</h1>
-  <p>Username: <span sec:authentication="name"></span></p>
-  <!-- Dodaj dodatkowe informacje o użytkowniku -->
-  <p>User ID: <span th:text="${user.id}"></span></p>
-  <div class="card" style="max-width: 500px;">
-    <div class="card-body">
-      <h5 class="card-title" th:text="${user.firstName} + ' ' + ${user.lastName}"></h5>
-      <h6 class="card-subtitle mb-2 text-muted">Username: <span th:text="${user.username}"></span></h6>
-      <p class="card-text">
-        <strong>Email:</strong> <span th:text="${user.email}"></span><br>
-        <strong>Phone Number:</strong> <span th:text="${user.phoneNumber} ?: 'N/A'"></span>
-      </p>
+<div class="row">
+    <div class="text-center mb-4">
+        <img th:if="${user.imageUrl != null}"
+             th:src="@{${user.imageUrl}}"
+             alt="Profile Image"
+             class="profile-image"/>
     </div>
+    <div class="container mt-5">
+        <h1>Your Account Details</h1>
+
+        <p>Username: <span sec:authentication="name"></span></p>
+        <!-- Dodaj dodatkowe informacje o użytkowniku -->
+        <p>User ID: <span th:text="${user.id}"></span></p>
+        <div class="card" style="max-width: 500px;">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${user.firstName} + ' ' + ${user.lastName}"></h5>
+                <h6 class="card-subtitle mb-2 text-muted">Username: <span th:text="${user.username}"></span></h6>
+                <p class="card-text">
+                    <strong>Email:</strong> <span th:text="${user.email}"></span><br>
+                    <strong>Phone Number:</strong> <span th:text="${user.phoneNumber} ?: 'N/A'"></span>
+                </p>
+            </div>
+        </div>
+        <div class="mt-4 text-left">
+            <a th:href="@{/editAccount}" class="btn btn-primary">Edit Account</a>
+            <a href="/user/tasks" class="btn btn-primary">Go to User Tasks</a>
+        </div>
 </div>
 
-    <div class="mt-4 text-left">
-        <a th:href="@{/editAccount}" class="btn btn-primary">Edit Account</a>
-        <a href="/user/tasks" class="btn btn-primary">Go to User Tasks</a>
-    </div>
+
 </div>
 
 <script crossorigin="anonymous"

@@ -10,6 +10,7 @@ import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.repository.AnnouncementRepository;
 import projekt.zespolowy.zero_waste.services.ProductService;
+import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -27,7 +28,7 @@ public class AnnouncementController {
     @GetMapping
     public String showAnnouncements(@RequestParam(name = "myAnnouncementsOnly", required = false, defaultValue = "false") boolean myAnnouncementsOnly,
                                     Model model) {
-        User user = UserController.getUser();
+        User user = UserService.getUser();
 
         List<Announcement> announcements;
         if (myAnnouncementsOnly) {
@@ -37,8 +38,8 @@ public class AnnouncementController {
         }
 
         model.addAttribute("announcements", announcements);
-        model.addAttribute("accountType", user.getAccountType().toString());
         model.addAttribute("myAnnouncementsOnly", myAnnouncementsOnly);
+        model.addAttribute("accountType", user.getAccountType().toString());
         model.addAttribute("currentUser", user); // Add this line
 
         return "/Announcement/announcements";
@@ -56,7 +57,7 @@ public class AnnouncementController {
     @PostMapping
     public String submitAnnouncement(@ModelAttribute Announcement announcement,
                                      @RequestParam("productIds") List<Long> productIds) {
-        User currentUser = UserController.getUser(); // Retrieve the current logged-in user
+        User currentUser = UserService.getUser(); // Retrieve the current logged-in user
 
         // Set the owner of the announcement
         announcement.setOwner(currentUser);
@@ -102,7 +103,7 @@ public class AnnouncementController {
 
     @DeleteMapping("/{id}")
     public String deleteAnnouncement(@PathVariable Long id) {
-        User currentUser = UserController.getUser();
+        User currentUser = UserService.getUser();
         Announcement announcement = announcementRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid announcement ID: " + id));
 

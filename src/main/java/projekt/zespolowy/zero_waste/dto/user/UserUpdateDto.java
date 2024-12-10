@@ -21,6 +21,8 @@ public class UserUpdateDto {
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Nieprawidłowy format numeru telefonu")
     private String phoneNumber;
 
+    private String imageUrl;
+
     private String currentPassword;
 
     private String newPassword;

@@ -2,6 +2,8 @@ package projekt.zespolowy.zero_waste.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import projekt.zespolowy.zero_waste.dto.user.UserRegistrationDto;
 import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
 import projekt.zespolowy.zero_waste.entity.Task;
@@ -25,10 +27,12 @@ import java.util.stream.Collectors;
 
 import projekt.zespolowy.zero_waste.security.CustomUser;
 
+import static projekt.zespolowy.zero_waste.controller.UserController.userService;
+
 @Service
 public class UserService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private static UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -63,6 +67,13 @@ public class UserService implements UserDetailsService {
         user.setLastName(userDto.getLastName());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setAccountType(userDto.isBusinessAccount() ? AccountType.BUSINESS : AccountType.NORMAL);
+
+
+
+        user.setImageUrl("https://www.mkm.szczecin.pl/images/default-avatar.svg?id=26d9452357b428b99ab97f2448b5d803");
+
+
+
         userRepository.save(user);
 
         // Pobierz wszystkie istniejące zadania
@@ -127,7 +138,7 @@ public class UserService implements UserDetailsService {
     }
 
     // Znajdź użytkownika po nazwie użytkownika
-    public User findByUsername(String username) {
+    public static User findByUsername(String username) {
         return userRepository.findByUsername(username).orElse(null);
     }
 
@@ -177,5 +188,10 @@ public class UserService implements UserDetailsService {
             user.setPassword(passwordEncoder.encode(userUpdateDto.getNewPassword()));
         }
         return userRepository.save(user);
+    }
+    public static User getUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        return findByUsername(customUser.getUsername());
     }
 }
