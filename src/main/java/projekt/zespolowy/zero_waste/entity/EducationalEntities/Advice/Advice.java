@@ -47,12 +47,11 @@ public class Advice {
     private Set<Tag> tags = new HashSet<>();
 
 
-/*    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User author;*/
+    private User author;
     @PrePersist
     public void onCreate() {
-        //author = User.getCurrentUser();
         createdAt = LocalDateTime.now();
     }
     @PreUpdate
