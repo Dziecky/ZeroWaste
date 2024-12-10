@@ -55,7 +55,7 @@
                 <!-- Register Form -->
                 <div class="tab-pane fade" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
                     <h5 class="card-title text-center mb-4">Register</h5>
-                    <form th:action="@{/submitRegister}" method="post">
+                    <form th:action="@{/submitRegister}" th:object="${user}" method="post">
                         <!-- Token CSRF -->
                         <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
 
@@ -86,6 +86,12 @@
                             <label class="form-label" for="phoneNumber">Phone Number</label>
                         </div>
                         -->
+                        <div>
+                            <label>
+                                <input type="checkbox" id="accountType" name="businessAccount" /> Konto firmowe
+                            </label>
+                        </div>
+
                         <button type="submit" class="btn btn-primary btn-block mb-4 w-100">Register</button>
                     </form>
                     <div class="text-center">
