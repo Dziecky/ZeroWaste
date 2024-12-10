@@ -54,7 +54,9 @@ public class CustomOidcUserService extends OidcUserService {
             user.setEmail(email);
             user.setProvider(AuthProvider.GOOGLE);
             user.setPhoneNumber(null); // Google domyślnie nie udostępnia numeru telefonu
-            user.setAccountType(AccountType.BUSINESS); // Domyślnie ustaw typ konta na BUSINESS
+            user.setAccountType(AccountType.BUSINESS);
+            user.setProvider(AuthProvider.GOOGLE);
+            user.setImageUrl("https://www.mkm.szczecin.pl/images/default-avatar.svg?id=26d9452357b428b99ab97f2448b5d803");// Domyślnie ustaw typ konta na BUSINESS
 
             // Ustaw losowe hasło
             user.setPassword(passwordEncoder.encode(org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(8)));
