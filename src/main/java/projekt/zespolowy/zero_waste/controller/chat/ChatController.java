@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import projekt.zespolowy.zero_waste.dto.chat.ChatMessageDTO;
 import projekt.zespolowy.zero_waste.dto.chat.ChatRoomDTO;
 import projekt.zespolowy.zero_waste.entity.User;
-import projekt.zespolowy.zero_waste.services.ChatMessageService;
-import projekt.zespolowy.zero_waste.services.ChatRoomService;
+import projekt.zespolowy.zero_waste.services.chat.ChatMessageService;
+import projekt.zespolowy.zero_waste.services.chat.ChatRoomService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
