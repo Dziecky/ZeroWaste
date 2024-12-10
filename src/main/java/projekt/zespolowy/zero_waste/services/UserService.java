@@ -1,6 +1,8 @@
 package projekt.zespolowy.zero_waste.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import projekt.zespolowy.zero_waste.dto.UserRegistrationDto;
 import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
@@ -16,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 
 import java.util.List;
+
 import projekt.zespolowy.zero_waste.security.CustomUser;
 
 @Service
@@ -82,5 +85,15 @@ public class UserService implements UserDetailsService {
     // Znajdź użytkownika po emailu
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            return userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+        }
+        throw new RuntimeException("No authenticated user found");
     }
 }
