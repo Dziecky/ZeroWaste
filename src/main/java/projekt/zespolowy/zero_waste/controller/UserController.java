@@ -14,18 +14,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
+import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
 import projekt.zespolowy.zero_waste.entity.Review;
 import projekt.zespolowy.zero_waste.entity.User;
-import projekt.zespolowy.zero_waste.services.ReviewService;
 import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 import projekt.zespolowy.zero_waste.security.CustomUser;
+import projekt.zespolowy.zero_waste.services.ReviewService;
 import projekt.zespolowy.zero_waste.services.UserService;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -108,6 +106,41 @@ public class UserController {
 
         model.addAttribute("success", "Konto zaktualizowane pomyślnie");
         redirectAttributes.addFlashAttribute("success", "Konto zaktualizowane pomyślnie");
+        return "redirect:/accountDetails";
+    }
+
+    @GetMapping("/editProfilePhoto")
+    public String editProfilePhotoForm(Model model) {
+        User user = UserService.getUser();
+
+        UserUpdateDto userUpdateDto = new UserUpdateDto();
+        userUpdateDto.setImageUrl(user.getImageUrl());
+
+        AuthProvider authProvider = user.getProvider();
+
+        model.addAttribute("userUpdateDto", userUpdateDto);
+        model.addAttribute("authProvider", authProvider.toString());
+
+        return "User/editProfilePhoto";
+    }
+
+    @PostMapping("/editProfilePhoto")
+    public String editProfilePhoto(UserUpdateDto userUpdateDto, Model model, RedirectAttributes redirectAttributes) {
+        // Pobierz aktualnie zalogowanego użytkownika
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        String username = customUser.getUsername();
+
+        try {
+            User updatedUser = userService.upadateUserPhoto(userUpdateDto, username);
+            refreshAuthentication(updatedUser, authentication);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "User/editProfilePhoto";
+        }
+
+        model.addAttribute("success", "Zdjęcie profilowe zaktualizowane pomyślnie");
+        redirectAttributes.addFlashAttribute("success", "Zdjęcie profilowe zaktualizowane pomyślnie");
         return "redirect:/accountDetails";
     }
 

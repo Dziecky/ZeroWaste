@@ -1,7 +1,6 @@
 package projekt.zespolowy.zero_waste.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import projekt.zespolowy.zero_waste.dto.user.UserRegistrationDto;
@@ -26,8 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import projekt.zespolowy.zero_waste.security.CustomUser;
-
-import static projekt.zespolowy.zero_waste.controller.UserController.userService;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -67,12 +64,8 @@ public class UserService implements UserDetailsService {
         user.setLastName(userDto.getLastName());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setAccountType(userDto.isBusinessAccount() ? AccountType.BUSINESS : AccountType.NORMAL);
-
-
-
+        user.setProvider(AuthProvider.LOCAL);
         user.setImageUrl("https://www.mkm.szczecin.pl/images/default-avatar.svg?id=26d9452357b428b99ab97f2448b5d803");
-
-
 
         userRepository.save(user);
 
@@ -155,10 +148,6 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(userId).orElse(null);
     }
 
-    public void updateUser(User user) {
-        userRepository.save(user);
-    }
-
     public User updateUser(UserUpdateDto userUpdateDto, String currentUsername) {
         User user = findByUsername(currentUsername);
         if (user == null) {
@@ -189,6 +178,20 @@ public class UserService implements UserDetailsService {
         }
         return userRepository.save(user);
     }
+
+    public void deleteUser(User user) {
+        userRepository.delete(user);
+    }
+
+    public User upadateUserPhoto(UserUpdateDto userUpdateDto, String currentUsername) {
+        User user = findByUsername(currentUsername);
+        if (user == null) {
+            throw new UsernameNotFoundException("Nie znaleziono użytkownika: " + currentUsername);
+        }
+        user.setImageUrl(userUpdateDto.getImageUrl());
+        return userRepository.save(user);
+    }
+
     public static User getUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile Photo</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- Dodatkowe Style (opcjonalnie) -->
+    <style>
+
+        .error {
+            color: #dc3545;
+            font-size: 0.875em;
+        }
+        .form-section {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column h-100">
+
+<!-- Nagłówek (Header) -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- Główna zawartość strony -->
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Edit Profile Image</h1>
+
+    <!-- Komunikaty o błędach -->
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Komunikaty o sukcesie -->
+    <div th:if="${success}" class="alert alert-success" role="alert">
+        <p th:text="${success}"></p>
+    </div>
+
+    <!-- Formularz edycji zdjęcia profilowego -->
+    <form th:action="@{/editProfilePhoto}" th:object="${userUpdateDto}" method="post" enctype="multipart/form-data" novalidate>
+        <div class="form-section text-center">
+            <div class="form-group">
+                <label for="imageUrl">Username</label>
+                <input type="text" id="imageUrl" th:field="*{imageUrl}" class="form-control" placeholder="Enter link to photo">
+                <div th:if="${#fields.hasErrors('username')}" th:errors="*{imageUrl}" class="error"></div>
+            </div>
+        </div>
+
+        <!-- Przycisk do zatwierdzenia formularza oraz Cancel -->
+        <div class="form-group d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">Update Profile Image</button>
+            <a href="/accountDetails" class="btn btn-outline-danger">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+</html>
