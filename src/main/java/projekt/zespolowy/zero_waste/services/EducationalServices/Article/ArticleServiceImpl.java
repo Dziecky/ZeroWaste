@@ -11,6 +11,7 @@ import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleC
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.repository.ArticleRepository;
 import projekt.zespolowy.zero_waste.services.TagService;
+import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.Optional;
 
@@ -19,17 +20,20 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
     private final TagService tagService;
+    private final UserService userService;
 
     @Autowired
-    public ArticleServiceImpl(ArticleRepository articleRepository, ArticleMapper articleMapper, TagService tagService) {
+    public ArticleServiceImpl(ArticleRepository articleRepository, ArticleMapper articleMapper, TagService tagService, UserService userService) {
         this.articleRepository = articleRepository;
         this.articleMapper = articleMapper;
         this.tagService = tagService;
+        this.userService = userService;
     }
 
     @Override
     public Article createArticle(ArticleDTO articleDTO) {
         Article article = articleMapper.toEntity(articleDTO, tagService);
+        article.setAuthor(userService.getCurrentUser());
         return articleRepository.save(article);
     }
     @Override

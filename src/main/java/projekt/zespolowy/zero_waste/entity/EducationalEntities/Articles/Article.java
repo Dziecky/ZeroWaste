@@ -54,7 +54,6 @@ public class Article {
 
     @PrePersist
     public void onCreate() {
-        //author = User.getCurrentUser();
         createdAt = LocalDateTime.now();
     }
     @PreUpdate
