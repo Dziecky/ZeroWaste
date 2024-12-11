@@ -8,6 +8,7 @@
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container">
     <h1 th:text="${adviceDTO.title}">Advice Title</h1>
+    <p><strong>Author:</strong> <span th:text="${adviceDTO.authorUsername}"></span></p>
     <p><strong>Category:</strong> <span th:text="${adviceDTO.adviceCategory}"></span></p>
     <div th:if="${adviceDTO.imageUrl}">
         <img th:src="${adviceDTO.imageUrl}" alt="Advice Image" class="img-fluid">

@@ -37,8 +37,9 @@ public class AdviceController {
         Pageable pageable = PageRequest.of(page, size);
         Page<Advice> advicePage = adviceService.findAdvices(category, title, tagName, pageable);
 
-        model.addAttribute("advicePage", advicePage);
-        model.addAttribute("activePage", "advices");
+        Page<AdviceDTO> adviceDTOPage = advicePage.map(adviceMapper::toDTO);
+        model.addAttribute("advicePage", adviceDTOPage);
+        //model.addAttribute("activePage", "advices");
         model.addAttribute("selectedCategory", category);
         model.addAttribute("categories", AdviceCategory.values());
         model.addAttribute("selectedTagName", tagName);

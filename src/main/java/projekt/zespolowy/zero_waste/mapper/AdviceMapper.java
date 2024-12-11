@@ -14,8 +14,10 @@ import java.util.stream.Collectors;
 public interface AdviceMapper {
 
     @Mapping(target = "tags", ignore = true)
+    @Mapping(target = "author", ignore = true) // Autor ustawiany w serwisie
     Advice toEntity(AdviceDTO dto, @Context TagService tagService);
 
+    @Mapping(source = "author.username", target = "authorUsername")
     @Mapping(target = "tags", ignore = true)
     AdviceDTO toDTO(Advice advice);
 
