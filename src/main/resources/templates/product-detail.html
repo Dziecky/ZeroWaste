@@ -209,6 +209,7 @@
                 <div class="product-footer">
                     <div th:if="${product.owner.username != #authentication.name}" class="w-100">
                         <div class="owner-section">
+                            <img th:src="${product.owner.imageUrl}" class="owner-image" alt="Owner Profile Image">
                             <div class="flex-grow-1">
                                 <span class="detail-label">Owner:</span>
                                 <span class="owner-nick" th:text="${product.owner.username}">Owner's Name</span>
