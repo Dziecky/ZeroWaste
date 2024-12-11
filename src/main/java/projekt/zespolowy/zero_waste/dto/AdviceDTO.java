@@ -19,5 +19,5 @@ public class AdviceDTO {
 
     private AdviceCategory adviceCategory;
     private List<String> tags;
-
+    private String authorUsername;
 }

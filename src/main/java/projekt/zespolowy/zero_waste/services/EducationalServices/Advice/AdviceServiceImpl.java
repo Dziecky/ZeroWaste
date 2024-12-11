@@ -38,7 +38,7 @@ public class AdviceServiceImpl implements AdviceService {
     @Override
     public Advice updateAdvice(Long id, AdviceDTO adviceDTO) {
         return adviceRepository.findById(id).map(existingAdvice -> {
-            adviceMapper.afterUpdateAdviceFromDTO(adviceDTO, existingAdvice, tagService);
+            adviceMapper.updateAdviceFromDTO(adviceDTO, existingAdvice, tagService);
             return adviceRepository.save(existingAdvice);
         }).orElseThrow(() -> new RuntimeException("Advice not found with id " + id));
     }
