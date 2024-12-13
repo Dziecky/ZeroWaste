@@ -1,5 +1,6 @@
 package projekt.zespolowy.zero_waste.services.EducationalServices.Article;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,7 @@ public class ArticleServiceImpl implements ArticleService {
         return articleRepository.save(article);
     }
     @Override
+    @Transactional
     public Article updateArticle(Long id, ArticleDTO articleDTO) {
         return articleRepository.findById(id).map(existingArticle -> {
             articleMapper.updateArticleFromDTO(articleDTO, existingArticle, tagService);
