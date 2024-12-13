@@ -15,8 +15,7 @@
 
   <!-- Informacja o rankingu aktualnego użytkownika -->
   <div class="alert alert-info">
-    <strong>Your current rank:</strong> <span th:text="${userRank}"></span> /
-    <span th:text="${rankSize}"></span> users.
+    <strong>Your current rank:</strong> <span th:text="${userRank}"></span> / <span th:text="${rankSize}"></span> users.
   </div>
 
   <!-- Formularz wyszukiwania i sortowania -->
@@ -43,17 +42,19 @@
   </form>
 
   <!-- Tabela rankingu -->
-  <table class="table table-bordered table-striped">
-    <thead>
+  <table class="table table-hover table-bordered table-striped">
+    <thead class="table-dark">
     <tr>
-      <th>Rank</th>
-      <th>Username</th>
-      <th>Full Name</th>
-      <th>Total Points</th>
+      <th scope="col">Rank</th>
+      <th scope="col">Username</th>
+      <th scope="col">Full Name</th>
+      <th scope="col">Total Points</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="user : ${ranking}">
+    <tr th:each="user, iterStat : ${ranking}"
+        th:onclick="|window.location.href='/' + (${user.id} == ${loggedUserId} ? 'account' : 'user/profile/' + ${user.id});|"
+        style="cursor: pointer;">
       <td th:text="${user.rank}"></td>
       <td th:text="${user.username}"></td>
       <td th:text="${user.firstName + ' ' + user.lastName}"></td>

@@ -5,6 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.security.CustomUser;
@@ -50,7 +51,41 @@ public class RankingController {
         model.addAttribute("search", search);
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("userRank", userRank);
+        model.addAttribute("loggedUserId", loggedUser.getId());
+        System.out.println(loggedUser.getId());
 
         return "ranking";
+    }
+
+    @GetMapping("/user/profile/{userId}")
+    public String showUserProfile(@PathVariable Long userId, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        User loggedUser = customUser.getUser();
+
+        User user = userService.findById(userId);
+
+        if (user == null) {
+            return "redirect:/error";
+        }
+
+        if (loggedUser.getId().equals(userId)) {
+            return "redirect:/account";
+        }
+
+        model.addAttribute("user", user);
+
+        return "user-profile";
+    }
+
+    @GetMapping("/account")
+    public String accountDetails(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        User user = customUser.getUser();
+
+        model.addAttribute("user", user);
+
+        return "User/accountDetails";
     }
 }

@@ -38,3 +38,10 @@
   background-color: #dc3545 !important;
   color: #ffffff !important;
 }
+
+tr {
+    cursor: pointer;
+}
+tr:hover {
+    background-color: #bed5fa; /* Podświetlenie wiersza przy najechaniu */
+}

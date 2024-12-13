@@ -1,18 +1,24 @@
 package projekt.zespolowy.zero_waste.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
+import projekt.zespolowy.zero_waste.repository.TaskRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
+import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 import projekt.zespolowy.zero_waste.security.CustomUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +26,12 @@ public class CustomOidcUserService extends OidcUserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
+    private UserTaskRepository userTaskRepository;
 
     public CustomOidcUserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -63,6 +75,21 @@ public class CustomOidcUserService extends OidcUserService {
 
             // Zapisz użytkownika w bazie danych
             userRepository.save(user);
+
+            List<Task> allTasks = taskRepository.findAll();
+
+            // Dla każdego zadania przypisz je do nowego użytkownika
+            for (Task task : allTasks) {
+                UserTask userTask = new UserTask();
+                userTask.setUser(user);
+                userTask.setTask(task);
+                userTask.setProgress(0);
+                userTask.setCompleted(false);
+                userTask.setCompletionDate(null);
+
+                // Zapisz obiekt UserTask w bazie
+                userTaskRepository.save(userTask);
+            }
         }
 
         // Zwróć CustomUser z atrybutami OIDC
