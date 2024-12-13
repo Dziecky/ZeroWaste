@@ -1,5 +1,6 @@
 package projekt.zespolowy.zero_waste.services.EducationalServices.Advice;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,7 @@ public class AdviceServiceImpl implements AdviceService {
         return adviceRepository.save(advice);
     }
     @Override
+    @Transactional
     public Advice updateAdvice(Long id, AdviceDTO adviceDTO) {
         return adviceRepository.findById(id).map(existingAdvice -> {
             adviceMapper.updateAdviceFromDTO(adviceDTO, existingAdvice, tagService);
