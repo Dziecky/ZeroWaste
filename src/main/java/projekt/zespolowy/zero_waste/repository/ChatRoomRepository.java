@@ -3,6 +3,7 @@ package projekt.zespolowy.zero_waste.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.chat.ChatMessage;
 import projekt.zespolowy.zero_waste.entity.chat.ChatRoom;
 
@@ -18,4 +19,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     @Query("SELECT c FROM ChatRoom c JOIN FETCH c.user1 JOIN FETCH c.user2")
     List<ChatRoom> findAllFetchUsers();
+
+    List<ChatRoom> findByUser1OrUser2(User user1, User user2);
 }

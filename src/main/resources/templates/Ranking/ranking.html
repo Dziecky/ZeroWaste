@@ -13,31 +13,33 @@
 <div class="container mt-5">
   <h1 class="mb-4">Global Ranking</h1>
 
-  <!-- Informacja o rankingu aktualnego użytkownika -->
   <div class="alert alert-info">
     <strong>Your current rank:</strong> <span th:text="${userRank}"></span> / <span th:text="${rankSize}"></span> users.
   </div>
 
-  <!-- Formularz wyszukiwania i sortowania -->
   <form method="get" action="/ranking" class="mb-3">
-    <div class="form-row">
-      <div class="col-md-4">
-        <input type="text" name="search" class="form-control"
-               placeholder="Search by name..." th:value="${search}">
+    <div class="d-flex justify-content-between mb-3 align-items-center">
+      <div class="d-flex">
+        <div class="me-2">
+          <input type="text" name="search" class="form-control"
+                 placeholder="Search by name..." th:value="${search}">
+        </div>
+        <div class="me-2">
+          <select name="sortBy" class="form-control">
+            <option value="totalPoints" th:selected="${sortBy == 'totalPoints'}">Sort by Points</option>
+            <option value="username" th:selected="${sortBy == 'username'}">Sort by Username</option>
+            <option value="name" th:selected="${sortBy == 'name'}">Sort by Name</option>
+          </select>
+        </div>
+        <div class="me-2">
+          <button type="submit" class="btn btn-primary">Apply</button>
+        </div>
+        <div class="me-2">
+          <a href="/ranking" class="btn btn-secondary">Reset Filters</a>
+        </div>
       </div>
-      <div class="col-md-3">
-        <select name="sortBy" class="form-control">
-          <option value="totalPoints" th:selected="${sortBy == 'totalPoints'}">Sort by Points</option>
-          <option value="username" th:selected="${sortBy == 'username'}">Sort by Username</option>
-          <option value="name" th:selected="${sortBy == 'name'}">Sort by Name</option>
-        </select>
-      </div>
-      <div class="col-md-2">
-        <button type="submit" class="btn btn-primary">Apply</button>
-      </div>
-      <div class="col-md-2">
-        <a href="/ranking" class="btn btn-secondary">Reset Filters</a>
-      </div>
+
+      <a href="/friends-ranking" class="btn btn-success">Friends Ranking</a>
     </div>
   </form>
 
@@ -55,7 +57,7 @@
     <tr th:each="user, iterStat : ${ranking}"
         th:onclick="|window.location.href='/' + (${user.id} == ${loggedUserId} ? 'account' : 'user/profile/' + ${user.id});|"
         style="cursor: pointer;">
-      <td th:text="${user.rank}"></td>
+      <td th:text="${iterStat.index + 1}"></td>
       <td th:text="${user.username}"></td>
       <td th:text="${user.firstName + ' ' + user.lastName}"></td>
       <td th:text="${user.totalPoints}"></td>
