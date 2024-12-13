@@ -51,8 +51,9 @@
             <ul class="list-group">
                 <li th:each="advice : ${advicePage.content}" class="list-group-item">
                     <h5 th:text="${advice.title}">Advice Title</h5>
-                    <p th:text="'Author: ' + ${advice.authorUsername}">Advice Category</p>
-                    <p th:text="${#strings.abbreviate(advice.content, 200)} + '...'">Advice Content</p>
+                    <p th:text="'Author: ' + ${advice.authorUsername}"></p>
+                    <p th:text="'Category: ' + ${advice.adviceCategory}"></p>
+                    <p th:text="'Tags: ' + ${advice.tags}"></p>
                     <a th:href="@{/advices/{id}(id=${advice.id})}" class="btn btn-link">Read More</a>
                     <a th:href="@{/advices/edit/{id}(id=${advice.id})}" class="btn btn-secondary btn-sm">Edit</a>
                     <a th:href="@{/advices/delete/{id}(id=${advice.id})}"
