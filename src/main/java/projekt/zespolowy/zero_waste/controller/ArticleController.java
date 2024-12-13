@@ -39,8 +39,9 @@ public class ArticleController {
             Pageable pageable = PageRequest.of(page, size);
             Page<Article> articlePage = articleService.findArticles(category, title, tagName, pageable);
 
-            model.addAttribute("articlePage", articlePage);
-            model.addAttribute("activePage", "articles");
+            Page<ArticleDTO> articleDTOPage = articlePage.map(articleMapper::toDTO);
+            model.addAttribute("articlePage", articleDTOPage);
+            //model.addAttribute("activePage", "articles");
             model.addAttribute("selectedCategory", category);
             model.addAttribute("categories", ArticleCategory.values());
             model.addAttribute("selectedTagName", tagName);

@@ -15,4 +15,5 @@ public class ArticleDTO {
     private String updatedAt;*/
     private List<String> tags;
     private ArticleCategory articleCategory;
+    private String authorUsername;
 }
