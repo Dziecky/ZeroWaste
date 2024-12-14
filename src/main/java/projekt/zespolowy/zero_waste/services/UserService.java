@@ -3,13 +3,16 @@ package projekt.zespolowy.zero_waste.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.dto.user.UserRegistrationDto;
 import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
+import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.repository.TaskRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +24,7 @@ import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -34,14 +38,17 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private TaskRepository taskRepository;
+    private final ArticleMapper articleMapper;
+
 
     @Autowired
     private UserTaskRepository userTaskRepository;
 
     // Konstruktorowe wstrzykiwanie zależności
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ArticleMapper articleMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.articleMapper = articleMapper;
     }
 
     // Implementacja metody z UserDetailsService
@@ -196,5 +203,12 @@ public class UserService implements UserDetailsService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         return findByUsername(customUser.getUsername());
+    }
+
+    public Set<ArticleDTO> getLikedArticles() {
+        User currentUser = getUser();
+        return currentUser.getLikedArticles().stream()
+                .map(articleMapper::toDTO)
+                .collect(Collectors.toSet());
     }
 }

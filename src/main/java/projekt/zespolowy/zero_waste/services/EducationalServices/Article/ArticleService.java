@@ -19,4 +19,6 @@ public interface ArticleService {
     Page<Article> getArticlesByTitle(String title, Pageable pageable);
     Page<Article> findByTags_NameIgnoreCase(String tagName, Pageable pageable);
     Page<Article> findArticles(ArticleCategory category, String title, String tagName, Pageable pageable);
+    void toggleLikeArticle(Long id);
+    int getLikes(Long id);
 }

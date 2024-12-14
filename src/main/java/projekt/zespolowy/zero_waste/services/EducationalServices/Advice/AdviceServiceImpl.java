@@ -22,18 +22,17 @@ public class AdviceServiceImpl implements AdviceService {
     private final AdviceRepository adviceRepository;
     private final TagService tagService;
     private final AdviceMapper adviceMapper;
-    private final UserService userService;
+
     @Autowired
-    public AdviceServiceImpl(AdviceRepository adviceRepository, TagService tagService, AdviceMapper adviceMapper, UserService userService) {
+    public AdviceServiceImpl(AdviceRepository adviceRepository, TagService tagService, AdviceMapper adviceMapper) {
         this.adviceRepository = adviceRepository;
         this.tagService = tagService;
         this.adviceMapper = adviceMapper;
-        this.userService = userService;
     }
     @Override
     public Advice createAdvice(AdviceDTO adviceDTO) {
         Advice advice = adviceMapper.toEntity(adviceDTO, tagService);
-        advice.setAuthor(userService.getCurrentUser());
+        advice.setAuthor(UserService.getUser());
         return adviceRepository.save(advice);
     }
     @Override

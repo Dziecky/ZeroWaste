@@ -10,6 +10,7 @@ import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -88,7 +89,7 @@ public class User {
     @JoinTable(name = "article_likes",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "article_id"))
-    private List<Article> likedArticles;
+    private Set<Article> likedArticles;
 
     @ManyToMany
     @JoinTable(name = "advice_likes",
