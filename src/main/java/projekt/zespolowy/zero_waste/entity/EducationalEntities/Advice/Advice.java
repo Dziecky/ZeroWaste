@@ -46,6 +46,8 @@ public class Advice {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
 
+    @ManyToMany(mappedBy = "likedAdvices")
+    private Set<User> likedByUsers = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
