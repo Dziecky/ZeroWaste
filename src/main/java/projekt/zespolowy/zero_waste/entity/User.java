@@ -57,4 +57,15 @@ public class User {
     private List<Advice> advices;
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Article> articles;
+    @ManyToMany
+    @JoinTable(name = "article_likes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "article_id"))
+    private List<Article> likedArticles;
+
+    @ManyToMany
+    @JoinTable(name = "advice_likes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "advice_id"))
+    private List<Advice> likedAdvices;
 }
