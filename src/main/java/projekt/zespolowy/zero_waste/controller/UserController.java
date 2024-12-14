@@ -1,6 +1,7 @@
 package projekt.zespolowy.zero_waste.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,20 +16,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
 import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.Review;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
+import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.security.CustomUser;
 import projekt.zespolowy.zero_waste.services.ReviewService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import java.security.Principal;
+
+import static projekt.zespolowy.zero_waste.services.UserService.getUser;
 
 @Controller
 public class UserController {
@@ -36,11 +43,13 @@ public class UserController {
     public static UserService userService = null;
 
     private final ReviewService reviewService;
+    private final ArticleMapper articleMapper;
 
     // Konstruktorowe wstrzykiwanie zależności
-    public UserController(UserService userService, ReviewService reviewService) {
+    public UserController(UserService userService, ReviewService reviewService, ArticleMapper articleMapper) {
         this.userService = userService;
         this.reviewService = reviewService;
+        this.articleMapper = articleMapper;
     }
 
     @GetMapping("/accountDetails")
@@ -109,7 +118,7 @@ public class UserController {
 
     @GetMapping("/editProfilePhoto")
     public String editProfilePhotoForm(Model model) {
-        User user = UserService.getUser();
+        User user = getUser();
 
         UserUpdateDto userUpdateDto = new UserUpdateDto();
         userUpdateDto.setImageUrl(user.getImageUrl());
@@ -179,6 +188,15 @@ public class UserController {
 
         return "Tasks/userTasks";
     }
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/likedArticles")
+    public String showLikedArticles(Model model) {
+        Set<ArticleDTO> likedArticles = userService.getLikedArticles();
+        model.addAttribute("likedArticles", likedArticles);
+        return "user/likedArticles";
+    }
+
+
 
     @GetMapping("/api/user/current")
     public ResponseEntity<User> getCurrentUser(Principal principal) {

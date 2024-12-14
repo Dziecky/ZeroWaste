@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
+import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.repository.ArticleRepository;
 import projekt.zespolowy.zero_waste.services.TagService;
@@ -21,20 +22,21 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
     private final TagService tagService;
-    private final UserService userService;
 
+    private final UserService userService;
     @Autowired
     public ArticleServiceImpl(ArticleRepository articleRepository, ArticleMapper articleMapper, TagService tagService, UserService userService) {
         this.articleRepository = articleRepository;
         this.articleMapper = articleMapper;
         this.tagService = tagService;
         this.userService = userService;
+
     }
 
     @Override
     public Article createArticle(ArticleDTO articleDTO) {
         Article article = articleMapper.toEntity(articleDTO, tagService);
-        article.setAuthor(userService.getCurrentUser());
+        article.setAuthor(UserService.getUser());
         return articleRepository.save(article);
     }
     @Override
@@ -96,5 +98,38 @@ public class ArticleServiceImpl implements ArticleService {
             specification = specification.and((root, query, cb) -> cb.equal(root.join("tags").get("name"), tagName));
         }
         return articleRepository.findAll(specification, pageable);
+    }
+    @Transactional
+    public void saveArticle(ArticleDTO articleDTO) {
+        Article article = articleMapper.toEntity(articleDTO, tagService);
+        article.setAuthor(userService.getUser());
+        articleRepository.save(article);
+    }
+
+    @Override
+    public int getLikes(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Article not found with id " + id));
+        return article.getLikedByUsers().size();
+    }
+
+    @Override
+    @Transactional
+    public void toggleLikeArticle(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Article not found with id " + id));
+
+        User currentUser = userService.getUser();
+
+        if(article.getLikedByUsers().contains(currentUser)) {
+            article.getLikedByUsers().remove(currentUser);
+            currentUser.getLikedArticles().remove(article);
+        } else {
+            article.getLikedByUsers().add(currentUser);
+            currentUser.getLikedArticles().add(article);
+        }
+
+        articleRepository.save(article);
+        userService.save(currentUser);
     }
 }
