@@ -35,6 +35,22 @@ public class ReviewService implements IReviewService{
     }
 
     @Override
+    @Transactional
+    public Review createResponse(Review review) {
+        Review newReview = new Review();
+        // Kopiuj pola z przekazanego obiektu review do newReview
+        newReview.setContent(review.getContent());
+        newReview.setCreatedDate(review.getCreatedDate());
+        newReview.setRating(0);
+        newReview.setTargetUserId(review.getTargetUserId());
+        newReview.setUser(review.getUser());
+        newReview.setParentReview(review.getParentReview());
+
+        return reviewRepository.save(newReview);
+    }
+
+
+    @Override
     public Review updateReview(Review review) {
         Review existingReview = reviewRepository.findById(review.getId())
                 .orElseThrow(() -> new RuntimeException("Review not found"));
@@ -49,8 +65,18 @@ public class ReviewService implements IReviewService{
 
     @Override
     public void deleteReview(Review review) {
+        // Find all child reviews
+        List<Review> childReviews = reviewRepository.findByParentReview(review);
+
+        // Delete child reviews first
+        for (Review child : childReviews) {
+            reviewRepository.delete(child);
+        }
+
+        // Now delete the parent review
         reviewRepository.delete(review);
     }
+
 
 
     public double calculateAverageRating(User user) {
@@ -73,6 +99,14 @@ public class ReviewService implements IReviewService{
                 .map(ReviewMapper::mapToReviewDto)
                 .collect(Collectors.toList());
     }
+    public List<ReviewDto> getReviewsWithZeroRatingByTargetUserId(Long targetUserId) {
+        List<Review> reviews = reviewRepository.findByTargetUserId(targetUserId);
+        return reviews.stream()
+                .filter(review -> review.getRating() == 0)
+                .map(ReviewMapper::mapToReviewDto)
+                .collect(Collectors.toList());
+    }
+
 
     public List<Review> getReviewsByUser(User user) {
         return reviewRepository.findByUserOrderByCreatedDateDesc(user);
@@ -115,4 +149,5 @@ public class ReviewService implements IReviewService{
     public Review findById(Long reviewId) {
         return reviewRepository.findById(reviewId).orElse(null);
     }
+
 }

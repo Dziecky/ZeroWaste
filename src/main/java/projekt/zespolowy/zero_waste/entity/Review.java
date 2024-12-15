@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Data
+@ToString(exclude = {"user"})
 public class Review {
 
     @Id
@@ -34,4 +35,8 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_review")
+    private Review parentReview;
 }

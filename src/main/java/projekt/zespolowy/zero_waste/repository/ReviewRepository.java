@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import projekt.zespolowy.zero_waste.entity.Review;
 import projekt.zespolowy.zero_waste.entity.User;
 
+import java.util.Arrays;
 import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
@@ -13,4 +14,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByUserId(Long userId);
     List<Review> findByTargetUserId(Long targetUserId);
     List<Review> findByTargetUserIdAndRating(Long targetUserId, int rating);
+
+    List<Review> findByParentReview(Review review);
 }

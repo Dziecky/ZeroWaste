@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface IReviewService {
     Review createReview(Review review);
+    Review createResponse(Review review);
     Review updateReview(Review review);
     void deleteReview(Review review);
     double calculateAverageRating(User user);
