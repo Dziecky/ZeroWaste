@@ -1,6 +1,7 @@
 let stompClient = null;
 let currentChatRoomId = null;
 let currentUser = null;
+let currentChatRoom = null;
 
 // Connect to WebSocket
 function connect() {
@@ -59,6 +60,7 @@ function loadChatRooms() {
 
 // Open a chat room and load its messages
 function openChatRoom(chatRoom) {
+    currentChatRoom = chatRoom;
     currentChatRoomId = chatRoom.id;
     document.getElementById('chat-window').innerHTML = '';  // Clear previous messages
 
@@ -98,23 +100,31 @@ function displayMessage(message, chatRoom) {
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-
-
 // Send a message to the selected chat room
 function sendMessage() {
     const messageContent = document.getElementById('messageInput').value;
 
-    currentChatRoomId = 1; // TODO: Remove this, stubbing for test purposes
+    let receiverName;
+    if(currentChatRoom.user1Name === currentUser.username) {
+        receiverName = currentChatRoom.user2Name;
+    } else {
+        receiverName = currentChatRoom.user1Name;
+    }
+    console.log(receiverName)
+
     if (messageContent && currentChatRoomId !== null) {
         const chatMessage = {
-            sender: document.getElementById('username-span').textContent,
-            receiver: document.getElementById('receiverInput').value,
-            content: messageContent,
-            chatRoomId: currentChatRoomId
+            sender: currentUser.username,
+            receiver: receiverName,
+            content: messageContent
         };
 
         stompClient.send('/app/chat', {}, JSON.stringify(chatMessage));
         document.getElementById('messageInput').value = '';  // Clear input field
+
+        setTimeout(() => {
+            openChatRoom(currentChatRoom);
+        }, 400);
     } else {
         alert('Please select a chat room and type a message.');
     }
