@@ -216,9 +216,10 @@
                             </div>
 
                             <div class="d-flex gap-2">
-                                <a th:href="@{'/chat?recipient=' + ${product.owner.username}}" class="btn btn-info btn-custom btn-owner">
-                                    <i class="bi bi-chat-fill"></i> Chat with Owner
-                                </a>
+                                <a th:href="@{/chat-room/{productOwnerUsername}(productOwnerUsername=${product.owner.username})}"
+                                   class="btn btn-info btn-custom btn-owner">
+                                <i class="bi bi-chat-fill"></i> Chat with Owner
+                            </a>
                                 <button class="btn btn-info btn-custom btn-owner" type="button"
                                         data-bs-toggle="collapse"
                                         data-bs-target="#phoneNumber"

@@ -31,7 +31,6 @@ function fetchCurrentUser() {
         })
         .then(user => {
             currentUser = user;
-            document.getElementById('username-span').textContent = user.username; // Example: update UI with username
         })
         .catch(error => {
             console.error('Error fetching user:', error);
@@ -62,9 +61,10 @@ function loadChatRooms() {
 function openChatRoom(chatRoom) {
     currentChatRoom = chatRoom;
     currentChatRoomId = chatRoom.id;
-    document.getElementById('chat-window').innerHTML = '';  // Clear previous messages
+    document.getElementById('chat-window').innerHTML = '';
 
-    // Fetch messages for the selected chat room
+    console.log(chatRoom);
+
     fetch(`/api/chat/rooms/${chatRoom.id}/messages`)
         .then(response => response.json())
         .then(messages => {

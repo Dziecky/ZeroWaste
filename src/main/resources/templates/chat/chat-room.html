@@ -48,5 +48,21 @@
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
         crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', () => {
+    const chatRoomId = [[${chatRoomId}]];
+    const user1Id = [[${user1Id}]];
+    const user1Name = [[${user1Name}]];
+    const user2Id = [[${user2Id}]];
+    const user2Name = [[${user2Name}]];
+
+    if (chatRoomId) {
+      openChatRoom({ id: chatRoomId, user1Id: user1Id, user1Name: user1Name, user2Id: user2Id, user2Name: user2Name });
+    }
+  });
+</script>
+
+
 </body>
 </html>
+
