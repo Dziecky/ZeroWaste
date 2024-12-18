@@ -1,6 +1,9 @@
 package projekt.zespolowy.zero_waste.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -31,33 +34,38 @@ public class ProductController {
     @GetMapping("/list")
     public String listProducts(
             @RequestParam(value = "category", required = false) ProductCategory category,
-            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "sort", defaultValue = "dateDesc") String sort,
+            @RequestParam(value = "page", defaultValue = "0") int page,
             Model model
     ) {
-        List<Product> products;
+        Pageable paging = PageRequest.of(page, 10);
 
+        Page<Product> pageProducts;
         if (category != null) {
             if ("priceAsc".equals(sort)) {
-                products = productService.getProductsByCategorySortedByPriceAsc(category);
+                pageProducts = productService.getProductsByCategorySortedByPriceAsc(category, paging);
             } else if ("priceDesc".equals(sort)) {
-                products = productService.getProductsByCategorySortedByPriceDesc(category);
+                pageProducts = productService.getProductsByCategorySortedByPriceDesc(category, paging);
             } else {
-                products = productService.getProductsByCategory(category);
+                pageProducts = productService.getProductsByCategorySortedByDateDesc(category, paging); // New method
             }
         } else {
             if ("priceAsc".equals(sort)) {
-                products = productService.getAllProductsSortedByPriceAsc();
+                pageProducts = productService.getAllProductsSortedByPriceAsc(paging);
             } else if ("priceDesc".equals(sort)) {
-                products = productService.getAllProductsSortedByPriceDesc();
+                pageProducts = productService.getAllProductsSortedByPriceDesc(paging);
             } else {
-                products = productService.getAllProducts();
+                pageProducts = productService.getAllProductsSortedByDateDesc(paging); // New method
             }
         }
 
-        model.addAttribute("products", products);
+        model.addAttribute("products", pageProducts.getContent());
         model.addAttribute("categories", ProductCategory.values());
         model.addAttribute("selectedCategory", category);
         model.addAttribute("selectedSort", sort);
+        model.addAttribute("currentPage", pageProducts.getNumber());
+        model.addAttribute("totalPages", pageProducts.getTotalPages());
+        model.addAttribute("totalItems", pageProducts.getTotalElements());
         return "list-products";
     }
 

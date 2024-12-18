@@ -1,5 +1,7 @@
 package projekt.zespolowy.zero_waste.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.ProductCategory;
@@ -7,13 +9,14 @@ import projekt.zespolowy.zero_waste.entity.ProductCategory;
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findAllByOrderByCreatedAtDesc();
 
-    List<Product> findByProductCategory(ProductCategory productCategory);
-    List<Product> findAllByOrderByCreatedAtAsc();
-    List<Product> findByProductCategoryOrderByPriceAsc(ProductCategory productCategory);
-    List<Product> findByProductCategoryOrderByPriceDesc(ProductCategory productCategory);
-    List<Product> findAllByOrderByPriceAsc();
-    List<Product> findAllByOrderByPriceDesc();
-
+    List<Product>findAllByOrderByCreatedAtDesc();
+    Page<Product> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<Product> findByProductCategory(ProductCategory productCategory, Pageable pageable);
+    Page<Product> findAllByOrderByCreatedAtAsc(Pageable pageable);
+    Page<Product> findByProductCategoryOrderByPriceAsc(ProductCategory productCategory, Pageable pageable);
+    Page<Product> findByProductCategoryOrderByPriceDesc(ProductCategory productCategory, Pageable pageable);
+    Page<Product> findAllByOrderByPriceAsc(Pageable pageable);
+    Page<Product> findAllByOrderByPriceDesc(Pageable pageable);
+    Page<Product> findByProductCategoryOrderByCreatedAtDesc(ProductCategory productCategory, Pageable pageable);
 }
