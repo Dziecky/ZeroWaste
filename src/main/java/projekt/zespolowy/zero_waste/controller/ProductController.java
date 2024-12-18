@@ -29,9 +29,35 @@ public class ProductController {
     }
 
     @GetMapping("/list")
-    public String listProducts(Model model) {
-        List<Product> products = productService.getAllProducts();
+    public String listProducts(
+            @RequestParam(value = "category", required = false) ProductCategory category,
+            @RequestParam(value = "sort", required = false) String sort,
+            Model model
+    ) {
+        List<Product> products;
+
+        if (category != null) {
+            if ("priceAsc".equals(sort)) {
+                products = productService.getProductsByCategorySortedByPriceAsc(category);
+            } else if ("priceDesc".equals(sort)) {
+                products = productService.getProductsByCategorySortedByPriceDesc(category);
+            } else {
+                products = productService.getProductsByCategory(category);
+            }
+        } else {
+            if ("priceAsc".equals(sort)) {
+                products = productService.getAllProductsSortedByPriceAsc();
+            } else if ("priceDesc".equals(sort)) {
+                products = productService.getAllProductsSortedByPriceDesc();
+            } else {
+                products = productService.getAllProducts();
+            }
+        }
+
         model.addAttribute("products", products);
+        model.addAttribute("categories", ProductCategory.values());
+        model.addAttribute("selectedCategory", category);
+        model.addAttribute("selectedSort", sort);
         return "list-products";
     }
 

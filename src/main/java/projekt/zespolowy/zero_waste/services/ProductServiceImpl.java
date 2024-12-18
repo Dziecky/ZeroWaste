@@ -2,10 +2,7 @@ package projekt.zespolowy.zero_waste.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import projekt.zespolowy.zero_waste.entity.Product;
-import projekt.zespolowy.zero_waste.entity.Task;
-import projekt.zespolowy.zero_waste.entity.User;
-import projekt.zespolowy.zero_waste.entity.UserTask;
+import projekt.zespolowy.zero_waste.entity.*;
 import projekt.zespolowy.zero_waste.repository.ProductRepository;
 import projekt.zespolowy.zero_waste.repository.TaskRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
@@ -84,5 +81,33 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> getProductsByIds(List<Long> ids) {
         return productRepository.findAllById(ids);
     }
+
+    public List<Product> getProductsByCategory(ProductCategory category) {
+        return productRepository.findByProductCategory(category);
+    }
+
+    public List<Product> getAllProductsSortedByPriceAsc() {
+        return productRepository.findAllByOrderByPriceAsc();
+    }
+
+    public List<Product> getAllProductsSortedByPriceDesc() {
+        return productRepository.findAllByOrderByPriceDesc();
+    }
+
+    public List<Product> getProductsByCategorySortedByPriceAsc(ProductCategory category) {
+        return productRepository.findByProductCategoryOrderByPriceAsc(category);
+    }
+
+    public List<Product> getProductsByCategorySortedByPriceDesc(ProductCategory category) {
+        return productRepository.findByProductCategoryOrderByPriceDesc(category);
+    }
+    public List<Product> getAllProductsSortedByDateAsc() {
+        return productRepository.findAllByOrderByCreatedAtAsc();
+    }
+
+    public List<Product> getAllProductsSortedByDateDesc() {
+        return productRepository.findAllByOrderByCreatedAtDesc();
+    }
+
 
 }
