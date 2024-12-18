@@ -1,6 +1,8 @@
 package projekt.zespolowy.zero_waste.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.entity.*;
 import projekt.zespolowy.zero_waste.repository.ProductRepository;
@@ -29,7 +31,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getAllProducts() {
-        return productRepository.findAllByOrderByCreatedAtDesc();
+        return productRepository.findAll();
+    }
+
+    @Override
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
 
@@ -82,32 +89,35 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAllById(ids);
     }
 
-    public List<Product> getProductsByCategory(ProductCategory category) {
-        return productRepository.findByProductCategory(category);
-    }
-
-    public List<Product> getAllProductsSortedByPriceAsc() {
-        return productRepository.findAllByOrderByPriceAsc();
-    }
-
-    public List<Product> getAllProductsSortedByPriceDesc() {
-        return productRepository.findAllByOrderByPriceDesc();
-    }
-
-    public List<Product> getProductsByCategorySortedByPriceAsc(ProductCategory category) {
-        return productRepository.findByProductCategoryOrderByPriceAsc(category);
-    }
-
-    public List<Product> getProductsByCategorySortedByPriceDesc(ProductCategory category) {
-        return productRepository.findByProductCategoryOrderByPriceDesc(category);
-    }
-    public List<Product> getAllProductsSortedByDateAsc() {
-        return productRepository.findAllByOrderByCreatedAtAsc();
-    }
-
-    public List<Product> getAllProductsSortedByDateDesc() {
-        return productRepository.findAllByOrderByCreatedAtDesc();
+    @Override
+    public Page<Product> getProductsByCategory(ProductCategory category, Pageable pageable) {
+        return productRepository.findByProductCategory(category, pageable);
     }
 
 
+    @Override
+    public Page<Product> getAllProductsSortedByPriceAsc(Pageable pageable) {
+        return productRepository.findAllByOrderByPriceAsc(pageable);
+    }
+    @Override
+    public Page<Product> getAllProductsSortedByPriceDesc(Pageable pageable) {
+        return productRepository.findAllByOrderByPriceDesc(pageable);
+    }
+    @Override
+    public Page<Product> getProductsByCategorySortedByPriceAsc(ProductCategory category, Pageable pageable) {
+        return productRepository.findByProductCategoryOrderByPriceAsc(category, pageable);
+    }
+    @Override
+    public Page<Product> getProductsByCategorySortedByPriceDesc(ProductCategory category, Pageable pageable) {
+        return productRepository.findByProductCategoryOrderByPriceDesc(category, pageable);
+    }
+    @Override
+    public Page<Product> getAllProductsSortedByDateDesc(Pageable pageable) {
+        return productRepository.findAllByOrderByCreatedAtDesc(pageable);
+    }
+
+    @Override
+    public Page<Product> getProductsByCategorySortedByDateDesc(ProductCategory category, Pageable pageable) {
+        return productRepository.findByProductCategoryOrderByCreatedAtDesc(category, pageable);
+    }
 }
