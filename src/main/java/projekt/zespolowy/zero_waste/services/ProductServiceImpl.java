@@ -1,11 +1,10 @@
 package projekt.zespolowy.zero_waste.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import projekt.zespolowy.zero_waste.entity.Product;
-import projekt.zespolowy.zero_waste.entity.Task;
-import projekt.zespolowy.zero_waste.entity.User;
-import projekt.zespolowy.zero_waste.entity.UserTask;
+import projekt.zespolowy.zero_waste.entity.*;
 import projekt.zespolowy.zero_waste.repository.ProductRepository;
 import projekt.zespolowy.zero_waste.repository.TaskRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
@@ -32,7 +31,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getAllProducts() {
-        return productRepository.findAllByOrderByCreatedAtDesc();
+        return productRepository.findAll();
+    }
+
+    @Override
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
 
@@ -85,4 +89,35 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAllById(ids);
     }
 
+    @Override
+    public Page<Product> getProductsByCategory(ProductCategory category, Pageable pageable) {
+        return productRepository.findByProductCategory(category, pageable);
+    }
+
+
+    @Override
+    public Page<Product> getAllProductsSortedByPriceAsc(Pageable pageable) {
+        return productRepository.findAllByOrderByPriceAsc(pageable);
+    }
+    @Override
+    public Page<Product> getAllProductsSortedByPriceDesc(Pageable pageable) {
+        return productRepository.findAllByOrderByPriceDesc(pageable);
+    }
+    @Override
+    public Page<Product> getProductsByCategorySortedByPriceAsc(ProductCategory category, Pageable pageable) {
+        return productRepository.findByProductCategoryOrderByPriceAsc(category, pageable);
+    }
+    @Override
+    public Page<Product> getProductsByCategorySortedByPriceDesc(ProductCategory category, Pageable pageable) {
+        return productRepository.findByProductCategoryOrderByPriceDesc(category, pageable);
+    }
+    @Override
+    public Page<Product> getAllProductsSortedByDateDesc(Pageable pageable) {
+        return productRepository.findAllByOrderByCreatedAtDesc(pageable);
+    }
+
+    @Override
+    public Page<Product> getProductsByCategorySortedByDateDesc(ProductCategory category, Pageable pageable) {
+        return productRepository.findByProductCategoryOrderByCreatedAtDesc(category, pageable);
+    }
 }
