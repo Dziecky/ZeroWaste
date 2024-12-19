@@ -8,12 +8,16 @@
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container">
     <h1 th:text="${articleDTO.title}">article Title</h1>
-    <h2 th:text="${articleDTO.author.username}">article Author</h2>
+    <h2 th:text="${articleDTO.authorUsername}">article Author</h2>
     <p><strong>Category:</strong> <span th:text="${articleDTO.articleCategory}"></span></p>
     <div th:if="${articleDTO.imageUrl}">
         <img th:src="${articleDTO.imageUrl}" alt="article Image" class="img-fluid">
     </div>
     <p th:text="${articleDTO.content}">article Content</p>
+    <p><strong>Created at:</strong></p>
+    <p th:text="${articleDTO.createdAt}">article Creation Date</p>
+    <p><strong>Last modified at:</strong></p>
+    <p th:text="${articleDTO.updatedAt}">article Last Modification Date</p>
     <!-- Display Tags -->
     <p>
         <strong>Tags:</strong>
