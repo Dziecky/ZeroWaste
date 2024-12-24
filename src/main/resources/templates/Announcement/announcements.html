@@ -5,6 +5,60 @@
     <title>Announcements</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary-color: #28a745;
+            --secondary-color: #218838;
+            --background-color: #f4f6f8;
+            --text-color: #2c3e50;
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: 'Inter', 'Arial', sans-serif;
+        }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 50px;
+        }
+
+        .pagination .page-item {
+            margin: 0 2px;
+        }
+
+        .pagination .page-link {
+            color: var(--text-color);
+            background-color: #fff;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            padding: 6px 12px;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .pagination .page-link:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            opacity: 0.5;
+            pointer-events: none;
+            background-color: #f4f6f8;
+            border-color: #ddd;
+            color: #999;
+        }
+
+    </style>
 </head>
 <body class="d-flex flex-column h-100">
 
@@ -15,6 +69,14 @@
         <!-- Form for filtering announcements -->
         <form th:action="@{/announcements}" method="get" class="d-flex justify-content-between align-items-center mb-4">
             <h2>Recent Announcements</h2>
+            <div class="form-inline">
+                <label for="productSearch" class="mr-2">Search by Product:</label>
+                <select id="productSearch" name="productSearch" class="form-control mr-2" placeholder="Search products">
+                    <option value="">All Products</option>
+                    <option th:each="product : ${products}" th:value="${product.name}" th:text="${product.name}"></option>
+                </select>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
             <div class="form-inline" th:if="${accountType == 'BUSINESS'}">
                 <label class="mr-2">
                     <input type="checkbox" name="myAnnouncementsOnly" th:checked="${myAnnouncementsOnly ? 'checked' : ''}"/>
@@ -60,6 +122,25 @@
                 </li>
             </ul>
         </div>
+
+        <!-- Pagination Section -->
+        <div class="mt-4 text-center">
+            <ul class="pagination">
+                <li th:classappend="${currentPage > 0} ? 'page-item' : 'page-item disabled'">
+                    <a class="page-link" th:href="@{/announcements(page=${currentPage - 1})}">Previous</a>
+                </li>
+                <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <li th:classappend="${i == currentPage} ? 'page-item active' : 'page-item'">
+                        <a class="page-link" th:href="@{/announcements(page=${i})}"
+                           th:text="${i + 1}">1</a>
+                    </li>
+                </span>
+                <li th:classappend="${currentPage < totalPages - 1} ? 'page-item' : 'page-item disabled'">
+                    <a class="page-link" th:href="@{/announcements(page=${currentPage + 1})}">Next</a>
+                </li>
+            </ul>
+        </div>
+
     </div>
 </main>
 
