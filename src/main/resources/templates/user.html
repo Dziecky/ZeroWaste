@@ -81,26 +81,6 @@
                     <button type="submit">Save</button>
                 </form>
 
-                <!-- Wyświetlanie odpowiedzi -->
-                <ul>
-                    <li th:each="response : ${reviewsAboutUser}" th:if="${review.id == response.parentReviewId}">
-                        <p><strong><span th:text="${response.username}"></span></strong></p>
-                        <p><strong>Response:</strong> <span th:text="${response.content}"></span></p>
-                        <p><strong>Response date:</strong> <span th:text="${response.createdDateFormatted}"></span></p>
-                    </li>
-                </ul>
-
-                <!-- Add response form -->
-                <th:block th:with="isAboutCurrentUser=${review.target_id == currentUserId}">
-                    <form th:if="${isAboutCurrentUser}"
-                          th:action="@{/user/{id}/reviews/{reviewId}/response(id=${user.id}, reviewId=${review.id})}"
-                          method="post"
-                          th:object="${newReview}">
-                        <input type="text" th:field="*{content}" placeholder="Add response" required />
-                        <button type="submit">Respond</button>
-                    </form>
-                </th:block>
-
                 <!-- Wyświetl przycisk edycji tylko dla recenzji napisanych przez zalogowanego użytkownika -->
                 <div th:with="isOwner=${reviewOwnership != null and reviewOwnership.get(review.id)? true : false}">
                     <form th:if="${isOwner and (reviewToEdit == null or reviewToEdit.id != review.id)}"
@@ -115,6 +95,53 @@
                         <button type="submit">Delete</button>
                     </form>
                 </div>
+
+                <!-- Wyświetlanie odpowiedzi -->
+                <ul>
+                    <li th:each="response : ${reviewsAboutUser}" th:if="${review.id == response.parentReviewId}">
+                        <p><strong><span th:text="${response.username}"></span></strong></p>
+                        <p><strong>Response:</strong> <span th:text="${response.content}"></span></p>
+                        <p><strong>Response date:</strong> <span th:text="${response.createdDateFormatted}"></span></p>
+
+                        <!-- Edycja odpowiedzi -->
+                        <div th:with="isOwner=${reviewOwnership != null and reviewOwnership.get(response.id)? true : false}">
+                            <form th:if="${isOwner and (reviewToEdit == null or reviewToEdit.id != response.id)}"
+                                  th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${response.id})}"
+                                  method="get">
+                                <button type="submit">Edit</button>
+                            </form>
+                            <form th:if="${isOwner}"
+                                  th:action="@{/user/{id}/reviews/{reviewId}/delete(id=${user.id}, reviewId=${response.id})}"
+                                  method="post">
+                                <input type="hidden" name="_method" value="POST"/>
+                                <button type="submit">Delete</button>
+                            </form>
+                        </div>
+                        <form th:if="${reviewToEdit != null and reviewToEdit.id == response.id}"
+                              th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${response.id})}"
+                              method="post"
+                              th:object="${reviewToEdit}">
+                            <input type="text" th:field="*{content}" required/>
+                            <button type="submit">Save</button>
+                        </form>
+
+                    </li>
+                </ul>
+
+
+
+                <!-- Add response form -->
+                <th:block th:with="isAboutCurrentUser=${review.target_id == currentUserId}">
+                    <form th:if="${isAboutCurrentUser}"
+                          th:action="@{/user/{id}/reviews/{reviewId}/response(id=${user.id}, reviewId=${review.id})}"
+                          method="post"
+                          th:object="${newReview}">
+                        <input type="text" th:field="*{content}" placeholder="Add response" required />
+                        <button type="submit">Respond</button>
+                    </form>
+                </th:block>
+
+
 
                 <hr>
             </li>
