@@ -33,7 +33,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/products/showFormForAddProduct", "/products/save").authenticated()
-                        .requestMatchers("/login", "/oauth2/**", "/submitRegister", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/login", "/oauth2/**", "/submitRegister", "/css/**", "/js/**", "/forgot-password", "/reset-password").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userService)

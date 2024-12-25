@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Account</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- Dodatkowe Style (opcjonalnie) -->
+    <style>
+
+        .error {
+            color: #dc3545;
+            font-size: 0.875em;
+        }
+        .form-section {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+<!-- Nagłówek (Header) -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- Główna zawartość strony -->
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="mb-4 text-center">Edit Account</h1>
+
+            <!-- Komunikaty o błędach -->
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <p th:text="${error}"></p>
+            </div>
+
+            <!-- Komunikaty o sukcesie -->
+            <div th:if="${success}" class="alert alert-success" role="alert">
+                Konto zostało zaktualizowane pomyślnie.
+            </div>
+
+            <!-- Formularz edycji konta -->
+            <form th:action="@{/editAccount}" th:object="${userUpdateDto}" method="post" novalidate>
+                <!-- Sekcja podstawowych danych -->
+                <div class="form-section">
+                    <h3>Personal Data</h3>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" th:field="*{username}" class="form-control" placeholder="Enter your username">
+                        <small class="form-text text-muted">Minimum length: 3 characters, Maximum: 20 characters.</small>
+                        <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="firstName">First name</label>
+                        <input type="text" id="firstName" th:field="*{firstName}" class="form-control" placeholder="Enter first name">
+                        <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last name</label>
+                        <input type="text" id="lastName" th:field="*{lastName}" class="form-control" placeholder="Enter last name">
+                        <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone number</label>
+                        <input type="text" id="phoneNumber" th:field="*{phoneNumber}" class="form-control" placeholder="Enter phone number">
+                        <small class="form-text text-muted">Format: +48 123 456 789 or 123456789.</small>
+                        <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error"></div>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <!-- Sekcja zmiany hasła -->
+                <div class="form-section" th:if="${authProvider == 'LOCAL'}">
+                    <button class="btn btn-secondary mb-3" type="button" data-toggle="collapse" data-target="#passwordSection" aria-expanded="false" aria-controls="passwordSection">
+                        Change Password
+                    </button>
+                    <div class="collapse" id="passwordSection">
+                        <div class="form-section">
+                            <h3>Change Password</h3>
+                            <div class="form-group">
+                                <label for="currentPassword">Current password</label>
+                                <input type="password" id="currentPassword" th:field="*{currentPassword}" class="form-control" placeholder="Enter current password">
+                                <div th:if="${#fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}" class="error"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="newPassword">New password</label>
+                                <input type="password" id="newPassword" th:field="*{newPassword}" class="form-control" placeholder="Enter new password">
+                                <div id="passwordStrength" class="mt-2"></div>
+                                <div th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}" class="error"></div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="confirmNewPassword">Confirm new password</label>
+                                <input type="password" id="confirmNewPassword" th:field="*{confirmNewPassword}" class="form-control" placeholder="Confirm new password">
+                                <div th:if="${#fields.hasErrors('confirmNewPassword')}" th:errors="*{confirmNewPassword}" class="error"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Przycisk do zatwierdzenia formularza -->
+                <div class="form-group d-flex justify-content-start">
+                    <button type="submit" class="btn btn-primary mr-2">Update your account</button>
+                    <a href="/accountDetails" class="btn btn-outline-danger">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const passwordInput = document.getElementById('newPassword');
+        const strengthDiv = document.getElementById('passwordStrength');
+
+        passwordInput.addEventListener('input', function () {
+            const password = passwordInput.value;
+            let strength = 0;
+
+            if (password.length >= 6) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            let strengthText = '';
+            let strengthClass = '';
+
+            switch (strength) {
+                case 0:
+                case 1:
+                    strengthText = 'Słabe';
+                    strengthClass = 'bg-danger';
+                    break;
+                case 2:
+                case 3:
+                    strengthText = 'Średnie';
+                    strengthClass = 'bg-warning';
+                    break;
+                case 4:
+                case 5:
+                    strengthText = 'Silne';
+                    strengthClass = 'bg-success';
+                    break;
+            }
+
+            strengthDiv.innerHTML = `
+                <div class="progress">
+                    <div class="progress-bar ${strengthClass}" role="progressbar" style="width: ${(strength / 5) * 100}%;" aria-valuenow="${strength}" aria-valuemin="0" aria-valuemax="5"></div>
+                </div>
+                <small class="${strengthClass} text-white">${strengthText}</small>
+            `;
+        });
+    });
+</script>
+</body>
+</html>

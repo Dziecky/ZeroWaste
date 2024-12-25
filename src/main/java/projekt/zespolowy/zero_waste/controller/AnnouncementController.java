@@ -7,11 +7,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.entity.Announcement;
 import projekt.zespolowy.zero_waste.entity.Product;
+import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.repository.AnnouncementRepository;
 import projekt.zespolowy.zero_waste.services.ProductService;
+import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @AllArgsConstructor
@@ -23,10 +26,50 @@ public class AnnouncementController {
     @Autowired
     private final ProductService productService; // Inject ProductService
 
-    // Display all announcements
     @GetMapping
-    public String showAnnouncements(Model model) {
-        model.addAttribute("announcements", announcementRepository.findAll());
+    public String showAnnouncements(
+            @RequestParam(name = "productSearch", required = false) String productSearch,
+            @RequestParam(name = "myAnnouncementsOnly", required = false, defaultValue = "false") boolean myAnnouncementsOnly,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            Model model) {
+        User user = UserService.getUser();
+
+        // Fetch products for dropdown
+        List<Product> products = productService.getAllProducts(); // Assuming you have a service to fetch all products
+
+        List<Announcement> announcements = myAnnouncementsOnly
+                ? announcementRepository.findByOwner(user)
+                : announcementRepository.findAll();
+
+        // Filter announcements by product name if provided
+        if (productSearch != null && !productSearch.isEmpty()) {
+            announcements = announcements.stream()
+                    .filter(a -> a.getProducts().stream()
+                            .anyMatch(p -> p.getName().toLowerCase().contains(productSearch.toLowerCase())))
+                    .collect(Collectors.toList());
+        }
+
+        // Pagination logic
+        int totalAnnouncements = announcements.size();
+        int totalPages = (int) Math.ceil((double) totalAnnouncements / size);
+
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, totalAnnouncements);
+
+        List<Announcement> paginatedAnnouncements = fromIndex < totalAnnouncements
+                ? announcements.subList(fromIndex, toIndex)
+                : List.of();
+
+        model.addAttribute("products", products);
+        model.addAttribute("announcements", paginatedAnnouncements);
+        model.addAttribute("myAnnouncementsOnly", myAnnouncementsOnly);
+        model.addAttribute("productSearch", productSearch);
+        model.addAttribute("accountType", user.getAccountType().toString());
+        model.addAttribute("currentUser", user);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
         return "/Announcement/announcements";
     }
 
@@ -40,10 +83,20 @@ public class AnnouncementController {
 
     // Handle form submission for new announcements
     @PostMapping
-    public String submitAnnouncement(@ModelAttribute Announcement announcement, @RequestParam("productIds") List<Long> productIds) {
+    public String submitAnnouncement(@ModelAttribute Announcement announcement,
+                                     @RequestParam("productIds") List<Long> productIds) {
+        User currentUser = UserService.getUser(); // Retrieve the current logged-in user
+
+        // Set the owner of the announcement
+        announcement.setOwner(currentUser);
+
+        // Set selected products
         List<Product> selectedProducts = productService.getProductsByIds(productIds);
         announcement.setProducts(selectedProducts);
+
+        // Save announcement
         announcementRepository.save(announcement);
+
         return "redirect:/announcements";
     }
 
@@ -76,6 +129,20 @@ public class AnnouncementController {
         return "my-announcements"; // Thymeleaf view for displaying user's announcements
     }
 
+    @DeleteMapping("/{id}")
+    public String deleteAnnouncement(@PathVariable Long id) {
+        User currentUser = UserService.getUser();
+        Announcement announcement = announcementRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid announcement ID: " + id));
+
+        // Ensure that only the owner can delete the announcement
+        if (!announcement.getOwner().getId().equals(currentUser.getId())) {
+            throw new SecurityException("You are not allowed to delete this announcement.");
+        }
+
+        announcementRepository.delete(announcement);
+        return "redirect:/announcements";
+    }
 
 }
 

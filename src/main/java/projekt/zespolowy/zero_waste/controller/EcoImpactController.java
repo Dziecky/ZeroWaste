@@ -4,15 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import projekt.zespolowy.zero_waste.dto.chat.ChatMessageDTO;
+import projekt.zespolowy.zero_waste.entity.EcoImpactHistory;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.services.UserService;
 import projekt.zespolowy.zero_waste.services.EcoImpactService;
-import projekt.zespolowy.zero_waste.entity.EcoImpactHistory;
+import projekt.zespolowy.zero_waste.repository.EcoImpactHistoryRep;
+import projekt.zespolowy.zero_waste.repository.UserRepository;
+import projekt.zespolowy.zero_waste.services.MonthlyReportService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
@@ -20,9 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class EcoImpactController {
 
     private final EcoImpactService ecoImpactService;
-
-    @Autowired
+    private final EcoImpactHistoryRep ecoImpactHistoryRep;
     private final UserService userService;
+    private final MonthlyReportService monthlyReportService;
 
     private Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -33,9 +40,7 @@ public class EcoImpactController {
 
     @GetMapping("/eco-impact")
     public String getEcoImpact(Model model) {
-
         Long userId = getCurrentUserId();
-
         String ecoImpactMessage = ecoImpactService.calculateEcoImpact(userId);
         List<EcoImpactHistory> history = ecoImpactService.getEcoImpactHistory(userId);
 
@@ -43,7 +48,6 @@ public class EcoImpactController {
         double co2Saved = history.stream().mapToDouble(EcoImpactHistory::getCo2Saved).sum();
         double energySaved = history.stream().mapToDouble(EcoImpactHistory::getEnergySaved).sum();
         double wasteReduced = history.stream().mapToDouble(EcoImpactHistory::getWasteReduced).sum();
-
 
         List<String> historyDates = new ArrayList<>();
         List<Double> waterSavedHistory = new ArrayList<>();
@@ -69,6 +73,26 @@ public class EcoImpactController {
         model.addAttribute("co2SavedHistory", co2SavedHistory);
         model.addAttribute("energySavedHistory", energySavedHistory);
         model.addAttribute("wasteReducedHistory", wasteReducedHistory);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "eco-impact";
+    }
+
+    @PostMapping("/generate-report")
+    public String generateMonthlyReports(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = userService.findByUsername(auth.getName());
+        boolean isAdmin = auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            monthlyReportService.generateAndSendMonthlyReports(currentUser);
+            model.addAttribute("reportGenerated", true);
+        }
 
         return "eco-impact";
     }

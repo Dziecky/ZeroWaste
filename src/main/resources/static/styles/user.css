@@ -1,0 +1,25 @@
+.profile-section {
+    padding: 2rem 0;
+    background-color: #f8f9fa;
+}
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+.user-card {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-radius: 12px;
+    border: none;
+    transition: transform 0.2s;
+}
+.user-card:hover {
+    transform: translateY(-5px);
+}
+.alert {
+    margin-bottom: 0;
+    border-radius: 0;
+}

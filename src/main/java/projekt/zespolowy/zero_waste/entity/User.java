@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
+import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 
 import java.util.Collection;
 import java.util.List;
@@ -36,13 +37,19 @@ public class User {
     private String phoneNumber;
 
     @Column(nullable = false)
-    private String password; // Зашифрованный пароль
+    private String password;
+
+    @Column
+    private String imageUrl;
 
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
 
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+
     @Column(name = "total_points")
-    private int totalPoints = 0;  // Количество очков пользователя
+    private int totalPoints = 0;
 
     @Column(name = "average_rating", columnDefinition = "Double default 0")
     private Double averageRating;

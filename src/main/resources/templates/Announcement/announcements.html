@@ -3,9 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>Announcements</title>
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link th:href="@{styles/main.css}" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary-color: #28a745;
+            --secondary-color: #218838;
+            --background-color: #f4f6f8;
+            --text-color: #2c3e50;
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: 'Inter', 'Arial', sans-serif;
+        }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 50px;
+        }
+
+        .pagination .page-item {
+            margin: 0 2px;
+        }
+
+        .pagination .page-link {
+            color: var(--text-color);
+            background-color: #fff;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            padding: 6px 12px;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .pagination .page-link:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            opacity: 0.5;
+            pointer-events: none;
+            background-color: #f4f6f8;
+            border-color: #ddd;
+            color: #999;
+        }
+
+    </style>
 </head>
 <body class="d-flex flex-column h-100">
 
@@ -13,33 +66,81 @@
 
 <main role="main" class="flex-shrink-0">
     <div class="container mt-5">
-        <!-- Button for creating a new announcement -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- Form for filtering announcements -->
+        <form th:action="@{/announcements}" method="get" class="d-flex justify-content-between align-items-center mb-4">
             <h2>Recent Announcements</h2>
-            <div class="d-flex justify-content-between mb-3">
-                <a class="btn btn-success" th:href="@{/announcements/new}">Create Announcement</a>
-                <a class="btn btn-primary" th:href="@{/my-announcements}">My Announcements</a>
+            <div class="form-inline">
+                <label for="productSearch" class="mr-2">Search by Product:</label>
+                <select id="productSearch" name="productSearch" class="form-control mr-2" placeholder="Search products">
+                    <option value="">All Products</option>
+                    <option th:each="product : ${products}" th:value="${product.name}" th:text="${product.name}"></option>
+                </select>
+                <button type="submit" class="btn btn-primary">Search</button>
             </div>
+            <div class="form-inline" th:if="${accountType == 'BUSINESS'}">
+                <label class="mr-2">
+                    <input type="checkbox" name="myAnnouncementsOnly" th:checked="${myAnnouncementsOnly ? 'checked' : ''}"/>
+                    Show only my announcements
+                </label>
+                <button type="submit" class="btn btn-secondary ml-2">Filter</button>
+            </div>
+        </form>
+
+        <!-- Button for creating a new announcement if the user is BUSINESS -->
+        <div th:if="${accountType == 'BUSINESS'}" class="d-flex justify-content-between mb-3">
+            <a class="btn btn-success" th:href="@{/announcements/create}">Create Announcement</a>
         </div>
 
         <div>
             <ul class="list-group">
-                <li th:each="announcement : ${announcements}" class="list-group-item">
-                    <!-- Make the title a link to the details page -->
-                    <h4>
-                        <a th:href="@{/announcements/{id}(id=${announcement.id})}" th:text="${announcement.title}">Announcement Title</a>
-                    </h4>
-                    <p th:text="${announcement.description}">Announcement Description</p>
+                <li th:each="announcement : ${announcements}" class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <!-- Make the title a link to the details page -->
+                        <h4>
+                            <a th:href="@{/announcements/{id}(id=${announcement.id})}"
+                               th:text="${announcement.title}">Announcement Title</a>
+                        </h4>
+                        <p th:text="${announcement.description}">Announcement Description</p>
 
-                    <div th:if="${not #lists.isEmpty(announcement.products)}">
-                        <strong>Products:</strong>
-                        <ul>
-                            <li th:each="product : ${announcement.products}" th:text="${product.name}"></li>
-                        </ul>
+                        <div th:if="${not #lists.isEmpty(announcement.products)}">
+                            <strong>Products:</strong>
+                            <ul>
+                                <li th:each="product : ${announcement.products}" th:text="${product.name}"></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div th:if="${accountType == 'BUSINESS'}">
+                        <!-- Only show delete button if current user is the owner of the announcement -->
+                        <form th:if="${announcement.owner.id == currentUser.id}"
+                              th:action="@{/announcements/{id}(id=${announcement.id})}"
+                              method="post" style="margin-left:10px;">
+
+                            <input type="hidden" name="_method" value="delete"/>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
                     </div>
                 </li>
             </ul>
         </div>
+
+        <!-- Pagination Section -->
+        <div class="mt-4 text-center">
+            <ul class="pagination">
+                <li th:classappend="${currentPage > 0} ? 'page-item' : 'page-item disabled'">
+                    <a class="page-link" th:href="@{/announcements(page=${currentPage - 1})}">Previous</a>
+                </li>
+                <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <li th:classappend="${i == currentPage} ? 'page-item active' : 'page-item'">
+                        <a class="page-link" th:href="@{/announcements(page=${i})}"
+                           th:text="${i + 1}">1</a>
+                    </li>
+                </span>
+                <li th:classappend="${currentPage < totalPages - 1} ? 'page-item' : 'page-item disabled'">
+                    <a class="page-link" th:href="@{/announcements(page=${currentPage + 1})}">Next</a>
+                </li>
+            </ul>
+        </div>
+
     </div>
 </main>
 
@@ -47,8 +148,7 @@
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
-        crossorigin="anonymous">
-</script>
+        crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

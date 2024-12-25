@@ -1,26 +1,39 @@
 package projekt.zespolowy.zero_waste.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
+import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
 import projekt.zespolowy.zero_waste.entity.Review;
 import projekt.zespolowy.zero_waste.entity.User;
-import projekt.zespolowy.zero_waste.services.ReviewService;
 import projekt.zespolowy.zero_waste.entity.UserTask;
+import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 import projekt.zespolowy.zero_waste.security.CustomUser;
+import projekt.zespolowy.zero_waste.services.ReviewService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.security.Principal;
+
 @Controller
 public class UserController {
 
-    private final UserService userService;
+    public static UserService userService = null;
 
     private final ReviewService reviewService;
 
@@ -30,7 +43,7 @@ public class UserController {
         this.reviewService = reviewService;
     }
 
-    @GetMapping("/accountDetails") 
+    @GetMapping("/accountDetails")
     public String accountDetails(Model model) {
         // Pobierz aktualnie zalogowanego użytkownika
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -45,7 +58,104 @@ public class UserController {
         model.addAttribute("reviews", reviews);
         model.addAttribute("newReview", new Review()); // Obiekt dla formularza
 
-        return "accountDetails";
+        return "User/accountDetails";
+    }
+
+    @GetMapping("/editAccount")
+    public String editAccountForm(Model model) {
+        // Pobierz aktualnie zalogowanego użytkownika
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        User user = customUser.getUser();
+
+        UserUpdateDto userUpdateDto = new UserUpdateDto();
+        userUpdateDto.setUsername(user.getUsername());
+        userUpdateDto.setFirstName(user.getFirstName());
+        userUpdateDto.setLastName(user.getLastName());
+        userUpdateDto.setPhoneNumber(user.getPhoneNumber());
+
+        AuthProvider authProvider = user.getProvider();
+
+        model.addAttribute("userUpdateDto", userUpdateDto);
+        model.addAttribute("authProvider", authProvider.toString());
+        return "User/editAccount";
+    }
+
+    @PostMapping("/editAccount")
+    public String editAccount(@Valid @ModelAttribute("userUpdateDto") UserUpdateDto userUpdateDto, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "User/editAccount";
+        }
+
+        // Pobierz aktualnie zalogowanego użytkownika
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        String username = customUser.getUsername();
+
+        try {
+            User updatedUser = userService.updateUser(userUpdateDto, username);
+            refreshAuthentication(updatedUser, authentication);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            User userInner = customUser.getUser();
+            AuthProvider authProvider = userInner.getProvider();
+            model.addAttribute("authProvider", authProvider.toString());
+            return "User/editAccount";
+        }
+        model.addAttribute("success", "Konto zaktualizowane pomyślnie");
+        redirectAttributes.addFlashAttribute("success", "Konto zaktualizowane pomyślnie");
+        return "redirect:/accountDetails";
+    }
+
+    @GetMapping("/editProfilePhoto")
+    public String editProfilePhotoForm(Model model) {
+        User user = UserService.getUser();
+
+        UserUpdateDto userUpdateDto = new UserUpdateDto();
+        userUpdateDto.setImageUrl(user.getImageUrl());
+
+        AuthProvider authProvider = user.getProvider();
+
+        model.addAttribute("userUpdateDto", userUpdateDto);
+        model.addAttribute("authProvider", authProvider.toString());
+
+        return "User/editProfilePhoto";
+    }
+
+    @PostMapping("/editProfilePhoto")
+    public String editProfilePhoto(UserUpdateDto userUpdateDto, Model model, RedirectAttributes redirectAttributes) {
+        // Pobierz aktualnie zalogowanego użytkownika
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        String username = customUser.getUsername();
+
+        try {
+            User updatedUser = userService.upadateUserPhoto(userUpdateDto, username);
+            refreshAuthentication(updatedUser, authentication);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "User/editProfilePhoto";
+        }
+
+        model.addAttribute("success", "Zdjęcie profilowe zaktualizowane pomyślnie");
+        redirectAttributes.addFlashAttribute("success", "Zdjęcie profilowe zaktualizowane pomyślnie");
+        return "redirect:/accountDetails";
+    }
+
+    private void refreshAuthentication(User updatedUser, Authentication aut) {
+        CustomUser updatedCustomUser;
+        if (aut instanceof OAuth2AuthenticationToken) {
+            OidcUser oidcUser = (OidcUser) aut.getPrincipal();
+            updatedCustomUser = new CustomUser(updatedUser, oidcUser.getAttributes(), oidcUser.getIdToken(), oidcUser.getUserInfo());
+        } else {
+            updatedCustomUser = new CustomUser(updatedUser);
+        }
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                updatedCustomUser,
+                updatedCustomUser.getPassword(),
+                updatedCustomUser.getAuthorities()
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @GetMapping("/user/tasks")
@@ -68,5 +178,16 @@ public class UserController {
         model.addAttribute("incompleteTasks", incompleteTasks);
 
         return "Tasks/userTasks";
+    }
+
+    @GetMapping("/api/user/current")
+    public ResponseEntity<User> getCurrentUser(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Assuming your UserService fetches user details
+        User user = UserService.findByUsername(principal.getName());
+        return ResponseEntity.ok(user);
     }
 }

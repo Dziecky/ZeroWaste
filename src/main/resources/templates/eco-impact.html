@@ -56,6 +56,11 @@
                 </table>
             </div>
         </div>
+        <div th:if="${isAdmin}">
+            <form th:action="@{/generate-report}" method="post">
+                <button type="submit" class="btn btn-primary">Generate Monthly Report</button>
+            </form>
+        </div>
     </div>
 </main>
 

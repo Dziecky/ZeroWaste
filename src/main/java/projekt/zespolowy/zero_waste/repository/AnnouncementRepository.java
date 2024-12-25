@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import projekt.zespolowy.zero_waste.entity.Announcement;
 import projekt.zespolowy.zero_waste.entity.Product;
+import projekt.zespolowy.zero_waste.entity.User;
 
 import java.util.List;
 
@@ -12,4 +13,5 @@ public interface AnnouncementRepository extends JpaRepository<Announcement, Long
 
     List<Announcement> findAllByProductsContaining(Product product);
 
+    List<Announcement> findByOwner(User user);
 }

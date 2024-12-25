@@ -1,4 +1,4 @@
-package projekt.zespolowy.zero_waste.controller;
+package projekt.zespolowy.zero_waste.controller.chat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,6 +23,13 @@ public class ChatPageController {
     public String chatPage(Model model, Principal principal) {
         User user = userService.findByUsername(principal.getName());
         model.addAttribute("username", user.getUsername());
-        return "chat";
+        return "/chat/chat";
+    }
+
+    @GetMapping("/chat-room")
+    public String chatRoomPage(Model model, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        model.addAttribute("username", user.getUsername());
+        return "/chat/chat-room";
     }
 }

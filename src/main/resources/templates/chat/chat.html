@@ -5,7 +5,7 @@
     <title>Chat</title>
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/chat.css}" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -33,8 +33,11 @@
         <form>
             <div class="form-group">
                 <label for="receiverInput">Recipient Username</label>
-                <input type="text" id="receiverInput" class="form-control" placeholder="Enter recipient username">
+                <input type="text" id="receiverInput" class="form-control"
+                       th:value="${param.recipient}"
+                       placeholder="Enter recipient username">
             </div>
+
             <div class="form-group">
                 <label for="messageInput">Message</label>
                 <input type="text" id="messageInput" class="form-control" placeholder="Type your message">

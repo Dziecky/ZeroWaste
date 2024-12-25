@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/styles/chat.css" rel="stylesheet"> <!-- Ensure correct path -->
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+  <script src="/scripts/chat.js" defer></script> <!-- Ensure correct path -->
+</head>
+<body class="d-flex flex-column bg-light vh-100">
+
+<header class="w-100">
+  <div th:replace="~{fragments/header :: header}"></div>
+</header>
+
+<main class="d-flex flex-grow-1 mt-3 mx-auto shadow rounded bg-white" style="width: 80%; min-width: 600px;">
+
+  <!-- Chat Room List -->
+  <aside id="chat-room-list" class="border-right p-3" style="width: 25%; background-color: #f8f9fa;">
+    <h3 class="text-secondary">Chat Rooms</h3>
+    <ul id="chat-rooms" class="list-group">
+      <!-- Chat rooms will be dynamically loaded here -->
+    </ul>
+  </aside>
+
+  <!-- Chat Window -->
+  <section id="chat-window-container" class="p-4 d-flex flex-column w-75">
+    <h2 class="text-center mb-4">Chat</h2>
+    <div id="chat-window" class="bg-light border rounded p-3 flex-grow-1 mb-3" style="overflow-y: auto;">
+      <!-- Chat messages will be dynamically loaded here -->
+    </div>
+    <div id="chat-controls" class="d-flex">
+      <input type="text" id="messageInput" class="form-control me-2" placeholder="Type a message">
+      <button id="sendButton" class="btn btn-primary">Send</button>
+    </div>
+  </section>
+</main>
+
+<footer class="w-100 mt-auto">
+  <div th:replace="~{fragments/footer :: footer}"></div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
