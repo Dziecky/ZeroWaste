@@ -77,22 +77,47 @@ public class ReviewService implements IReviewService{
         reviewRepository.delete(review);
     }
 
-
+//    public double calculateAverageRating(User user) {
+//        List<ReviewDto> reviews = getReviewsByTargetUserId(user.getId());
+//        if (reviews.isEmpty()) {
+//            System.out.println("AverageRating dla: "+ user.getId() + " - PUSTA");
+//            return 0.0;
+//        }
+//
+//
+//        double totalRating = reviews.stream()
+//                .mapToInt(ReviewDto::getRating)
+//                .sum();
+//        System.out.println("AverageRating dla: "+ user.getId() + " - " + totalRating / reviews.size());
+//        return totalRating / reviews.size();
+//    }
 
     public double calculateAverageRating(User user) {
         List<ReviewDto> reviews = getReviewsByTargetUserId(user.getId());
         if (reviews.isEmpty()) {
-            System.out.println("AverageRating dla: "+ user.getId() + " - PUSTA");
+            System.out.println("AverageRating dla: " + user.getId() + " - PUSTA");
             return 0.0;
         }
 
+        // Filter out reviews with a rating of 0
+        List<ReviewDto> filteredReviews = reviews.stream()
+                .filter(review -> review.getRating() != 0)
+                .collect(Collectors.toList());
 
-        double totalRating = reviews.stream()
+        if (filteredReviews.isEmpty()) {
+            System.out.println("AverageRating dla: " + user.getId() + " - All ratings are 0");
+            return 0.0;
+        }
+
+        double totalRating = filteredReviews.stream()
                 .mapToInt(ReviewDto::getRating)
                 .sum();
-        System.out.println("AverageRating dla: "+ user.getId() + " - " + totalRating / reviews.size());
-        return totalRating / reviews.size();
+
+        double averageRating = totalRating / filteredReviews.size();
+        System.out.println("AverageRating dla: " + user.getId() + " - " + averageRating);
+        return averageRating;
     }
+
     public List<ReviewDto> getReviewsByTargetUserId(Long targetUserId) {
         List<Review> reviews = reviewRepository.findByTargetUserId(targetUserId);
         return reviews.stream()
