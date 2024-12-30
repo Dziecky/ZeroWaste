@@ -14,6 +14,7 @@ import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @AllArgsConstructor
@@ -26,21 +27,48 @@ public class AnnouncementController {
     private final ProductService productService; // Inject ProductService
 
     @GetMapping
-    public String showAnnouncements(@RequestParam(name = "myAnnouncementsOnly", required = false, defaultValue = "false") boolean myAnnouncementsOnly,
-                                    Model model) {
+    public String showAnnouncements(
+            @RequestParam(name = "productSearch", required = false) String productSearch,
+            @RequestParam(name = "myAnnouncementsOnly", required = false, defaultValue = "false") boolean myAnnouncementsOnly,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            Model model) {
         User user = UserService.getUser();
 
-        List<Announcement> announcements;
-        if (myAnnouncementsOnly) {
-            announcements = announcementRepository.findByOwner(user);
-        } else {
-            announcements = announcementRepository.findAll();
+        // Fetch products for dropdown
+        List<Product> products = productService.getAllProducts(); // Assuming you have a service to fetch all products
+
+        List<Announcement> announcements = myAnnouncementsOnly
+                ? announcementRepository.findByOwner(user)
+                : announcementRepository.findAll();
+
+        // Filter announcements by product name if provided
+        if (productSearch != null && !productSearch.isEmpty()) {
+            announcements = announcements.stream()
+                    .filter(a -> a.getProducts().stream()
+                            .anyMatch(p -> p.getName().toLowerCase().contains(productSearch.toLowerCase())))
+                    .collect(Collectors.toList());
         }
 
-        model.addAttribute("announcements", announcements);
+        // Pagination logic
+        int totalAnnouncements = announcements.size();
+        int totalPages = (int) Math.ceil((double) totalAnnouncements / size);
+
+        int fromIndex = page * size;
+        int toIndex = Math.min(fromIndex + size, totalAnnouncements);
+
+        List<Announcement> paginatedAnnouncements = fromIndex < totalAnnouncements
+                ? announcements.subList(fromIndex, toIndex)
+                : List.of();
+
+        model.addAttribute("products", products);
+        model.addAttribute("announcements", paginatedAnnouncements);
         model.addAttribute("myAnnouncementsOnly", myAnnouncementsOnly);
+        model.addAttribute("productSearch", productSearch);
         model.addAttribute("accountType", user.getAccountType().toString());
-        model.addAttribute("currentUser", user); // Add this line
+        model.addAttribute("currentUser", user);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
 
         return "/Announcement/announcements";
     }

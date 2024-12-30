@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"reviews"}) // Exclude the reviews field from toString()
 public class User {
 
     @Id
