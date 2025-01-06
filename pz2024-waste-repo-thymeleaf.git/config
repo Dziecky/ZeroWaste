@@ -1,0 +1,8 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = true
+	ignorecase = true
+[remote "github"]
+	url = https://github.com/sktybucdred/Spring6ZeroWaste
+	fetch = +refs/heads/*:refs/remotes/github/*
