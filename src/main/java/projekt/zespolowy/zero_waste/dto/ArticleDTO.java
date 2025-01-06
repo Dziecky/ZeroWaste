@@ -16,4 +16,6 @@ public class ArticleDTO {
     private List<String> tags;
     private ArticleCategory articleCategory;
     private String authorUsername;
+    private boolean likedByCurrentUser;
+    private int likesCount;
 }

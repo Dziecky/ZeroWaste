@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
+import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.services.EducationalServices.Article.ArticleService;
+import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.Optional;
 
@@ -22,10 +24,12 @@ public class ArticleController {
 
     private final ArticleService articleService;
     private final ArticleMapper articleMapper;
+    private final UserService userService;
     @Autowired
-    public ArticleController(ArticleService articleService, ArticleMapper articleMapper) {
+    public ArticleController(ArticleService articleService, ArticleMapper articleMapper, UserService userService) {
         this.articleService = articleService;
         this.articleMapper = articleMapper;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -37,9 +41,11 @@ public class ArticleController {
             @RequestParam(required = false) String tagName,
             Model model) {
             Pageable pageable = PageRequest.of(page, size);
-            Page<Article> articlePage = articleService.findArticles(category, title, tagName, pageable);
 
-            Page<ArticleDTO> articleDTOPage = articlePage.map(articleMapper::toDTO);
+        User currentUser = userService.getUser();
+
+        Page<ArticleDTO> articleDTOPage = articleService.findArticlesWithLikes(category, title, tagName, pageable, currentUser);
+
             model.addAttribute("articlePage", articleDTOPage);
             //model.addAttribute("activePage", "articles");
             model.addAttribute("selectedCategory", category);
@@ -98,7 +104,11 @@ public class ArticleController {
     public String viewArticle(@PathVariable("id") Long id, Model model) {
         Optional<Article> optionalArticle = articleService.getArticleById(id);
         if (optionalArticle.isPresent()) {
-            ArticleDTO articleDTO = articleMapper.toDTO(optionalArticle.get());
+            Article article = optionalArticle.get();
+            ArticleDTO articleDTO = articleMapper.toDTO(article);
+            User currentUser = userService.getUser();
+            articleDTO.setLikedByCurrentUser(article.getLikedByUsers().contains(currentUser));
+            articleDTO.setLikesCount(article.getLikedByUsers().size());
             model.addAttribute("articleDTO", articleDTO);
             return "Educational/Articles/article_view";
         } else {
@@ -106,5 +116,10 @@ public class ArticleController {
         }
     }
 
-
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/like/{id}")
+    public String likeArticle(@PathVariable("id") Long id) {
+        articleService.toggleLikeArticle(id);
+        return "redirect:/articles";
+    }
 }

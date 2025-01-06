@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import projekt.zespolowy.zero_waste.dto.AdviceDTO;
 import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
 import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
@@ -196,6 +197,13 @@ public class UserController {
         return "user/likedArticles";
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/likedAdvices")
+    public String showLikedAdvices(Model model) {
+        Set<AdviceDTO> likedAdvices = userService.getLikedAdvices();
+        model.addAttribute("likedAdvices", likedAdvices);
+        return "user/likedAdvices";
+    }
 
 
     @GetMapping("/api/user/current")

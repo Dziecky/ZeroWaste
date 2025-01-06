@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.dto.AdviceDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.Advice;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.AdviceCategory;
+import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
 import projekt.zespolowy.zero_waste.services.EducationalServices.Advice.AdviceService;
+import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.Optional;
 
@@ -21,11 +23,15 @@ import java.util.Optional;
 public class AdviceController {
     private final AdviceService adviceService;
     private final AdviceMapper adviceMapper;
+    private final UserService userService;
 
     @Autowired
-    public AdviceController(AdviceService adviceService, AdviceMapper adviceMapper) {
+    public AdviceController(AdviceService adviceService,
+                            AdviceMapper adviceMapper,
+                            UserService userService) {
         this.adviceService = adviceService;
         this.adviceMapper = adviceMapper;
+        this.userService = userService;
     }
     @GetMapping
     public String listAdvices(@RequestParam(defaultValue = "0") int page,
@@ -35,9 +41,10 @@ public class AdviceController {
                               @RequestParam(required = false) String tagName,
                               Model model) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Advice> advicePage = adviceService.findAdvices(category, title, tagName, pageable);
 
-        Page<AdviceDTO> adviceDTOPage = advicePage.map(adviceMapper::toDTO);
+        User currentUser = userService.getUser();
+
+        Page<AdviceDTO> adviceDTOPage = adviceService.findAdvicesWithLikes(category, title, tagName, pageable, currentUser);
         model.addAttribute("advicePage", adviceDTOPage);
         //model.addAttribute("activePage", "advices");
         model.addAttribute("selectedCategory", category);
@@ -105,6 +112,11 @@ public class AdviceController {
             return "redirect:/advices";
         }
     }
-
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/like/{id}")
+    public String likeAdvice(@PathVariable("id") Long id) {
+        adviceService.toggleLikeAdvice(id);
+        return "redirect:/advices";
+    }
 
 }

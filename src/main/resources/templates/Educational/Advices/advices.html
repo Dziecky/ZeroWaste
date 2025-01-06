@@ -7,6 +7,7 @@
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link th:href="@{styles/main.css}" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 <body class="d-flex flex-column h-100">
 <div th:replace="~{fragments/header :: header}"></div>
@@ -59,6 +60,12 @@
                     <a th:href="@{/advices/delete/{id}(id=${advice.id})}"
                        class="btn btn-danger btn-sm"
                        onclick="return confirm('Are you sure you want to delete this advice?');">Delete</a>
+                    <!-- Formularz do Polubienia/Odlubienia -->
+                    <form th:action="@{/advices/like/{id}(id=${advice.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-outline-primary">
+                            <span th:text="${advice.likedByCurrentUser} ? 'Odlub' : 'Polub'">Polub/Odlub</span>
+                        </button>
+                    </form>
                 </li>
             </ul>
 

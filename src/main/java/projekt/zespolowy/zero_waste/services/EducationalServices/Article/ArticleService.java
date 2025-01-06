@@ -6,6 +6,7 @@ import org.springframework.data.web.PagedModel;
 import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
+import projekt.zespolowy.zero_waste.entity.User;
 
 import java.util.Optional;
 
@@ -19,4 +20,7 @@ public interface ArticleService {
     Page<Article> getArticlesByTitle(String title, Pageable pageable);
     Page<Article> findByTags_NameIgnoreCase(String tagName, Pageable pageable);
     Page<Article> findArticles(ArticleCategory category, String title, String tagName, Pageable pageable);
+    void toggleLikeArticle(Long id);
+    int getLikes(Long id);
+    Page<ArticleDTO> findArticlesWithLikes(ArticleCategory category, String title, String tagName, Pageable pageable, User currentUser);
 }

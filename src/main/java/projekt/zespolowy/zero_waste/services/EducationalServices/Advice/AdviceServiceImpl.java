@@ -23,8 +23,12 @@ public class AdviceServiceImpl implements AdviceService {
     private final TagService tagService;
     private final AdviceMapper adviceMapper;
     private final UserService userService;
+
     @Autowired
-    public AdviceServiceImpl(AdviceRepository adviceRepository, TagService tagService, AdviceMapper adviceMapper, UserService userService) {
+    public AdviceServiceImpl(AdviceRepository adviceRepository,
+                             TagService tagService,
+                             AdviceMapper adviceMapper,
+                             UserService userService) {
         this.adviceRepository = adviceRepository;
         this.tagService = tagService;
         this.adviceMapper = adviceMapper;
@@ -33,7 +37,7 @@ public class AdviceServiceImpl implements AdviceService {
     @Override
     public Advice createAdvice(AdviceDTO adviceDTO) {
         Advice advice = adviceMapper.toEntity(adviceDTO, tagService);
-        advice.setAuthor(userService.getCurrentUser());
+        advice.setAuthor(userService.getUser());
         return adviceRepository.save(advice);
     }
     @Override
@@ -99,5 +103,34 @@ public class AdviceServiceImpl implements AdviceService {
             spec = spec.and((root, query, cb) -> cb.equal(root.join("tags").get("name"), tagName));
         }
         return adviceRepository.findAll(spec, pageable);
+    }
+    @Override
+    public Page<AdviceDTO> findAdvicesWithLikes(AdviceCategory category, String title, String tagName, Pageable pageable, User currentUser) {
+        Page<Advice> advices = findAdvices(category, title, tagName, pageable);
+        return advices.map(advice -> {
+            AdviceDTO dto = adviceMapper.toDTO(advice);
+            dto.setLikedByCurrentUser(advice.getLikedByUsers().contains(currentUser));
+            dto.setLikesCount(advice.getLikedByUsers().size());
+            return dto;
+        });
+    }
+
+    @Override
+    public void toggleLikeAdvice(Long id) {
+        Advice advice = adviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Advice not found with id " + id));
+
+        User currentUser = userService.getUser();
+
+        if(advice.getLikedByUsers().contains(currentUser)){
+            advice.getLikedByUsers().remove(currentUser);
+            currentUser.getLikedAdvices().remove(advice);
+        }else{
+            advice.getLikedByUsers().add(currentUser);
+            currentUser.getLikedAdvices().add(advice);
+        }
+
+        adviceRepository.save(advice);
+        userService.save(currentUser);
     }
 }

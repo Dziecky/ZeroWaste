@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Ustawienia Preferencji</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h1>Ustawienia Preferencji</h1>
+  <form th:action="@{/preferences}" method="post">
+    <div class="form-group">
+      <label for="frequency">Częstotliwość wysyłki:</label>
+      <select class="form-control" id="frequency" name="frequency" required>
+        <option th:each="freq : ${frequencyOptions}"
+                th:value="${freq}"
+                th:text="${#strings.capitalize(freq.toString().toLowerCase())}"
+                th:selected="${userPreference.frequency == freq}">
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Typy subskrypcji:</label><br/>
+      <div th:each="subscription : ${subscriptionOptions}" class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" th:id="'sub_' + ${subscription}"
+               th:name="subscriptions" th:value="${subscription}"
+               th:checked="${userPreference.subscribedTo != null} ? ${userPreference.subscribedTo.contains(subscription)} : false"/>
+        <label class="form-check-label" th:for="'sub_' + ${subscription}"
+               th:text="${#strings.capitalize(subscription.toString().toLowerCase())}">Subscription</label>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Zapisz Preferencje</button>
+  </form>
+</div>
+</body>
+</html>

@@ -22,4 +22,6 @@ public class AdviceDTO {
     private AdviceCategory adviceCategory;
     private List<String> tags;
     private String authorUsername;
+    private boolean likedByCurrentUser;
+    private int likesCount;
 }
