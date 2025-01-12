@@ -3,7 +3,6 @@ let currentChatRoomId = null;
 let currentUser = null;
 let currentChatRoom = null;
 
-// Connect to WebSocket
 function connect() {
     const socket = new SockJS('/ws');
     stompClient = Stomp.over(socket);
@@ -11,13 +10,12 @@ function connect() {
     stompClient.connect({}, () => {
         console.log('Connected to WebSocket');
 
-        // Subscribe to user-specific message queue
         stompClient.subscribe('/user/queue/messages', (message) => {
             const chatMessage = JSON.parse(message.body);
             displayMessage(chatMessage);
         });
 
-        loadChatRooms();  // Load existing chat rooms when connected
+        loadChatRooms();
     });
 }
 
@@ -57,13 +55,17 @@ function loadChatRooms() {
         });
 }
 
-// Open a chat room and load its messages
 function openChatRoom(chatRoom) {
     currentChatRoom = chatRoom;
     currentChatRoomId = chatRoom.id;
     document.getElementById('chat-window').innerHTML = '';
 
-    console.log(chatRoom);
+    const chatWithUser = (currentUser.id === chatRoom.user1Id)
+        ? chatRoom.user2Name
+        : chatRoom.user1Name;
+
+    const chatHeading = document.getElementById('chat-heading');
+    chatHeading.textContent = `Chat with ${chatWithUser}`;
 
     fetch(`/api/chat/rooms/${chatRoom.id}/messages`)
         .then(response => response.json())
@@ -74,7 +76,6 @@ function openChatRoom(chatRoom) {
         });
 }
 
-// Display a message in the chat window
 function displayMessage(message, chatRoom) {
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
@@ -100,7 +101,6 @@ function displayMessage(message, chatRoom) {
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Send a message to the selected chat room
 function sendMessage() {
     const messageContent = document.getElementById('messageInput').value;
 
@@ -130,10 +130,8 @@ function sendMessage() {
     }
 }
 
-// Initialize connection on page load
 document.addEventListener('DOMContentLoaded', () => {
-    connect();  // Connect to WebSocket
+    connect();
     fetchCurrentUser();
-    // Set up event listener for sending messages
     document.getElementById('sendButton').addEventListener('click', sendMessage);
 });

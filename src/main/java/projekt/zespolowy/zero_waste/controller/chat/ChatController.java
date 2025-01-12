@@ -39,7 +39,6 @@ public class ChatController {
 
     @GetMapping("/api/chat/rooms/{chatRoomId}/messages")
     public List<ChatMessageDTO> getMessagesByChatRoom(@PathVariable Long chatRoomId) {
-        System.out.println("test");
         return chatMessageService.getMessagesByChatRoom(chatRoomId);
     }
 
@@ -58,7 +57,6 @@ public class ChatController {
 
     @MessageMapping("/chat")
     public void processMessage(@Payload ChatMessageDTO chatMessageDTO) {
-        System.out.println(chatMessageDTO);
         User sender = userService.findByUsername((chatMessageDTO.getSender()));
         User receiver = userService.findByUsername((chatMessageDTO.getReceiver()));
 
@@ -66,5 +64,9 @@ public class ChatController {
 
         messagingTemplate.convertAndSendToUser(receiver.getId().toString(), "/queue/messages", chatMessageDTO);
         messagingTemplate.convertAndSendToUser(sender.getId().toString(), "/queue/messages", chatMessageDTO);
+
+        // Send a notification to the receiver
+        String notification = "User " + sender.getUsername() + " sent you a message.";
+        messagingTemplate.convertAndSendToUser(receiver.getUsername(), "/user/queue/notifications", notification);
     }
 }

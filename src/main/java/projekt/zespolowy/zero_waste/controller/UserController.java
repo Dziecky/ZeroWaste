@@ -186,7 +186,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // Assuming your UserService fetches user details
         User user = UserService.findByUsername(principal.getName());
         return ResponseEntity.ok(user);
     }
