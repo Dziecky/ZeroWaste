@@ -34,28 +34,29 @@ public class ProductController {
     @GetMapping("/list")
     public String listProducts(
             @RequestParam(value = "category", required = false) ProductCategory category,
+            @RequestParam(value = "search", required = false, defaultValue = "") String search,
             @RequestParam(value = "sort", defaultValue = "dateDesc") String sort,
             @RequestParam(value = "page", defaultValue = "0") int page,
             Model model
     ) {
         Pageable paging = PageRequest.of(page, 10);
-
         Page<Product> pageProducts;
+
         if (category != null) {
             if ("priceAsc".equals(sort)) {
-                pageProducts = productService.getProductsByCategorySortedByPriceAsc(category, paging);
+                pageProducts = productService.getProductsByCategoryAndNameContainingIgnoreCaseSortedByPriceAsc(category, search, paging);
             } else if ("priceDesc".equals(sort)) {
-                pageProducts = productService.getProductsByCategorySortedByPriceDesc(category, paging);
+                pageProducts = productService.getProductsByCategoryAndNameContainingIgnoreCaseSortedByPriceDesc(category, search, paging);
             } else {
-                pageProducts = productService.getProductsByCategorySortedByDateDesc(category, paging); // New method
+                pageProducts = productService.getProductsByCategoryAndNameContainingIgnoreCaseSortedByDateDesc(category, search, paging);
             }
         } else {
             if ("priceAsc".equals(sort)) {
-                pageProducts = productService.getAllProductsSortedByPriceAsc(paging);
+                pageProducts = productService.getProductsByNameContainingIgnoreCaseSortedByPriceAsc(search, paging);
             } else if ("priceDesc".equals(sort)) {
-                pageProducts = productService.getAllProductsSortedByPriceDesc(paging);
+                pageProducts = productService.getProductsByNameContainingIgnoreCaseSortedByPriceDesc(search, paging);
             } else {
-                pageProducts = productService.getAllProductsSortedByDateDesc(paging); // New method
+                pageProducts = productService.getProductsByNameContainingIgnoreCaseSortedByDateDesc(search, paging);
             }
         }
 
@@ -63,6 +64,7 @@ public class ProductController {
         model.addAttribute("categories", ProductCategory.values());
         model.addAttribute("selectedCategory", category);
         model.addAttribute("selectedSort", sort);
+        model.addAttribute("search", search);
         model.addAttribute("currentPage", pageProducts.getNumber());
         model.addAttribute("totalPages", pageProducts.getTotalPages());
         model.addAttribute("totalItems", pageProducts.getTotalElements());
