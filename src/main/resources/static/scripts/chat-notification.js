@@ -5,8 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
         stompClient.connect({}, (frame) => {
-            console.log('Connected to WebSocket: ' + frame);
-
             stompClient.subscribe('/user/queue/notifications', (message) => {
                 onNotificationReceived(message);
             });

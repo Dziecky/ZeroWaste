@@ -65,8 +65,7 @@ public class ChatController {
         messagingTemplate.convertAndSendToUser(receiver.getId().toString(), "/queue/messages", chatMessageDTO);
         messagingTemplate.convertAndSendToUser(sender.getId().toString(), "/queue/messages", chatMessageDTO);
 
-        // Send a notification to the receiver
-        String notification = "User " + sender.getUsername() + " sent you a message.";
-        messagingTemplate.convertAndSendToUser(receiver.getUsername(), "/user/queue/notifications", notification);
+        String notification = "{ \"message\": \"User " + sender.getUsername() + " sent you a message.\" }";
+        messagingTemplate.convertAndSendToUser(receiver.getUsername(), "/queue/notifications", notification);
     }
 }
