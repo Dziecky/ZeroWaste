@@ -224,4 +224,9 @@ public class UserService implements UserDetailsService {
                 .map(adviceMapper::toDTO)
                 .collect(Collectors.toSet());
     }
+
+    public void updatePassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 }

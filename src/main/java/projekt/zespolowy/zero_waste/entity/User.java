@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.Advice;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
+import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 
 import java.util.Collection;
 import java.util.List;
@@ -52,11 +53,18 @@ public class User {
         // Dla uproszczenia, wszyscy użytkownicy mają rolę ADMIN podczas produkcji
         return List.of(() -> "ROLE_ADMIN");
     }
-
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+    @Column
+    private String imageUrl;
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Advice> advices;
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Article> articles;
+    @Transient
+    private int rank;
+    @Column(name = "average_rating", columnDefinition = "Double default 0")
+    private double averageRating;
     @ManyToMany
     @JoinTable(name = "article_likes",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -68,4 +76,5 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "advice_id"))
     private List<Advice> likedAdvices;
+
 }
