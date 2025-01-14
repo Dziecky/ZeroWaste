@@ -126,6 +126,7 @@
         .btn-add-product:hover {
             background-color: var(--secondary-color);
             transform: translateY(-3px);
+            color: white;
         }
 
         .filter-form {
@@ -169,6 +170,28 @@
             box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
         }
 
+        .filter-form .btn-secondary {
+            background-color: #737375;
+            border-color: #eef0f2;
+            color: #f4f6f6;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-form .btn-secondary:hover {
+            background-color: #585859;
+            border-color: #dde0e3;
+            border-radius: 10px;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
@@ -190,48 +213,91 @@
         }
 
         .pagination {
+            display: flex;
             justify-content: center;
-            margin-top: 20px;
-            margin-bottom: 100px;
+            align-items: center;
+            margin: 40px 0;
+            gap: 8px;
         }
 
         .pagination .page-item {
-            margin: 0 2px;
+            margin: 0;
         }
 
         .pagination .page-link {
-            color: var(--text-color);
-            background-color: #fff;
-            border: 1px solid var(--primary-color);
-            border-radius: 4px;
-            padding: 6px 12px;
-            transition: all 0.3s ease;
-            font-size: 0.9em;
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 15px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #2c3e50;
+            background-color: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
         }
 
         .pagination .page-link:hover {
-            background-color: var(--primary-color);
-            color: #fff;
+            background-color: #f8f9fa;
             border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .pagination .page-item.active .page-link {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
-            color: #fff;
+            color: white;
+            font-weight: 600;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+        }
+
+        .pagination .page-item:first-child .page-link,
+        .pagination .page-item:last-child .page-link {
+            padding: 0 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
         }
 
         .pagination .page-item.disabled .page-link {
-            opacity: 0.5;
+            background-color: #f8f9fa;
+            border-color: #e9ecef;
+            color: #adb5bd;
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: none;
+            box-shadow: none;
             pointer-events: none;
-            background-color: #f4f6f8;
-            border-color: #ddd;
-            color: #999;
+        }
+        .pagination .page-item:not(.disabled):not(.active) .page-link:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .pagination .page-item.disabled .page-link {
-            opacity: 0.5;
-            pointer-events: none;
+        @media (max-width: 576px) {
+            .pagination {
+                gap: 4px;
+            }
+
+            .pagination .page-link {
+                min-width: 35px;
+                height: 35px;
+                padding: 0 10px;
+                font-size: 0.9rem;
+            }
+
+            .pagination .page-item:first-child .page-link,
+            .pagination .page-item:last-child .page-link {
+                padding: 0 15px;
+            }
         }
     </style>
 </head>
@@ -241,8 +307,18 @@
 <div class="container mt-5">
     <h2 class="mb-4 text-center">Products List</h2>
     <form action="/products/list" method="get" class="filter-form">
-        <div class="row align-items-end">
-            <div class="col-md-4">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="search" class="form-label">Search Products</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" id="search" name="search" class="form-control"
+                               th:value="${search}" placeholder="Search by product name...">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
                 <div class="form-group">
                     <label for="category" class="form-label">Category</label>
                     <select id="category" name="category" class="form-control">
@@ -255,11 +331,11 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="form-group">
-                    <label for="sort" class="form-label">Sort By Price</label>
+                    <label for="sort" class="form-label">Sort By</label>
                     <select id="sort" name="sort" class="form-control">
-                        <option value="">Default</option>
+                        <option value="dateDesc">Newest First</option>
                         <option value="priceAsc" th:selected="${selectedSort == 'priceAsc'}">
                             Price Low to High
                         </option>
@@ -269,20 +345,23 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary w-100 mt-3">
-                        <i class="fas fa-filter mr-2"></i>Filter
-                    </button>
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" id="showMyProducts" class="form-check-input">
+                    <label for="showMyProducts" class="form-check-label">
+                        Show My Products Only
+                    </label>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4 mt-3">
-            <div class="form-check">
-                <input type="checkbox" id="showMyProducts" class="form-check-input">
-                <label for="showMyProducts" class="form-check-label">
-                    Show My Products Only
-                </label>
+            <div class="col-12">
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="/products/list" class="btn btn-secondary">
+                        <i class="fas fa-undo me-1"></i> Reset Filters
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter me-1"></i> Apply Filters
+                    </button>
+                </div>
             </div>
         </div>
     </form>
@@ -296,7 +375,7 @@
              th:classappend="${product.owner.username == #authentication.name} ? 'user-product' : 'other-product'"
              class="product-card"
              th:onclick="'location.href=\'/products/view/' + ${product.id} + '\''">
-            <img th:src="${product.imageUrl}" alt="Product Image" onerror="this.src='/default-image.jpg'">
+            <img th:src="${product.imageUrl}" alt="Product Image">
             <div class="product-details">
                 <div>
                     <div class="product-title">
@@ -326,7 +405,10 @@
     <div class="mt-4 text-center">
         <ul class="pagination">
             <li th:classappend="${currentPage > 0} ? 'page-item' : 'page-item disabled'">
-                <a class="page-link" th:href="@{/products/list(category=${selectedCategory},sort=${selectedSort},page=${currentPage - 1})}">Previous</a>
+                <a class="page-link"
+                   th:href="@{/products/list(category=${selectedCategory},sort=${selectedSort},search=${search},page=${currentPage - 1})}">
+                    Previous
+                </a>
             </li>
             <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
             <li th:classappend="${i == currentPage} ? 'page-item active' : 'page-item'">
@@ -339,7 +421,7 @@
             </li>
         </ul>
     </div>
-   <hr>
+    <hr>
 </div>
 
 <script>
