@@ -21,9 +21,6 @@
 
     <div class="collapse navbar-collapse" id="navbarsExample04">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item" th:class="${activePage == 'contact'} ? 'nav-item active' : 'nav-item'">
-                <a class="nav-link" th:href="@{/contact}">Contact</a>
-            </li>
             <li class="nav-item" th:class="${activePage == 'announcements'} ? 'nav-item active' : 'nav-item'">
                 <a class="nav-link" th:href="@{/announcements}">Announcements</a>
             </li>
@@ -47,6 +44,9 @@
             </li>
             <li class="nav-item" th:class="${activePage == 'eco-impact'} ? 'nav-item active' : 'nav-item'">
                 <a class="nav-link" th:href="@{/eco-impact}">Eco Impact</a>
+            </li>
+            <li class="nav-item" th:class="${activePage == 'faq'} ? 'nav-item active' : 'nav-item'">
+                <a class="nav-link" th:href="@{/faq}">FAQ</a>
             </li>
         </ul>
 
