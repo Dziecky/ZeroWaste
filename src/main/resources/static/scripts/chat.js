@@ -19,20 +19,21 @@ function connect() {
     });
 }
 
-function fetchCurrentUser() {
-    return fetch('/api/user/current')
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
+async function fetchCurrentUser() {
+    try {
+        const response = await fetch('/api/user/current');
+        if (!response.ok) {
             throw new Error('Failed to fetch current user');
-        })
-        .then(user => {
-            currentUser = user;
-        })
-        .catch(error => {
-            console.error('Error fetching user:', error);
-        });
+        }
+        currentUser = await response.json();
+    } catch (error) {
+        console.error('Error fetching user:', error);
+    }
+}
+
+async function handleChatRoomClick(room) {
+    await fetchCurrentUser();
+    await openChatRoom(room);
 }
 
 function loadChatRooms() {
@@ -44,21 +45,23 @@ function loadChatRooms() {
 
             chatRooms.forEach(room => {
                 const listItem = document.createElement('li');
-                if(currentUser.id === room.user1Id) {
+                if (currentUser.id === room.user1Id) {
                     listItem.textContent = `Chat Room with user ${room.user2Name}`;
                 } else {
                     listItem.textContent = `Chat Room with user ${room.user1Name}`;
                 }
-                listItem.onclick = () => openChatRoom(room);
+                listItem.onclick = () => handleChatRoomClick(room);
                 chatRoomsList.appendChild(listItem);
             });
         });
 }
 
-function openChatRoom(chatRoom) {
+async function openChatRoom(chatRoom) {
     currentChatRoom = chatRoom;
     currentChatRoomId = chatRoom.id;
     document.getElementById('chat-window').innerHTML = '';
+
+    await fetchCurrentUser();
 
     const chatWithUser = (currentUser.id === chatRoom.user1Id)
         ? chatRoom.user2Name
@@ -130,8 +133,8 @@ function sendMessage() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await fetchCurrentUser();
     connect();
-    fetchCurrentUser();
     document.getElementById('sendButton').addEventListener('click', sendMessage);
 });

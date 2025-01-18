@@ -59,7 +59,7 @@ public class ChatController {
     public void processMessage(@Payload ChatMessageDTO chatMessageDTO) {
         User sender = userService.findByUsername((chatMessageDTO.getSender()));
         User receiver = userService.findByUsername((chatMessageDTO.getReceiver()));
-
+        System.out.println(chatMessageDTO.getContent());
         chatMessageService.saveMessage(chatMessageDTO, sender, receiver);
 
         messagingTemplate.convertAndSendToUser(receiver.getId().toString(), "/queue/messages", chatMessageDTO);

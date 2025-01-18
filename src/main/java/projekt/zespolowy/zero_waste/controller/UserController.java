@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import projekt.zespolowy.zero_waste.dto.AdviceDTO;
 import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
+import projekt.zespolowy.zero_waste.dto.chat.UserChatDto;
 import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.Review;
@@ -205,14 +206,14 @@ public class UserController {
         return "user/likedAdvices";
     }
 
-
     @GetMapping("/api/user/current")
-    public ResponseEntity<User> getCurrentUser(Principal principal) {
+    public ResponseEntity<UserChatDto> getCurrentUser(Principal principal) {
         if (principal == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         User user = UserService.findByUsername(principal.getName());
-        return ResponseEntity.ok(user);
+        UserChatDto userDto = new UserChatDto(user.getId(), user.getUsername());
+        return ResponseEntity.ok(userDto);
     }
 }
