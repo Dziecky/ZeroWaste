@@ -48,4 +48,9 @@ public class TagServiceImpl implements TagService {
     public void deleteTag(Long id) {
         tagRepository.deleteById(id);
     }
+
+    public Tag getOrCreateTag(String tagName) {
+        Optional<Tag> tag = tagRepository.findByNameIgnoreCase(tagName);
+        return tag.orElseGet(() -> tagRepository.save(new Tag(tagName)));
+    }
 }

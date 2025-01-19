@@ -1,19 +1,33 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${article.title}">Article Details</title>
+    <title th:text="${articleDTO.title}">article Details</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container">
-    <h1 th:text="${article.title}"></h1>
-    <p><strong>Category:</strong> <span th:text="${article.articleCategory}"></span></p>
-    <div th:if="${article.imageUrl}">
-        <img th:src="${article.imageUrl}" alt="Article Image" class="img-fluid">
+    <h1 th:text="${articleDTO.title}">article Title</h1>
+    <h2 th:text="${articleDTO.authorUsername}">article Author</h2>
+    <p><strong>Category:</strong> <span th:text="${articleDTO.articleCategory}"></span></p>
+    <div th:if="${articleDTO.imageUrl}">
+        <img th:src="${articleDTO.imageUrl}" alt="article Image" class="img-fluid">
     </div>
-    <p th:text="${article.content}"></p>
-    <a th:href="@{/articles}" class="btn btn-secondary">Back to Articles</a>
+    <p th:text="${articleDTO.content}">article Content</p>
+    <p><strong>Created at:</strong></p>
+    <p th:text="${articleDTO.createdAt}">article Creation Date</p>
+    <p><strong>Last modified at:</strong></p>
+    <p th:text="${articleDTO.updatedAt}">article Last Modification Date</p>
+    <!-- Display Tags -->
+    <p>
+        <strong>Tags:</strong>
+        <span th:each="tagName, iterStat : ${articleDTO.tags}">
+        <span th:text="'#' + ${tagName}">#TagName</span>
+        <span th:if="${!iterStat.last}">, </span>
+    </span>
+    </p>
+    <a th:href="@{/articles}" class="btn btn-secondary">Back to articles</a>
+
 </div>
 </body>
 </html>

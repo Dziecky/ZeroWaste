@@ -1,10 +1,13 @@
-package projekt.zespolowy.zero_waste.services;
+package projekt.zespolowy.zero_waste.services.EducationalServices.Advice;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import projekt.zespolowy.zero_waste.dto.AdviceDTO;
+import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.Advice;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.AdviceCategory;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
+import projekt.zespolowy.zero_waste.entity.User;
 
 import java.util.Optional;
 
@@ -16,4 +19,9 @@ public interface AdviceService {
     void deleteAdvice(Long id);
     Page<Advice> getAdvicesByCategory(AdviceCategory category, Pageable pageable);
     Page<Advice> getAdvicesByTitle(String title, Pageable pageable);
+    Page<Advice> findByTags_NameIgnoreCase(String tagName, Pageable pageable);
+    Page<Advice> findAdvices(AdviceCategory category, String title, String tagName, Pageable pageable);
+    Page<AdviceDTO> findAdvicesWithLikes(AdviceCategory category, String title, String tagName, Pageable pageable, User currentUser);
+
+    void toggleLikeAdvice(Long id);
 }

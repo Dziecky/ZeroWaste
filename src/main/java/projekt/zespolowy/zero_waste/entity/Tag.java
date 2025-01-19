@@ -28,11 +28,11 @@ public class Tag {
     @ManyToMany(mappedBy = "tags")
     private Set<Product> products = new HashSet<>();
 
-    @ManyToMany(mappedBy = "tags")
+/*    @ManyToMany(mappedBy = "tags")
     private Set<Article> articles = new HashSet<>();
 
     @ManyToMany(mappedBy = "tags")
-    private Set<Advice> advices = new HashSet<>();
+    private Set<Advice> advices = new HashSet<>();*/
 
     public Tag(String name) {
         this.name = name;

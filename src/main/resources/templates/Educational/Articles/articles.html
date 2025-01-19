@@ -18,7 +18,6 @@
 
     <!-- Filter by Category and Title-->
     <form method="get" th:action="@{/articles}" class="form-inline mb-3">
-        <!-- Filter by Category -->
         <div class="form-group mr-3">
             <label for="category" class="mr-2">Filter by Category:</label>
             <select name="category" id="category" class="form-control mr-2">
@@ -42,19 +41,32 @@
         <button type="submit" class="btn btn-secondary">Filter</button>
         </div>
     </form>
-
+    <!-- Search by Tag -->
+    <form method="get" th:action="@{/articles}" class="form-inline mb-3">
+        <label for="tagName" class="mr-2">Search by Tag:</label>
+        <input type="text" name="tagName" id="tagName" class="form-control mr-2" th:value="${selectedTagName}" placeholder="Enter Tag"/>
+        <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
 
     <!-- Articles List -->
     <div>
         <ul class="list-group">
             <li th:each="article : ${articlePage.content}" class="list-group-item">
                 <h5 th:text="${article.title}">Article Title</h5>
-                <p th:text="${#strings.abbreviate(article.content, 200)} + '...'">Article Content</p>
+                <p th:text="'Author: ' + ${article.authorUsername}">Author</p>
+                <p th:text="'Category: ' + ${article.articleCategory}">Category</p>
+                <p th:text="'Tags: ' + ${article.tags}">Tags</p>
                 <a th:href="@{/articles/{id}(id=${article.id})}" class="btn btn-link">Read More</a>
                 <a th:href="@{/articles/edit/{id}(id=${article.id})}" class="btn btn-secondary btn-sm">Edit</a>
                 <a th:href="@{/articles/delete/{id}(id=${article.id})}"
                    class="btn btn-danger btn-sm"
                    onclick="return confirm('Are you sure you want to delete this article?');">Delete</a>
+                <!-- Formularz do Polubienia/Odlubienia -->
+                <form th:action="@{/articles/like/{id}(id=${article.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <span th:text="${article.likedByCurrentUser} ? 'Odlub' : 'Polub'">Polub/Odlub</span>
+                    </button>
+                </form>
             </li>
         </ul>
     </div>
@@ -81,6 +93,11 @@
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<script crossorigin="anonymous"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

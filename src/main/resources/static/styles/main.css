@@ -1,40 +1,81 @@
-/* main.css */
-
-/* Set navbar background color */
+/* Navbar styling */
 .navbar {
-  background-color: #222 !important; /* Dark background */
+  background-color: #28a644;
+  padding: 10px 15px;
 }
 
-/* Logo styling */
-.navbar-brand img {
-  height: 30px;
-  width: 30px;
-  margin-right: 8px;
-}
-
-/* Title text color */
+/* Navbar brand logo and text */
 .navbar-brand {
-  color: #ffffff !important; /* White title text */
+  color: #ffffff !important; /* White text */
+  font-size: 1.25rem;
+  font-weight: bold;
 }
 
-/* Login button styling */
-.btn-outline-success {
-  border-color: #28a745 !important;
-  color: #28a745 !important;
+.navbar-brand:hover {
+  color: #e9ecef !important; /* Slightly lighter on hover */
 }
 
-.btn-outline-success:hover {
-  background-color: #28a745 !important;
+/* Navbar links */
+.navbar-nav .nav-link {
+  color: #cfd8dc !important; /* Light gray text */
+  font-size: 0.95rem;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #ffffff !important; /* White text on hover */
+}
+
+/* Active link styling */
+.navbar-nav .nav-item.active .nav-link {
+  font-weight: bold;
   color: #ffffff !important;
 }
 
-/* Logout button styling */
-.btn-outline-danger {
-  border-color: #dc3545 !important;
-  color: #dc3545 !important;
+/* Buttons styling */
+.btn-outline-light {
+  border-color: #f8f9fa !important; /* Light border */
+  color: #f8f9fa !important; /* Light text */
+  font-size: 0.9rem;
 }
 
-.btn-outline-danger:hover {
-  background-color: #dc3545 !important;
-  color: #ffffff !important;
+.btn-outline-light:hover {
+  background-color: #f8f9fa !important;
+  color: #343a40 !important; /* Dark text on hover */
+}
+
+/* Notifications badge */
+#notification-count {
+  font-size: 0.8rem;
+  font-weight: bold;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #dc3545; /* Red badge */
+  color: #ffffff;
+  border-radius: 50%;
+  padding: 4px 8px;
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+  background-color: #343a40; /* Dark background */
+  border: none;
+}
+
+.dropdown-menu .dropdown-item {
+  color: #cfd8dc; /* Light gray text */
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: #495057; /* Slightly lighter background */
+  color: #ffffff; /* White text */
+}
+
+/* Toggler button (mobile view) */
+.navbar-toggler {
+  border-color: #cfd8dc;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba%28207, 216, 220, 1%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }

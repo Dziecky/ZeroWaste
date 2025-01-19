@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>FAQ</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/styles/faq.css">
+    <link th:href="@{styles/main.css}" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="faq-container">
+    <h1>Frequently Asked Questions</h1>
+    <div th:each="faq : ${faqList}" class="faq-item">
+        <h3 th:text="${faq.question}" th:onclick="|toggleFAQ(this)|">
+            <i class="bi bi-chevron-down"></i> <!-- Dodanie ikony do pytania -->
+        </h3>
+        <p th:text="${faq.answer}"></p>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+    function toggleFAQ(element) {
+        const parent = element.parentElement;
+        parent.classList.toggle("open");
+
+        const icon = element.querySelector('i');
+        if (parent.classList.contains('open')) {
+            icon.classList.remove('bi-chevron-down');
+            icon.classList.add('bi-chevron-up');
+        } else {
+            icon.classList.remove('bi-chevron-up');
+            icon.classList.add('bi-chevron-down');
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -3,6 +3,8 @@ package projekt.zespolowy.zero_waste.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.Advice;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 
@@ -16,7 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 @ToString(exclude = {"reviews"}) // Exclude the reviews field from toString()
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,44 +37,46 @@ public class User {
     @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
-    @Column(nullable = false)
-    private String password;
-
-    @Column
-    private String imageUrl;
+    @Column()
+    private String password; // Zabezpieczone hasło
 
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
 
-    @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
-
     @Column(name = "total_points")
-    private int totalPoints = 0;
+    private int totalPoints; // BUSINESS lub NORMAL
 
-    @Column(name = "average_rating", columnDefinition = "Double default 0")
-    private Double averageRating;
-
-    // Implementacja metod z interfejsu UserDetails
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
-
-    public int getTotalPoints() {
-        return totalPoints;
-    }
-
-    public void setTotalPoints(int totalPoints) {
-        this.totalPoints = totalPoints;
-    }
-
-    // Метод getAuthorities() для использования в Spring Security
+    // Metoda getAuthorities() do użycia w CustomUser
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> "ROLE_ADMIN");  // Все пользователи имеют роль ADMIN
+        // Dla uproszczenia, wszyscy użytkownicy mają rolę ADMIN podczas produkcji
+        return List.of(() -> "ROLE_ADMIN");
     }
-
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+    @Column
+    private String imageUrl;
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Advice> advices;
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Article> articles;
     @Transient
     private int rank;
+    @Column(name = "average_rating", columnDefinition = "Double default 0")
+    private double averageRating;
+    @ManyToMany
+    @JoinTable(name = "article_likes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "article_id"))
+    private List<Article> likedArticles;
+
+    @ManyToMany
+    @JoinTable(name = "advice_likes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "advice_id"))
+    private List<Advice> likedAdvices;
 
     public void setRank(int rank) {
         this.rank = rank;

@@ -1,8 +1,8 @@
 let stompClient = null;
 let currentChatRoomId = null;
 let currentUser = null;
+let currentChatRoom = null;
 
-// Connect to WebSocket
 function connect() {
     const socket = new SockJS('/ws');
     stompClient = Stomp.over(socket);
@@ -10,31 +10,30 @@ function connect() {
     stompClient.connect({}, () => {
         console.log('Connected to WebSocket');
 
-        // Subscribe to user-specific message queue
         stompClient.subscribe('/user/queue/messages', (message) => {
             const chatMessage = JSON.parse(message.body);
             displayMessage(chatMessage);
         });
 
-        loadChatRooms();  // Load existing chat rooms when connected
+        loadChatRooms();
     });
 }
 
-function fetchCurrentUser() {
-    return fetch('/api/user/current')
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
+async function fetchCurrentUser() {
+    try {
+        const response = await fetch('/api/user/current');
+        if (!response.ok) {
             throw new Error('Failed to fetch current user');
-        })
-        .then(user => {
-            currentUser = user;
-            document.getElementById('username-span').textContent = user.username; // Example: update UI with username
-        })
-        .catch(error => {
-            console.error('Error fetching user:', error);
-        });
+        }
+        currentUser = await response.json();
+    } catch (error) {
+        console.error('Error fetching user:', error);
+    }
+}
+
+async function handleChatRoomClick(room) {
+    await fetchCurrentUser();
+    await openChatRoom(room);
 }
 
 function loadChatRooms() {
@@ -46,23 +45,31 @@ function loadChatRooms() {
 
             chatRooms.forEach(room => {
                 const listItem = document.createElement('li');
-                if(currentUser.id === room.user1Id) {
+                if (currentUser.id === room.user1Id) {
                     listItem.textContent = `Chat Room with user ${room.user2Name}`;
                 } else {
                     listItem.textContent = `Chat Room with user ${room.user1Name}`;
                 }
-                listItem.onclick = () => openChatRoom(room);
+                listItem.onclick = () => handleChatRoomClick(room);
                 chatRoomsList.appendChild(listItem);
             });
         });
 }
 
-// Open a chat room and load its messages
-function openChatRoom(chatRoom) {
+async function openChatRoom(chatRoom) {
+    currentChatRoom = chatRoom;
     currentChatRoomId = chatRoom.id;
-    document.getElementById('chat-window').innerHTML = '';  // Clear previous messages
+    document.getElementById('chat-window').innerHTML = '';
 
-    // Fetch messages for the selected chat room
+    await fetchCurrentUser();
+
+    const chatWithUser = (currentUser.id === chatRoom.user1Id)
+        ? chatRoom.user2Name
+        : chatRoom.user1Name;
+
+    const chatHeading = document.getElementById('chat-heading');
+    chatHeading.textContent = `Chat with ${chatWithUser}`;
+
     fetch(`/api/chat/rooms/${chatRoom.id}/messages`)
         .then(response => response.json())
         .then(messages => {
@@ -72,7 +79,6 @@ function openChatRoom(chatRoom) {
         });
 }
 
-// Display a message in the chat window
 function displayMessage(message, chatRoom) {
     const chatWindow = document.getElementById('chat-window');
     const messageElement = document.createElement('div');
@@ -98,32 +104,37 @@ function displayMessage(message, chatRoom) {
     chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-
-
-// Send a message to the selected chat room
 function sendMessage() {
     const messageContent = document.getElementById('messageInput').value;
 
-    currentChatRoomId = 1; // TODO: Remove this, stubbing for test purposes
+    let receiverName;
+    if(currentChatRoom.user1Name === currentUser.username) {
+        receiverName = currentChatRoom.user2Name;
+    } else {
+        receiverName = currentChatRoom.user1Name;
+    }
+    console.log(receiverName)
+
     if (messageContent && currentChatRoomId !== null) {
         const chatMessage = {
-            sender: document.getElementById('username-span').textContent,
-            receiver: document.getElementById('receiverInput').value,
-            content: messageContent,
-            chatRoomId: currentChatRoomId
+            sender: currentUser.username,
+            receiver: receiverName,
+            content: messageContent
         };
 
         stompClient.send('/app/chat', {}, JSON.stringify(chatMessage));
         document.getElementById('messageInput').value = '';  // Clear input field
+
+        setTimeout(() => {
+            openChatRoom(currentChatRoom);
+        }, 400);
     } else {
         alert('Please select a chat room and type a message.');
     }
 }
 
-// Initialize connection on page load
-document.addEventListener('DOMContentLoaded', () => {
-    connect();  // Connect to WebSocket
-    fetchCurrentUser();
-    // Set up event listener for sending messages
+document.addEventListener('DOMContentLoaded', async () => {
+    await fetchCurrentUser();
+    connect();
     document.getElementById('sendButton').addEventListener('click', sendMessage);
 });

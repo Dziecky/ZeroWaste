@@ -22,12 +22,18 @@ public class Advice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
-    @Column(columnDefinition = "TEXT")
+
+    //@Column(columnDefinition = "TEXT")
+    @Lob
     private String content;
+
     private String imageUrl;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -40,21 +46,14 @@ public class Advice {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
 
-    public void addTag(Tag tag) {
-        this.tags.add(tag);
-        tag.getAdvices().add(this);
-    }
+    @ManyToMany(mappedBy = "likedAdvices")
+    private Set<User> likedByUsers = new HashSet<>();
 
-    public void removeTag(Tag tag) {
-        this.tags.remove(tag);
-        tag.getAdvices().remove(this);
-    }
-/*    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User author;*/
+    private User author;
     @PrePersist
     public void onCreate() {
-        //author = User.getCurrentUser();
         createdAt = LocalDateTime.now();
     }
     @PreUpdate

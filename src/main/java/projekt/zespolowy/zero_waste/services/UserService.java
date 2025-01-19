@@ -3,13 +3,18 @@ package projekt.zespolowy.zero_waste.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import projekt.zespolowy.zero_waste.dto.AdviceDTO;
+import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.dto.user.UserRegistrationDto;
 import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
+import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
+import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.repository.TaskRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +26,7 @@ import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -34,14 +40,22 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private TaskRepository taskRepository;
+    private final ArticleMapper articleMapper;
+    private final AdviceMapper adviceMapper;
+
 
     @Autowired
     private UserTaskRepository userTaskRepository;
 
     // Konstruktorowe wstrzykiwanie zależności
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       ArticleMapper articleMapper,
+                       AdviceMapper adviceMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.articleMapper = articleMapper;
+        this.adviceMapper = adviceMapper;
     }
 
     // Implementacja metody z UserDetailsService
@@ -192,15 +206,28 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public void updatePassword(User user, String newPassword) {
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-    }
-
     public static User getUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         return findByUsername(customUser.getUsername());
+    }
+
+    public Set<ArticleDTO> getLikedArticles() {
+        User currentUser = getUser();
+        return currentUser.getLikedArticles().stream()
+                .map(articleMapper::toDTO)
+                .collect(Collectors.toSet());
+    }
+    public Set<AdviceDTO> getLikedAdvices() {
+        User currentUser = getUser();
+        return currentUser.getLikedAdvices().stream()
+                .map(adviceMapper::toDTO)
+                .collect(Collectors.toSet());
+    }
+
+    public void updatePassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 
     public User getAdminById(Long id) {
