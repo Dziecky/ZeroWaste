@@ -56,7 +56,7 @@ public class User {
 
     // Implementacja metod z interfejsu UserDetails
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews; // Связь с отзывами (если есть)
+    private List<Review> reviews;
 
 
     public int getTotalPoints() {
@@ -78,4 +78,6 @@ public class User {
     public void setRank(int rank) {
         this.rank = rank;
     }
+
 }
+

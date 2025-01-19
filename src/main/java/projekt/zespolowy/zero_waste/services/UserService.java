@@ -202,4 +202,11 @@ public class UserService implements UserDetailsService {
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         return findByUsername(customUser.getUsername());
     }
+
+    public User getAdminById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Admin with id " + id + " not found"));
+    }
+
+
 }
