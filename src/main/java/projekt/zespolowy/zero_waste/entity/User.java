@@ -77,10 +77,14 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "advice_id"))
     private List<Advice> likedAdvices;
+    @ManyToMany
+    @JoinTable(name = "article_read",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "article_id"))
+    private List<Article> readArticles;
 
-    public void setRank(int rank) {
-        this.rank = rank;
-    }
 
 }
+
+
 

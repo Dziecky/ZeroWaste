@@ -142,4 +142,37 @@ public class ArticleServiceImpl implements ArticleService {
             return dto;
         });
     }
+
+    @Override
+    public void toggleReadArticle(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Article not found with id " + id));
+
+        User currentUser = userService.getUser();
+        if(article.getReadByUsers().contains(currentUser)) {
+            article.getReadByUsers().remove(currentUser);
+            currentUser.getReadArticles().remove(article);
+        } else {
+            article.getReadByUsers().add(currentUser);
+            currentUser.getReadArticles().add(article);
+        }
+    }
+
+    @Override
+    public int getReads(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Article not found with id " + id));
+        return article.getReadByUsers().size();
+    }
+
+    @Override
+    public Page<ArticleDTO> findArticlesWithReads(ArticleCategory category, String title, String tagName, Pageable pageable, User currentUser) {
+        Page<Article> articles = findArticles(category, title, tagName, pageable);
+        return articles.map(article -> {
+            ArticleDTO dto = articleMapper.toDTO(article);
+            dto.setReadByCurrentUser(article.getReadByUsers().contains(currentUser));
+            dto.setReadsCount(article.getReadByUsers().size());
+            return dto;
+        });
+    }
 }

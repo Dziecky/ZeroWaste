@@ -224,7 +224,12 @@ public class UserService implements UserDetailsService {
                 .map(adviceMapper::toDTO)
                 .collect(Collectors.toSet());
     }
-
+    public Set<ArticleDTO> getReadArticles() {
+        User currentUser = getUser();
+        return currentUser.getReadArticles().stream()
+                .map(articleMapper::toDTO)
+                .collect(Collectors.toSet());
+    }
     public void updatePassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);

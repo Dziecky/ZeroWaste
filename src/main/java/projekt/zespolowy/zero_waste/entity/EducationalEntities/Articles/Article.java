@@ -54,6 +54,8 @@ public class Article {
     @ManyToMany(mappedBy = "likedArticles")
     private Set<User> likedByUsers;
 
+    @ManyToMany(mappedBy = "readArticles")
+    private Set<User> readByUsers;
     @PrePersist
     public void onCreate() {
         createdAt = LocalDateTime.now();

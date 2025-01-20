@@ -109,6 +109,8 @@ public class ArticleController {
             User currentUser = userService.getUser();
             articleDTO.setLikedByCurrentUser(article.getLikedByUsers().contains(currentUser));
             articleDTO.setLikesCount(article.getLikedByUsers().size());
+            articleDTO.setReadByCurrentUser(article.getReadByUsers().contains(currentUser));
+            articleDTO.setReadsCount(article.getReadByUsers().size());
             model.addAttribute("articleDTO", articleDTO);
             return "Educational/Articles/article_view";
         } else {
@@ -120,6 +122,13 @@ public class ArticleController {
     @PostMapping("/like/{id}")
     public String likeArticle(@PathVariable("id") Long id) {
         articleService.toggleLikeArticle(id);
+        return "redirect:/articles";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/read/{id}")
+    public String readArticle(@PathVariable("id") Long id) {
+        articleService.toggleReadArticle(id);
         return "redirect:/articles";
     }
 }

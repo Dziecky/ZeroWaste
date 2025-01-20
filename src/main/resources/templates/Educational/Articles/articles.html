@@ -67,6 +67,10 @@
                         <span th:text="${article.likedByCurrentUser} ? 'Odlub' : 'Polub'">Polub/Odlub</span>
                     </button>
                 </form>
+                <form th:action="@{/articles/read/{id}(id=${article.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <span th:text="${article.readByCurrentUser} ? 'Odznacz przeczytanie' : 'Przeczytany'">Przeczytany/Odznacz przeczytanie</span>
+                    </button>
             </li>
         </ul>
     </div>
