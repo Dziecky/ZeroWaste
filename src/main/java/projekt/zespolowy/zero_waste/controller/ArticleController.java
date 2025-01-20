@@ -44,7 +44,7 @@ public class ArticleController {
 
         User currentUser = userService.getUser();
 
-        Page<ArticleDTO> articleDTOPage = articleService.findArticlesWithLikes(category, title, tagName, pageable, currentUser);
+        Page<ArticleDTO> articleDTOPage = articleService.findArticlesWithLikesAndReads(category, title, tagName, pageable, currentUser);
 
             model.addAttribute("articlePage", articleDTOPage);
             //model.addAttribute("activePage", "articles");

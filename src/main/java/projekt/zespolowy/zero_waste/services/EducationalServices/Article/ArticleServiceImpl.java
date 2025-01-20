@@ -132,13 +132,15 @@ public class ArticleServiceImpl implements ArticleService {
         articleRepository.save(article);
         userService.save(currentUser);
     }
-    @Override
-    public Page<ArticleDTO> findArticlesWithLikes(ArticleCategory category, String title, String tagName, Pageable pageable, User currentUser) {
+    @Override //to be refactored
+    public Page<ArticleDTO> findArticlesWithLikesAndReads(ArticleCategory category, String title, String tagName, Pageable pageable, User currentUser) {
         Page<Article> articles = findArticles(category, title, tagName, pageable);
         return articles.map(article -> {
             ArticleDTO dto = articleMapper.toDTO(article);
             dto.setLikedByCurrentUser(article.getLikedByUsers().contains(currentUser));
             dto.setLikesCount(article.getLikedByUsers().size());
+            dto.setReadByCurrentUser(article.getReadByUsers().contains(currentUser));
+            dto.setReadsCount(article.getReadByUsers().size());
             return dto;
         });
     }
@@ -168,14 +170,5 @@ public class ArticleServiceImpl implements ArticleService {
         return article.getReadByUsers().size();
     }
 
-    @Override
-    public Page<ArticleDTO> findArticlesWithReads(ArticleCategory category, String title, String tagName, Pageable pageable, User currentUser) {
-        Page<Article> articles = findArticles(category, title, tagName, pageable);
-        return articles.map(article -> {
-            ArticleDTO dto = articleMapper.toDTO(article);
-            dto.setReadByCurrentUser(article.getReadByUsers().contains(currentUser));
-            dto.setReadsCount(article.getReadByUsers().size());
-            return dto;
-        });
-    }
+
 }
