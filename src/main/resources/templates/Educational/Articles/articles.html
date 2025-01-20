@@ -71,6 +71,8 @@
                     <button type="submit" class="btn btn-outline-primary">
                         <span th:text="${article.readByCurrentUser} ? 'Odznacz przeczytanie' : 'Przeczytany'">Przeczytany/Odznacz przeczytanie</span>
                     </button>
+                </form>
+                <a th:text="'Likes: ' + ${article.likesCount}">Likes</a>
             </li>
         </ul>
     </div>

@@ -144,6 +144,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @Transactional
     public void toggleReadArticle(Long id) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Article not found with id " + id));
@@ -156,6 +157,8 @@ public class ArticleServiceImpl implements ArticleService {
             article.getReadByUsers().add(currentUser);
             currentUser.getReadArticles().add(article);
         }
+        articleRepository.save(article);
+        userService.save(currentUser);
     }
 
     @Override
