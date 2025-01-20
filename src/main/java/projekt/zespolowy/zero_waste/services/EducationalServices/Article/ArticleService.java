@@ -23,4 +23,7 @@ public interface ArticleService {
     void toggleLikeArticle(Long id);
     int getLikes(Long id);
     Page<ArticleDTO> findArticlesWithLikes(ArticleCategory category, String title, String tagName, Pageable pageable, User currentUser);
+    void toggleReadArticle(Long id);
+    int getReads(Long id);
+    Page<ArticleDTO> findArticlesWithReads(ArticleCategory category, String title, String tagName, Pageable pageable, User currentUser);
 }
