@@ -83,6 +83,12 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "article_id"))
     private List<Article> readArticles;
 
+    @ManyToMany
+    @JoinTable(name = "advice_read",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "advice_id"))
+    private List<Advice> readAdvices;
+
 
 }
 

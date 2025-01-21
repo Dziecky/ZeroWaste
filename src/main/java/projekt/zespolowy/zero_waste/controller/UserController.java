@@ -212,6 +212,14 @@ public class UserController {
         model.addAttribute("readArticles", readArticles);
         return "user/readArticles";
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/readAdvices")
+    public String showReadAdvices(Model model) {
+        Set<AdviceDTO> readAdvices = userService.getReadAdvices();
+        model.addAttribute("readAdvices", readAdvices);
+        return "user/readAdvices";
+    }
     @GetMapping("/api/user/current")
     public ResponseEntity<UserChatDto> getCurrentUser(Principal principal) {
         if (principal == null) {

@@ -105,17 +105,51 @@ public class AdviceServiceImpl implements AdviceService {
         return adviceRepository.findAll(spec, pageable);
     }
     @Override
-    public Page<AdviceDTO> findAdvicesWithLikes(AdviceCategory category, String title, String tagName, Pageable pageable, User currentUser) {
+    public Page<AdviceDTO> findAdvicesWithLikesAndReads(AdviceCategory category, String title, String tagName, Pageable pageable, User currentUser) {
         Page<Advice> advices = findAdvices(category, title, tagName, pageable);
         return advices.map(advice -> {
             AdviceDTO dto = adviceMapper.toDTO(advice);
             dto.setLikedByCurrentUser(advice.getLikedByUsers().contains(currentUser));
             dto.setLikesCount(advice.getLikedByUsers().size());
+            dto.setReadByCurrentUser(advice.getReadByUsers().contains(currentUser));
+            dto.setReadsCount(advice.getReadByUsers().size());
             return dto;
         });
     }
 
     @Override
+    @Transactional
+    public void toggleReadAdvice(Long id) {
+        Advice advice = adviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Advice not found with id " + id));
+
+        User currentUser = userService.getUser();
+
+        if(advice.getReadByUsers().contains(currentUser)){
+            advice.getReadByUsers().remove(currentUser);
+            currentUser.getReadAdvices().remove(advice);
+        }else{
+            advice.getReadByUsers().add(currentUser);
+            currentUser.getReadAdvices().add(advice);
+        }
+
+        adviceRepository.save(advice);
+        userService.save(currentUser);
+    }
+
+    @Override
+    public Page<AdviceDTO> findAdvicesWithReads(AdviceCategory category, String title, String tagName, Pageable pageable, User currentUser) {
+        Page<Advice> advices = findAdvices(category, title, tagName, pageable);
+        return advices.map(advice -> {
+            AdviceDTO dto = adviceMapper.toDTO(advice);
+            dto.setReadByCurrentUser(advice.getReadByUsers().contains(currentUser));
+            dto.setReadsCount(advice.getReadByUsers().size());
+            return dto;
+        });
+    }
+
+    @Override
+    @Transactional
     public void toggleLikeAdvice(Long id) {
         Advice advice = adviceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Advice not found with id " + id));

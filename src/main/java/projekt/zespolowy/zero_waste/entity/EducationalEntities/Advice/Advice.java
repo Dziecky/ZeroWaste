@@ -49,6 +49,9 @@ public class Advice {
     @ManyToMany(mappedBy = "likedAdvices")
     private Set<User> likedByUsers = new HashSet<>();
 
+    @ManyToMany(mappedBy = "readAdvices")
+    private Set<User> readByUsers = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
