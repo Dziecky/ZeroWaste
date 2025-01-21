@@ -1,5 +1,6 @@
 package projekt.zespolowy.zero_waste.services;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -74,6 +75,18 @@ public class ProductServiceImpl implements ProductService {
         return savedProduct;
     }
 
+    @Transactional
+    public Product handleProductAfterPurchase(String productName) {
+        Optional<Product> maybeProduct = productRepository.findByName(productName);
+
+        if(maybeProduct.isPresent()) {
+            Product product = maybeProduct.get();
+            product.setAvailable(false);
+            return productRepository.save(product);
+        }
+        return null;
+    }
+
     @Override
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);
@@ -84,6 +97,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
 
     }
+
     @Override
     public List<Product> getProductsByIds(List<Long> ids) {
         return productRepository.findAllById(ids);
