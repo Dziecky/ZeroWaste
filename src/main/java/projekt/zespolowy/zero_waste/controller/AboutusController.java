@@ -1,0 +1,14 @@
+package projekt.zespolowy.zero_waste.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+@Controller
+public class AboutusController {
+
+    @GetMapping("/about")
+    public String aboutPage(Model model) {
+        model.addAttribute("activePage", "about");
+        return "about"; // This refers to the Thymeleaf template named "about.html"
+    }
+}
