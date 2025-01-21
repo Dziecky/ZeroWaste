@@ -1,6 +1,6 @@
 /* Navbar styling */
 .navbar {
-  background-color: #28a644;
+  background-color: #343a40;
   padding: 10px 15px;
 }
 
@@ -79,3 +79,57 @@
 .navbar-toggler-icon {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba%28207, 216, 220, 1%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
+
+
+.footer {
+  background-color:#343a40 ; /* Matches your navbar color */
+  padding: 20px 0;
+  margin-top: auto;
+}
+/* Footer brand style (similar to navbar-brand) */
+.footer-brand {
+  color: #ffffff !important;
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+.footer-brand:hover {
+  color: #e9ecef !important; /* Slightly lighter on hover */
+}
+/* Footer links (similar to navbar links) */
+.footer-link {
+  color: #cfd8dc !important; /* Light gray text */
+  text-decoration: none;
+  margin: 0 10px;
+  font-size: 0.95rem;
+}
+.footer-link:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+/* Optional: Social icon styling (if using icons) */
+.footer-social-icon {
+  margin: 0 8px;
+  font-size: 1.2rem;
+  color: #cfd8dc;
+  transition: color 0.3s ease;
+}
+.footer-social-icon:hover {
+  color: #ffffff !important;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Occupies full viewport height */
+}
+
+html{
+  height: 100%;
+}
+body{
+  min-height: 100%;
+  display:flex;
+  flex-direction: column;
+}
+

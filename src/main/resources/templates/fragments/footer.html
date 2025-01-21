@@ -1,14 +1,55 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" class="h-100">
 <head>
-    <meta charset="UTF-8">
-    <title>Spring MVC</title>
+    <meta charset="UTF-8" />
+    <title>Sticky Footer Example</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-<body>
-<footer class="footer mt-auto py-3" th:fragment="footer">
+<body class="d-flex flex-column h-100">
+
+<footer class="footer">
     <div class="container">
-        <span class="text-muted">Zero Waste 2024©</span>
+        <div class="row align-items-center text-center text-md-start">
+            <!-- Left Column: Brand & Info -->
+            <div class="col-md-4 mb-3 mb-md-0">
+                <a href="#" class="footer-brand">Zero Waste 2024©</a>
+                <p class="text-white-50 mt-2 mb-0 small">
+                    Making the world greener, one step at a time.
+                </p>
+            </div>
+
+            <!-- Middle Column: Footer Links -->
+            <div class="col-md-4 mb-3 mb-md-0 d-flex justify-content-center justify-content-md-start">
+                <a class="footer-link" th:href="@{/about}">About Us</a>
+                <a class="footer-link" th:href="@{/articles}">Blog</a>
+                <a class="footer-link" href="#">Contact</a>
+                <a class="footer-link" th:href="@{/faq}">FAQ</a>
+            </div>
+
+            <!-- Right Column: Social Icons -->
+            <div class="col-md-4 mb-3 mb-md-0 d-flex justify-content-center justify-content-md-end">
+                <a href="#" class="footer-social-icon">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="footer-social-icon">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="footer-social-icon">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
     </div>
 </footer>
+
+
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>
