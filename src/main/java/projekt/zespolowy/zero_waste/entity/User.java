@@ -16,6 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"reviews"}) // Exclude the reviews field from toString()
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,4 +78,9 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "advice_id"))
     private List<Advice> likedAdvices;
 
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
+
 }
+

@@ -229,4 +229,11 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+
+    public User getAdminById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Admin with id " + id + " not found"));
+    }
+
+
 }
