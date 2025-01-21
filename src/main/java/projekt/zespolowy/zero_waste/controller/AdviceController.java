@@ -44,7 +44,7 @@ public class AdviceController {
 
         User currentUser = userService.getUser();
 
-        Page<AdviceDTO> adviceDTOPage = adviceService.findAdvicesWithLikes(category, title, tagName, pageable, currentUser);
+        Page<AdviceDTO> adviceDTOPage = adviceService.findAdvicesWithLikesAndReads(category, title, tagName, pageable, currentUser);
         model.addAttribute("advicePage", adviceDTOPage);
         //model.addAttribute("activePage", "advices");
         model.addAttribute("selectedCategory", category);
@@ -116,6 +116,13 @@ public class AdviceController {
     @PostMapping("/like/{id}")
     public String likeAdvice(@PathVariable("id") Long id) {
         adviceService.toggleLikeAdvice(id);
+        return "redirect:/advices";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/read/{id}")
+    public String readAdvice(@PathVariable("id") Long id) {
+        adviceService.toggleReadAdvice(id);
         return "redirect:/advices";
     }
 

@@ -235,6 +235,13 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    public Set<AdviceDTO> getReadAdvices() {
+        User currentUser = getUser();
+        return currentUser.getReadAdvices().stream()
+                .map(adviceMapper::toDTO)
+                .collect(Collectors.toSet());
+    }
+
     public User getAdminById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Admin with id " + id + " not found"));

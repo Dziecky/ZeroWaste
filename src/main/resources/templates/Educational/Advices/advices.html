@@ -66,6 +66,13 @@
                             <span th:text="${advice.likedByCurrentUser} ? 'Odlub' : 'Polub'">Polub/Odlub</span>
                         </button>
                     </form>
+                    <form th:action="@{/advices/read/{id}(id=${advice.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-outline-primary">
+                            <span th:text="${advice.readByCurrentUser} ? 'Odznacz przeczytanie' : 'Przeczytany'">Przeczytane</span>
+                        </button>
+                    </form>
+                    <a th:text="'Likes: ' + ${advice.likesCount}">Likes</a>
+                    <a th:text="'Reads: ' + ${advice.readsCount}">Reads</a>
                 </li>
             </ul>
 

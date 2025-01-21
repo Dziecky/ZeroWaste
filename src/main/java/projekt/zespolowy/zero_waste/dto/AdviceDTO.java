@@ -24,4 +24,6 @@ public class AdviceDTO {
     private String authorUsername;
     private boolean likedByCurrentUser;
     private int likesCount;
+    private boolean readByCurrentUser;
+    private int readsCount;
 }
