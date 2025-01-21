@@ -5,22 +5,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import projekt.zespolowy.zero_waste.dto.chat.ChatMessageDTO;
 import projekt.zespolowy.zero_waste.entity.EcoImpactHistory;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.services.UserService;
 import projekt.zespolowy.zero_waste.services.EcoImpactService;
 import projekt.zespolowy.zero_waste.repository.EcoImpactHistoryRep;
-import projekt.zespolowy.zero_waste.repository.UserRepository;
 import projekt.zespolowy.zero_waste.services.MonthlyReportService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
 @RequiredArgsConstructor
@@ -43,7 +38,9 @@ public class EcoImpactController {
         Long userId = getCurrentUserId();
         String ecoImpactMessage = ecoImpactService.calculateEcoImpact(userId);
         List<EcoImpactHistory> history = ecoImpactService.getEcoImpactHistory(userId);
+        boolean hasImpactData = !history.isEmpty();
 
+        User user = userService.findById(userId);
         double waterSaved = history.stream().mapToDouble(EcoImpactHistory::getWaterSaved).sum();
         double co2Saved = history.stream().mapToDouble(EcoImpactHistory::getCo2Saved).sum();
         double energySaved = history.stream().mapToDouble(EcoImpactHistory::getEnergySaved).sum();
@@ -74,6 +71,10 @@ public class EcoImpactController {
         model.addAttribute("energySavedHistory", energySavedHistory);
         model.addAttribute("wasteReducedHistory", wasteReducedHistory);
 
+
+        model.addAttribute("points", user.getTotalPoints());
+        model.addAttribute("ecoImpactMessage", ecoImpactMessage);
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
@@ -94,6 +95,6 @@ public class EcoImpactController {
             model.addAttribute("reportGenerated", true);
         }
 
-        return "eco-impact";
+        return "redirect:/eco-impact";
     }
 }
