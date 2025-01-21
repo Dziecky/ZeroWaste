@@ -7,8 +7,11 @@ import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.ProductCategory;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
+
+    Optional<Product> findByName(String name);
 
     List<Product>findAllByOrderByCreatedAtDesc();
     Page<Product> findAllByOrderByCreatedAtDesc(Pageable pageable);
