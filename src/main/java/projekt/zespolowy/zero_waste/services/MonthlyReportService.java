@@ -25,8 +25,10 @@ public class MonthlyReportService {
     private ChatMessageService chatMessageService;
 
     @Autowired
-    private RankingService rankingService;  // Внедряем RankingService
+    private RankingService rankingService;
 
+    @Autowired
+    private EmailReportService emailReportService;
     public void generateAndSendMonthlyReports(User admin) {
         LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
         LocalDate endOfMonth = LocalDate.now();
@@ -45,6 +47,13 @@ public class MonthlyReportService {
             );
 
             chatMessageService.saveMessage(message, admin, user);
+
+            try {
+                emailReportService.sendMonthlyReport(user.getEmail(), "Monthly Eco Impact Report", reportContent);
+            } catch (Exception e) {
+
+                e.printStackTrace();
+            }
         }
     }
 
@@ -58,7 +67,7 @@ public class MonthlyReportService {
         double totalCo2 = historyList.stream().mapToDouble(EcoImpactHistory::getCo2Saved).sum();
         double totalEnergy = historyList.stream().mapToDouble(EcoImpactHistory::getEnergySaved).sum();
         double totalWaste = historyList.stream().mapToDouble(EcoImpactHistory::getWasteReduced).sum();
-       
+
 
 
         int rank = rankingService.getUserRank(user);
