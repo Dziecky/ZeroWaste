@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>About Us</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/styles/faq.css">
+    <link th:href="@{styles/main.css}" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- Header Fragment -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- Main About Content -->
+<div class="container about-container my-5">
+    <h1 class="mb-4">About Our Company</h1>
+
+    <!-- Example: An Intro Section -->
+    <section>
+        <h2>Our Mission</h2>
+        <p>
+            We strive to create sustainable solutions that benefit our community
+            and environment. Our journey started in 2020 with a small team of
+            innovators who believed that big changes often begin with small steps.
+        </p>
+    </section>
+
+    <!-- Example: A Team Section -->
+    <section class="mt-5">
+        <h2>Meet the Team</h2>
+        <p>
+            Our dedicated team members come from diverse backgrounds
+            in engineering, marketing, design, and community outreach.
+            Together, we aim to empower individuals, organizations,
+            and businesses to reduce waste and support a greener future.
+        </p>
+    </section>
+
+    <!-- Example: A Values / Vision Section -->
+    <section class="mt-5">
+        <h2>Our Vision for the Future</h2>
+        <p>
+            As we continue to expand our services and product line,
+            our focus remains on eco-friendly, innovative approaches.
+            We believe collaboration is key—partnerships with local
+            groups help us inspire global change from the ground up.
+        </p>
+    </section>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

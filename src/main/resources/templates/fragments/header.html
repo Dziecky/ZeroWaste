@@ -10,7 +10,7 @@
     <script src="/scripts/chat-notification.js" defer></script>
 </head>
 <body>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark" th:fragment="header">
+<nav class="navbar navbar-expand-md navbar-dark " th:fragment="header">
 
     <a class="navbar-brand" th:href="@{/}">Home</a>
 
@@ -45,9 +45,7 @@
             <li class="nav-item" th:class="${activePage == 'eco-impact'} ? 'nav-item active' : 'nav-item'">
                 <a class="nav-link" th:href="@{/eco-impact}">Eco Impact</a>
             </li>
-            <li class="nav-item" th:class="${activePage == 'faq'} ? 'nav-item active' : 'nav-item'">
-                <a class="nav-link" th:href="@{/faq}">FAQ</a>
-            </li>
+
         </ul>
 
         <ul class="navbar-nav ml-auto">
