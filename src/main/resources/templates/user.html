@@ -7,6 +7,11 @@
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link th:href="@{/styles/main.css}" rel="stylesheet" />
+    <link th:href="@{/styles/forms.css}" rel="stylesheet" />
+    <link th:href="@{/styles/buttons.css}" rel="stylesheet" />
+    <link th:href="@{/styles/reviews.css}" rel="stylesheet" />
+    <link th:href="@{/styles/userProfile.css}" rel="stylesheet" />
+    <script th:href="@{/scripts/preventDefault.js}"></script>
 </head>
 <body class="d-flex flex-column h-100">
 
@@ -14,148 +19,234 @@
 
 
 <div class="container mt-5">
-    <div class="card" style="max-width: 500px;">
-        <div class="card-body">
-            <h5 class="card-title" th:text="${user.firstName} + ' ' + ${user.lastName}"></h5>
-            <h6 class="card-subtitle mb-2 text-muted">Username: <span th:text="${user.username}"></span></h6>
-            <p class="card-text">
-                <strong>Email:</strong> <span th:text="${user.email}"></span><br>
-                <strong>Phone Number:</strong> <span th:text="${user.phoneNumber} ?: 'N/A'"></span>
-            </p>
+    <div class="user-profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <!-- Pierwsza litera imienia jako awatar -->
+                <span th:text="${#strings.substring(user.firstName,0,1)}"></span>
+            </div>
+            <div class="profile-title">
+                <h2 class="user-name" th:text="${user.firstName} + ' ' + ${user.lastName}"></h2>
+                <p class="username" th:text="${user.username}"></p>
+            </div>
+        </div>
+
+        <div class="profile-details">
+            <div class="detail-item">
+                <span class="detail-label">Email</span>
+                <span class="detail-value" th:text="${user.email}"></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Phone Number</span>
+                <span class="detail-value" th:text="${user.phoneNumber} ?: 'Not provided'"></span>
+            </div>
         </div>
     </div>
+
+
     <!-- Wyświetlanie średniej oceny -->
-    <!-- Wyświetlanie średniej oceny -->
-    <h2>Average Rating</h2>
-    <div th:if="${user.averageRating > 0}">
-        <p>Your average rating is: <strong th:text="${#numbers.formatDecimal(user.averageRating, 1, 2)}"></strong></p>
-    </div>
-    <div th:if="${user.averageRating == 0}">
-        <p>No reviews available to calculate an average rating.</p>
+    <div class="rating-section">
+        <div class="average-rating-card">
+            <h2 class="section-title">Average Rating</h2>
+            <div class="rating-content" th:if="${user.averageRating > 0}">
+                <div class="rating-circle">
+                    <span class="rating-number" th:text="${#numbers.formatDecimal(user.averageRating, 1, 2)}"></span>
+                    <span class="rating-max">/5</span>
+                </div>
+                <div class="stars-display">
+                    <div class="stars-outer">
+                        <div class="stars-inner" th:style="'width: ' + ${user.averageRating * 20} + '%'"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="no-rating" th:if="${user.averageRating == 0}">
+                <i class="far fa-star no-rating-icon"></i>
+                <p>No reviews available yet</p>
+            </div>
+        </div>
     </div>
 
     <!-- Formularz dodawania recenzji -->
     <h2>Add New Review</h2>
     <form th:if="${newReview != null}" th:action="@{/user/{id}/reviews(id=${user.id})}" method="post" th:object="${newReview}">
         <input type="hidden" th:field="*{user.id}" />
-        <input type="text" th:field="*{content}" placeholder="Review content" required />
-        <input type="number" th:field="*{rating}" min="1" max="5" required />
-        <input type="submit" value="Add Review" />
+        <label class="textarea-wrapper">
+            <textarea th:field="*{content}"
+                      placeholder="Review content"
+                      required
+                      class="resizable-textarea">
+            </textarea>
+        </label>
+        <div class="rating-container">
+            <div class="star-rating">
+                <input type="radio" id="star5" name="rating" th:field="*{rating}" value="5" />
+                <label for="star5">★</label>
+                <input type="radio" id="star4" name="rating" th:field="*{rating}" value="4" />
+                <label for="star4">★</label>
+                <input type="radio" id="star3" name="rating" th:field="*{rating}" value="3" />
+                <label for="star3">★</label>
+                <input type="radio" id="star2" name="rating" th:field="*{rating}" value="2" />
+                <label for="star2">★</label>
+                <input type="radio" id="star1" name="rating" th:field="*{rating}" value="1" />
+                <label for="star1">★</label>
+            </div>
+            <div class="button-container">
+                <button type="submit" class="submit-button">Add Review</button>
+            </div>
+        </div>
     </form>
 
     <!-- Formularz do filtrowania -->
-    <form action="#" th:action="@{/user/{id}/filter-reviews(id=${user.id})}" method="get">
-        <label for="rating">Filter by rating:</label>
-        <select id="rating" name="rating">
-            <option value="">All ratings</option>
-            <option th:selected="${selectedRating == 1}" value="1">1 star</option>
-            <option th:selected="${selectedRating == 2}" value="2">2 stars</option>
-            <option th:selected="${selectedRating == 3}" value="3">3 stars</option>
-            <option th:selected="${selectedRating == 4}" value="4">4 stars</option>
-            <option th:selected="${selectedRating == 5}" value="5">5 stars</option>
-        </select>
-        <button type="submit">Filter</button>
+    <form action="#" th:action="@{/user/{id}/filter-reviews(id=${user.id})}" method="get" class="filter-form">
+        <div class="filter-wrapper">
+            <label for="rating" class="filter-label">Filter by rating:</label>
+            <select id="rating" name="rating" class="rating-select">
+                <option value="">All ratings</option>
+                <option th:selected="${selectedRating == 1}" value="1">★</option>
+                <option th:selected="${selectedRating == 2}" value="2">★★</option>
+                <option th:selected="${selectedRating == 3}" value="3">★★★</option>
+                <option th:selected="${selectedRating == 4}" value="4">★★★★</option>
+                <option th:selected="${selectedRating == 5}" value="5">★★★★★</option>
+            </select>
+            <button type="submit" class="submit-button">Filter</button>
+        </div>
     </form>
 
+
     <!-- Lista recenzji -->
-    <h2>User Reviews</h2>
-    <div th:if="${reviewsAboutUser != null and not #lists.isEmpty(reviewsAboutUser)}">
-        <ul>
-            <li th:each="review : ${reviewsAboutUser}" th:if="${review.rating != 0}">
-                <p><strong><span th:text="${review.username}"></span></strong></p>
-                <p><strong>Date:</strong> <span th:text="${review.createdDateFormatted}"></span></p>
-                <p><strong>Rating:</strong>
-                    <span th:text="${review.rating}"></span>/5
-                    <span th:if="${review.rating == 0}">(No rating)</span>
-                </p>
-                <p><strong>Content:</strong>
-                    <span th:if="${reviewToEdit == null or reviewToEdit.id != review.id}"
-                          th:text="${review.content}"></span>
-                </p>
-                <form th:if="${reviewToEdit != null and reviewToEdit.id == review.id}"
-                      th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${review.id})}"
-                      method="post"
-                      th:object="${reviewToEdit}">
-                    <input type="text" th:field="*{content}" required/>
-                    <input type="number" th:field="*{rating}" min="1" max="5" required/>
-                    <button type="submit">Save</button>
-                </form>
+    <div class="reviews-container">
+        <h2 class="reviews-title">User Reviews</h2>
 
-                <!-- Wyświetl przycisk edycji tylko dla recenzji napisanych przez zalogowanego użytkownika -->
-                <div th:with="isOwner=${reviewOwnership != null and reviewOwnership.get(review.id)? true : false}">
-                    <form th:if="${isOwner and (reviewToEdit == null or reviewToEdit.id != review.id)}"
-                          th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${review.id})}"
-                          method="get">
-                        <button type="submit">Edit</button>
-                    </form>
-                    <form th:if="${isOwner}"
-                          th:action="@{/user/{id}/reviews/{reviewId}/delete(id=${user.id}, reviewId=${review.id})}"
-                          method="post">
-                        <input type="hidden" name="_method" value="POST"/>
-                        <button type="submit">Delete</button>
-                    </form>
-                </div>
-
-                <!-- Wyświetlanie odpowiedzi -->
-                <ul>
-                    <li th:each="response : ${reviewsAboutUser}" th:if="${review.id == response.parentReviewId}">
-                        <p><strong><span th:text="${response.username}"></span></strong></p>
-                        <p><strong>Response:</strong> <span th:text="${response.content}"></span></p>
-                        <p><strong>Response date:</strong> <span th:text="${response.createdDateFormatted}"></span></p>
-
-                        <!-- Edycja odpowiedzi -->
-                        <div th:with="isOwner=${reviewOwnership != null and reviewOwnership.get(response.id)? true : false}">
-                            <form th:if="${isOwner and (reviewToEdit == null or reviewToEdit.id != response.id)}"
-                                  th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${response.id})}"
-                                  method="get">
-                                <button type="submit">Edit</button>
-                            </form>
-                            <form th:if="${isOwner}"
-                                  th:action="@{/user/{id}/reviews/{reviewId}/delete(id=${user.id}, reviewId=${response.id})}"
-                                  method="post">
-                                <input type="hidden" name="_method" value="POST"/>
-                                <button type="submit">Delete</button>
-                            </form>
+        <div th:if="${reviewsAboutUser != null and not #lists.isEmpty(reviewsAboutUser)}">
+            <div class="review-list">
+                <div th:each="review : ${reviewsAboutUser}" th:if="${review.rating != 0}" class="review-card">
+                    <div class="review-header">
+                        <div class="user-info">
+                            <span class="username" th:text="${review.username}"></span>
+                            <div class="review-date">
+                                <i class="far fa-calendar-alt"></i>
+                                <span th:text="${review.createdDateFormatted}"></span>
+                            </div>
                         </div>
-                        <form th:if="${reviewToEdit != null and reviewToEdit.id == response.id}"
-                              th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${response.id})}"
+                        <div class="rating-display">
+                            <div class="stars">
+                                <!-- Usuwamy duplikaty i zostawiamy tylko jedną pętlę dla gwiazdek -->
+                                <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                      th:class="${i <= review.rating ? 'star' : 'star empty'}">★</span>
+                            </div>
+                            <span class="rating-text" th:text="${review.rating + '/5'}"></span>
+                        </div>
+                    </div>
+
+                    <div class="review-content">
+                        <p th:if="${reviewToEdit == null or reviewToEdit.id != review.id}"
+                           th:text="${review.content}"
+                           class="review-text"></p>
+
+                        <form th:if="${reviewToEdit != null and reviewToEdit.id == review.id}"
+                              th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${review.id})}"
                               method="post"
-                              th:object="${reviewToEdit}">
-                            <input type="text" th:field="*{content}" required/>
-                            <button type="submit">Save</button>
+                              th:object="${reviewToEdit}"
+                              class="edit-form">
+                            <textarea th:field="*{content}" required class="edit-textarea"></textarea>
+                            <div class="edit-rating">
+                                <div class="star-rating">
+                                    <input type="radio" th:id="${'star5-' + review.id}" name="rating" th:field="*{rating}" value="5" />
+                                    <label th:for="${'star5-' + review.id}">★</label>
+                                    <input type="radio" th:id="${'star4-' + review.id}" name="rating" th:field="*{rating}" value="4" />
+                                    <label th:for="${'star4-' + review.id}">★</label>
+                                    <input type="radio" th:id="${'star3-' + review.id}" name="rating" th:field="*{rating}" value="3" />
+                                    <label th:for="${'star3-' + review.id}">★</label>
+                                    <input type="radio" th:id="${'star2-' + review.id}" name="rating" th:field="*{rating}" value="2" />
+                                    <label th:for="${'star2-' + review.id}">★</label>
+                                    <input type="radio" th:id="${'star1-' + review.id}" name="rating" th:field="*{rating}" value="1" />
+                                    <label th:for="${'star1-' + review.id}">★</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="submit-button">Save Changes</button>
                         </form>
 
-                    </li>
-                </ul>
+                    </div>
 
+                    <div class="review-actions" th:with="isOwner=${reviewOwnership != null and reviewOwnership.get(review.id)? true : false}">
+                        <div th:if="${isOwner}" class="action-buttons">
+                            <form th:if="${reviewToEdit == null or reviewToEdit.id != review.id}"
+                                  th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${review.id})}"
+                                  method="get"
+                                  class="edit-button-form"
+                                  onsubmit="handleEditClick(event, this)">
+                                <button type="submit" class="action-button edit">Edit</button>
+                            </form>
+                            <form th:action="@{/user/{id}/reviews/{reviewId}/delete(id=${user.id}, reviewId=${review.id})}"
+                                  method="post">
+                                <input type="hidden" name="_method" value="POST"/>
+                                <button type="submit" class="action-button delete">Delete</button>
+                            </form>
+                        </div>
+                    </div>
 
+                    <!-- Responses section -->
+                    <div class="responses-section">
+                        <div th:each="response : ${reviewsAboutUser}"
+                             th:if="${review.id == response.parentReviewId}"
+                             class="response-card">
+                            <!-- Wyświetlanie odpowiedzi -->
+                            <div th:if="${reviewToEdit == null or reviewToEdit.id != response.id}">
+                                <div class="response-header">
+                                    <span class="username" th:text="${response.username}"></span>
+                                    <span class="response-date" th:text="${response.createdDateFormatted}"></span>
+                                </div>
+                                <p class="response-content" th:text="${response.content}"></p>
+                            </div>
 
-                <!-- Add response form -->
-                <th:block th:with="isAboutCurrentUser=${review.target_id == currentUserId}">
-                    <form th:if="${isAboutCurrentUser}"
-                          th:action="@{/user/{id}/reviews/{reviewId}/response(id=${user.id}, reviewId=${review.id})}"
-                          method="post"
-                          th:object="${newReview}">
-                        <input type="text" th:field="*{content}" placeholder="Add response" required />
-                        <button type="submit">Respond</button>
-                    </form>
-                </th:block>
+                            <!-- Formularz edycji odpowiedzi -->
+                            <form th:if="${reviewToEdit != null and reviewToEdit.id == response.id}"
+                                  th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${response.id})}"
+                                  method="post"
+                                  th:object="${reviewToEdit}"
+                                  class="edit-form">
+                                <textarea th:field="*{content}" required class="edit-textarea"></textarea>
+                                <button type="submit" class="submit-button">Save Changes</button>
+                            </form>
 
+                            <!-- Przyciski akcji -->
+                            <div class="response-actions"
+                                 th:with="isOwner=${reviewOwnership != null and reviewOwnership.get(response.id)? true : false}">
+                                <div th:if="${isOwner}" class="action-buttons">
+                                    <form th:if="${reviewToEdit == null or reviewToEdit.id != response.id}"
+                                          th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${response.id})}"
+                                          method="get">
+                                        <button type="submit" class="action-button edit">Edit</button>
+                                    </form>
+                                    <form th:action="@{/user/{id}/reviews/{reviewId}/delete(id=${user.id}, reviewId=${response.id})}"
+                                          method="post">
+                                        <input type="hidden" name="_method" value="POST"/>
+                                        <button type="submit" class="action-button delete">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-
-                <hr>
-            </li>
-        </ul>
+                        <!-- Add response form -->
+                        <div th:with="isAboutCurrentUser=${review.target_id == currentUserId}" class="add-response-section">
+                            <form th:if="${isAboutCurrentUser}"
+                                  th:action="@{/user/{id}/reviews/{reviewId}/response(id=${user.id}, reviewId=${review.id})}"
+                                  method="post"
+                                  th:object="${newReview}"
+                                  class="response-form">
+                                <textarea th:field="*{content}" placeholder="Add your response..." required class="response-textarea"></textarea>
+                                <button type="submit" class="submit-button">Respond</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-
-
-
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
-        crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 </html>
