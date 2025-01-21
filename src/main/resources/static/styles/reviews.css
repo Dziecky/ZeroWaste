@@ -1,0 +1,254 @@
+.reviews-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.reviews-title {
+    color: #333;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 2em;
+}
+
+.reviews-list {
+    list-style: none;
+    padding: 0;
+}
+
+.review-item {
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.username {
+    font-weight: bold;
+    color: #28a745;
+    font-size: 1.1em;
+}
+
+.review-date {
+    color: #666;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.rating-display {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.review-content {
+    margin: 15px 0;
+    line-height: 1.6;
+}
+
+.review-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow:
+            0 4px 6px rgba(0, 0, 0, 0.1),
+            0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+            0 6px 12px rgba(0, 0, 0, 0.15),
+            0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Responses section */
+.responses-section {
+    margin-top: 20px;
+    padding-left: 20px;
+    border-left: 2px solid #e0e0e0;
+}
+
+.response-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+.response-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.response-date {
+    color: #666;
+    font-size: 0.8em;
+}
+
+.response-content {
+    color: #444;
+    line-height: 1.5;
+}
+
+.add-response-section {
+    margin-top: 15px;
+}
+
+.response-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.response-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: vertical;
+}
+
+/* Stars */
+.rating-text {
+    color: #666;
+    font-size: 0.9em;
+}
+.stars {
+    display: flex;
+    gap: 2px;
+}
+.star {
+    color: #28a745;
+    font-size: 1.2em;
+    transition: color 0.2s ease-in-out;
+}
+.star.empty {
+    color: #ddd;
+}
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 4px;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 30px;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: #2dbb4e;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #2dbb4e;
+}
+.edit-rating {
+    margin: 15px 0;
+}
+
+.edit-rating .star-rating {
+    justify-content: center;
+}
+
+.edit-rating .star-rating label {
+    font-size: 35px;
+    padding: 0 5px;
+}
+
+.edit-form .star-rating input {
+    display: none;
+}
+
+.edit-form .star-rating label {
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.edit-form .star-rating label:hover,
+.edit-form .star-rating label:hover ~ label,
+.edit-form .star-rating input:checked ~ label {
+    color: #28a745;
+}
+
+.edit-form .submit-button {
+    align-self: center;
+    margin-top: 10px;
+}
+
+.edit-form {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #e0e0e0;
+}
+
+.edit-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    margin-bottom: 15px;
+}
+
+.edit-textarea:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+}
+@media (max-width: 768px) {
+    .review-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .rating-display {
+        align-items: flex-start;
+    }
+
+    .responses-section {
+        padding-left: 10px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

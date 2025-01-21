@@ -1,0 +1,51 @@
+.submit-button {
+    padding: 10px 25px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #22873a;
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.submit-button:active {
+    transform: translateY(1px);
+}
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.action-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+}
+
+.action-button.edit {
+    background-color: #28a745;
+    color: white;
+}
+
+.action-button.delete {
+    border: 1px solid #dc3545;
+    background-color: transparent;
+    padding: 7px 14px;
+    color: black;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
