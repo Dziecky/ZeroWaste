@@ -5,6 +5,8 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.Advice;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Challenge;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Tip;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 
@@ -88,8 +90,16 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "advice_id"))
     private List<Advice> readAdvices;
-
-
+    @ManyToMany
+    @JoinTable(name = "user_tips",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "tip_id"))
+    private List<Tip> tips;
+    @ManyToMany
+    @JoinTable(name = "user_challenges",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "challenge_id"))
+    private List<Challenge> challenges;
 }
 
 

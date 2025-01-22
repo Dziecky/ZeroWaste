@@ -8,6 +8,8 @@ import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.dto.user.UserRegistrationDto;
 import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Tip;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.UserPreference;
 import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
@@ -26,6 +28,7 @@ import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;

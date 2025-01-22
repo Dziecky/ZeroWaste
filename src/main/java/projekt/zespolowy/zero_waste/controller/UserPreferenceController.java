@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Challenge;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Tip;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.UserPreference;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.enums.Frequency;
@@ -18,10 +20,11 @@ import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Controller
-@RequestMapping("/preferences")
+@RequestMapping("/newsletter")
 public class UserPreferenceController {
     private final UserService userService;
     private final UserPreferenceService userPreferenceService;
@@ -32,26 +35,56 @@ public class UserPreferenceController {
         this.userPreferenceService = userPreferenceService;
     }
 
+    // Wyświetla formularz ze starymi ustawieniami
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
-    public String showPreferencesForm(Model model) {
-        User currentUser = userService.getUser();
-        UserPreference preference = userPreferenceService.getUserPreference(currentUser).orElse(new UserPreference());
+    public String showNewsletterSettings(Model model) {
+        User currentUser = userService.getUser(); // pobiera aktualnie zalogowanego
+        // Pobierzemy preferencje z bazy lub stworzymy domyślne
+        UserPreference preference = userPreferenceService
+                .getUserPreference(currentUser)
+                .orElseGet(() -> {
+                    UserPreference p = new UserPreference();
+                    p.setUser(currentUser);
+                    p.setFrequency(Frequency.DAILY); // domyślne
+                    p.setSubscribedTo(new HashSet<>());
+                    return p;
+                });
 
-        model.addAttribute("frequencyOptions", Frequency.values());
-        model.addAttribute("subscriptionOptions", SubscriptionType.values());
         model.addAttribute("userPreference", preference);
-
-        return "preferences/preferences_form";
+        return "/newsletter"; // nazwa widoku Thymeleaf: newsletter.html
     }
 
+    // Odbiera dane z formularza i zapisuje w bazie
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
-    public String updatePreferences(@RequestParam("frequency") Frequency frequency,
-                                    @RequestParam(value = "subscriptions", required = false) SubscriptionType[] subscriptions) {
+    public String updateNewsletterSettings(
+            @RequestParam("frequency") Frequency frequency,
+            @RequestParam(value = "subscribedTo", required = false) Set<SubscriptionType> subscribedTo // moze byc null
+    ) {
         User currentUser = userService.getUser();
-        Set<SubscriptionType> subscriptionSet = subscriptions != null ? new HashSet<>(Arrays.asList(subscriptions)) : new HashSet<>();
-        userPreferenceService.saveUserPreference(currentUser, frequency, subscriptionSet);
-        return "redirect:/preferences";
+
+        userPreferenceService.saveUserPreference(currentUser, frequency, subscribedTo != null ? subscribedTo : Set.of());
+
+        // Powrót do GET /newsletter
+        return "redirect:/newsletter";
+    }
+
+    // Zwraca widok ze wszystkimi TIP-ami otrzymanymi przez usera
+    @GetMapping("/tips")
+    public String showUserTips(Model model) {
+        User currentUser = userService.getUser();
+        // Zakładamy, że user.getReceivedTips() trzyma TIP-y wysłane przez NotificationService
+        List<Tip> tips = currentUser.getTips();
+
+        model.addAttribute("tips", tips);
+        return "/tips"; // np. inny widok do wyświetlenia listy TIP-ów
+    }
+
+    // Zwraca widok z CHALLENGE-ami otrzymanymi przez usera
+    @GetMapping("/challenges")
+    public String showUserChallenges(Model model) {
+        User currentUser = userService.getUser();
+        List<Challenge> challenges = currentUser.getChallenges();
+        model.addAttribute("challenges", challenges);
+        return "/challenges";
     }
 }
