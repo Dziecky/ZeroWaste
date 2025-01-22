@@ -2,12 +2,14 @@ package projekt.zespolowy.zero_waste.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.ProductCategory;
@@ -17,6 +19,7 @@ import projekt.zespolowy.zero_waste.services.ProductService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/products")
@@ -41,7 +44,6 @@ public class ProductController {
     ) {
         Pageable paging = PageRequest.of(page, 10);
         Page<Product> pageProducts;
-
         if (category != null) {
             if ("priceAsc".equals(sort)) {
                 pageProducts = productService.getProductsByCategoryAndNameContainingIgnoreCaseSortedByPriceAsc(category, search, paging);
@@ -59,7 +61,14 @@ public class ProductController {
                 pageProducts = productService.getProductsByNameContainingIgnoreCaseSortedByDateDesc(search, paging);
             }
         }
+        List<Product> nonAuctionProducts = pageProducts.getContent().stream()
+                .filter(product -> !product.isAuction())
+                .collect(Collectors.toList());
 
+
+        int start = Math.min(page * 10, nonAuctionProducts.size());
+        int end = Math.min((page + 1) * 10, nonAuctionProducts.size());
+        pageProducts = new PageImpl<>(nonAuctionProducts.subList(start, end), paging, nonAuctionProducts.size());
         model.addAttribute("products", pageProducts.getContent());
         model.addAttribute("categories", ProductCategory.values());
         model.addAttribute("selectedCategory", category);
@@ -68,8 +77,11 @@ public class ProductController {
         model.addAttribute("currentPage", pageProducts.getNumber());
         model.addAttribute("totalPages", pageProducts.getTotalPages());
         model.addAttribute("totalItems", pageProducts.getTotalElements());
-        return "list-products";
+
+        return "/product/list-products";
     }
+
+
 
     @GetMapping("/showFormForAddProduct")
     public String showFormForAddProduct(Model model) {
@@ -77,11 +89,17 @@ public class ProductController {
         model.addAttribute("product", product);
         model.addAttribute("categories", ProductCategory.values());
         model.addAttribute("units", UnitOfMeasure.values());
-        return "product-form";
+        return "/product/product-form";
     }
 
     @PostMapping("/save")
-    public String createProduct(@ModelAttribute("product") Product product, Authentication authentication) {
+    public String createProduct(@ModelAttribute("product") Product product, BindingResult bindingResult, Authentication authentication) {
+        if (product.isAuction() && product.getEndDate() == null) {
+            bindingResult.rejectValue("endDate", "error.product", "End date is required for auction products.");
+        }
+        if (bindingResult.hasErrors()) {
+            return "/product/product-form";
+        }
         String currentUsername = authentication.getName();
         User currentUser = userService.findByUsername(currentUsername);
         product.setOwner(currentUser);
@@ -100,7 +118,7 @@ public class ProductController {
         model.addAttribute("product", product);
         model.addAttribute("categories", ProductCategory.values());
         model.addAttribute("units", UnitOfMeasure.values());
-        return "product-form";
+        return "/product/product-form";
     }
 
     @PostMapping("/update")
@@ -136,6 +154,6 @@ public class ProductController {
         Product product = productService.getProductById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Product ID: " + id));
         model.addAttribute("product", product);
-        return "product-detail";
+        return "/product/product-detail";
     }
 }
