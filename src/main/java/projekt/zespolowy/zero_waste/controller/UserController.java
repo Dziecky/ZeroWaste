@@ -22,12 +22,16 @@ import projekt.zespolowy.zero_waste.dto.ReviewDto;
 import projekt.zespolowy.zero_waste.dto.chat.UserChatDto;
 import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Tip;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.UserPreference;
 import projekt.zespolowy.zero_waste.entity.Review;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
+import projekt.zespolowy.zero_waste.entity.enums.Frequency;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.security.CustomUser;
+import projekt.zespolowy.zero_waste.services.EducationalServices.UserPreferenceService;
 import projekt.zespolowy.zero_waste.services.ReviewService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
@@ -45,13 +49,12 @@ public class UserController {
     public static UserService userService = null;
 
     private final ReviewService reviewService;
-    private final ArticleMapper articleMapper;
-
+    private final UserPreferenceService userPreferenceService;
     // Konstruktorowe wstrzykiwanie zależności
-    public UserController(UserService userService, ReviewService reviewService, ArticleMapper articleMapper) {
+    public UserController(UserService userService, ReviewService reviewService, UserPreferenceService userPreferenceService) {
         this.userService = userService;
         this.reviewService = reviewService;
-        this.articleMapper = articleMapper;
+        this.userPreferenceService = userPreferenceService;
     }
 
     @GetMapping("/accountDetails")
