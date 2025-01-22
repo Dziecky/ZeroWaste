@@ -129,8 +129,6 @@ public class ProductServiceImpl implements ProductService {
         }
         return productRepository.findByNameContainingIgnoreCaseOrderByCreatedAtDesc(search.trim(), pageable);
     }
-
-    // Metody dla wyszukiwania z kategorią
     public Page<Product> getProductsByCategoryAndNameContainingIgnoreCaseSortedByPriceAsc(ProductCategory category, String search, Pageable pageable) {
         if (search == null || search.trim().isEmpty()) {
             return productRepository.findByProductCategoryOrderByPriceAsc(category, pageable);
@@ -150,5 +148,11 @@ public class ProductServiceImpl implements ProductService {
             return productRepository.findByProductCategoryOrderByCreatedAtDesc(category, pageable);
         }
         return productRepository.findByProductCategoryAndNameContainingIgnoreCaseOrderByCreatedAtDesc(category, search.trim(), pageable);
+    }
+    public List<Product> getAuctionProducts() {
+        return productRepository.findByAuctionTrueAndAvailableTrue();
+    }
+    public List<Product> getProductsNotOnAuction() {
+        return productRepository.findByAuctionFalseAndAvailableTrue();
     }
 }

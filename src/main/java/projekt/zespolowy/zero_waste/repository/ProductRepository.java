@@ -29,4 +29,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByProductCategoryAndNameContainingIgnoreCaseOrderByPriceAsc(ProductCategory category, String name, Pageable pageable);
     Page<Product> findByProductCategoryAndNameContainingIgnoreCaseOrderByPriceDesc(ProductCategory category, String name, Pageable pageable);
     Page<Product> findByProductCategoryAndNameContainingIgnoreCaseOrderByCreatedAtDesc(ProductCategory category, String name, Pageable pageable);
+
+    List<Product> findByAuctionTrueAndAvailableTrue();
+
+    List<Product> findByAuctionFalseAndAvailableTrue();
 }
