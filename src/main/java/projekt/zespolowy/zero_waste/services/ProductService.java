@@ -30,7 +30,8 @@ public interface ProductService {
  Page<Product> getProductsByCategoryAndNameContainingIgnoreCaseSortedByPriceDesc(ProductCategory category, String search, Pageable pageable);
  Page<Product> getProductsByCategoryAndNameContainingIgnoreCaseSortedByDateDesc(ProductCategory category, String search, Pageable pageable);
 
-
+ List<Product> getAuctionProducts();
+ List<Product> getProductsNotOnAuction();
 
 
 }

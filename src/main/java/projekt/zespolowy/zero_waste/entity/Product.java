@@ -1,11 +1,12 @@
 package projekt.zespolowy.zero_waste.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,9 +58,22 @@ public class Product {
     @Column(name = "unit_of_measure")
     private UnitOfMeasure unitOfMeasure;
 
+    @Column(nullable = true)
+    private boolean auction = false;
+
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Bid> bids = new HashSet<>();
+
     @PrePersist
+    @PreUpdate
     public void onCreate() {
         createdAt = LocalDateTime.now();
         available = true;
     }
+
+
+
 }
