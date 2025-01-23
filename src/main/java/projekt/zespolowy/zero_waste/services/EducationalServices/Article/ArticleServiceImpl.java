@@ -9,12 +9,18 @@ import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
+import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.repository.ArticleRepository;
+import projekt.zespolowy.zero_waste.repository.TaskRepository;
+import projekt.zespolowy.zero_waste.repository.UserRepository;
+import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 import projekt.zespolowy.zero_waste.services.TagService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -24,19 +30,47 @@ public class ArticleServiceImpl implements ArticleService {
     private final TagService tagService;
 
     private final UserService userService;
+
+    private final UserTaskRepository userTaskRepository;
+    private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
     @Autowired
-    public ArticleServiceImpl(ArticleRepository articleRepository, ArticleMapper articleMapper, TagService tagService, UserService userService) {
+    public ArticleServiceImpl(ArticleRepository articleRepository, ArticleMapper articleMapper, TagService tagService, UserService userService, UserTaskRepository userTaskRepository, TaskRepository taskRepository, UserRepository userRepository) {
         this.articleRepository = articleRepository;
         this.articleMapper = articleMapper;
         this.tagService = tagService;
         this.userService = userService;
+        this.userTaskRepository = userTaskRepository;
 
+        this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     public Article createArticle(ArticleDTO articleDTO) {
         Article article = articleMapper.toEntity(articleDTO, tagService);
         article.setAuthor(UserService.getUser());
+
+        Task createReviewTask = taskRepository.findByTaskName("Dodaj artykuł");
+
+        if (createReviewTask != null) {
+            // Pobierz zadanie użytkownika
+            UserTask userTask = userTaskRepository.findByUserAndTask(UserService.getUser(), createReviewTask);
+            // Zwiększ postęp zadania
+            userTask.setProgress(userTask.getProgress() + 1);
+
+            // Sprawdź, czy zadanie zostało ukończone
+            if (userTask.getProgress() >= createReviewTask.getRequiredActions()) {
+                userTask.setCompleted(true);
+                userTask.setCompletionDate(LocalDate.now());
+
+                UserService.getUser().setTotalPoints(UserService.getUser().getTotalPoints() + createReviewTask.getPointsAwarded());
+                userRepository.save(UserService.getUser()); // Zapisz zmiany w użytkowniku
+            }
+
+            userTaskRepository.save(userTask);
+        }
+
         return articleRepository.save(article);
     }
     @Override

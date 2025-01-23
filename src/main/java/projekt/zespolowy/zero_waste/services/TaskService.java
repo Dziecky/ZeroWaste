@@ -62,4 +62,12 @@ public class TaskService {
     public List<UserTask> getAllTasksForUser(User user) {
         return userTaskRepository.findByUser(user);
     }
+
+    public Task findByTaskName(String taskName) {
+        return taskRepository.findByTaskName(taskName);
+    }
+
+    public UserTask findByUserAndTask(User user, Task task) {
+        return userTaskRepository.findByUserAndTask(user, task);
+    }
 }

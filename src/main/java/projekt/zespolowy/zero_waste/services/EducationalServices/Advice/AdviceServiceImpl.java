@@ -9,12 +9,18 @@ import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.dto.AdviceDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.Advice;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.AdviceCategory;
+import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
 import projekt.zespolowy.zero_waste.repository.AdviceRepository;
+import projekt.zespolowy.zero_waste.repository.TaskRepository;
+import projekt.zespolowy.zero_waste.repository.UserRepository;
+import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 import projekt.zespolowy.zero_waste.services.TagService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -24,20 +30,51 @@ public class AdviceServiceImpl implements AdviceService {
     private final AdviceMapper adviceMapper;
     private final UserService userService;
 
+    private final UserTaskRepository userTaskRepository;
+    private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
+
     @Autowired
     public AdviceServiceImpl(AdviceRepository adviceRepository,
                              TagService tagService,
                              AdviceMapper adviceMapper,
-                             UserService userService) {
+                             UserService userService, UserTaskRepository userTaskRepository, TaskRepository taskRepository, UserRepository userRepository) {
         this.adviceRepository = adviceRepository;
         this.tagService = tagService;
         this.adviceMapper = adviceMapper;
         this.userService = userService;
+
+        this.userTaskRepository = userTaskRepository;
+        this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
     }
     @Override
     public Advice createAdvice(AdviceDTO adviceDTO) {
         Advice advice = adviceMapper.toEntity(adviceDTO, tagService);
         advice.setAuthor(userService.getUser());
+
+        Task createAdviceTask = taskRepository.findByTaskName("Dodaj pierwszą poradę");
+
+        if (createAdviceTask != null) {
+            // Pobierz zadanie użytkownika
+            UserTask userTask = userTaskRepository.findByUserAndTask(userService.getUser(), createAdviceTask);
+            // Zwiększ postęp zadania
+            userTask.setProgress(userTask.getProgress() + 1);
+
+            // Sprawdź, czy zadanie zostało ukończone
+            if (userTask.getProgress() >= createAdviceTask.getRequiredActions()) {
+                userTask.setCompleted(true);
+                userTask.setCompletionDate(LocalDate.now());
+
+                userService.getUser().setTotalPoints(userService.getUser().getTotalPoints() + createAdviceTask.getPointsAwarded());
+                userRepository.save(userService.getUser()); // Zapisz zmiany w użytkowniku
+            }
+
+            // Zapisz zmiany w UserTask
+            userTaskRepository.save(userTask);
+        }
+
+
         return adviceRepository.save(advice);
     }
     @Override
