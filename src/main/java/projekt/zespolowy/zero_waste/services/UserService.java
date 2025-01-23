@@ -26,6 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -99,6 +100,27 @@ public class UserService implements UserDetailsService {
             userTask.setCompletionDate(null);
 
             // Zapisz obiekt UserTask w bazie
+            userTaskRepository.save(userTask);
+        }
+
+        Task createUserTask = taskRepository.findByTaskName("Pierwsze logowanie");
+
+        if (createUserTask != null) {
+            // Pobierz zadanie użytkownika
+            UserTask userTask = userTaskRepository.findByUserAndTask(user, createUserTask);
+            // Zwiększ postęp zadania
+            userTask.setProgress(userTask.getProgress() + 1);
+
+            // Sprawdź, czy zadanie zostało ukończone
+            if (userTask.getProgress() >= createUserTask.getRequiredActions()) {
+                userTask.setCompleted(true);
+                userTask.setCompletionDate(LocalDate.now());
+
+                user.setTotalPoints(user.getTotalPoints() + createUserTask.getPointsAwarded());
+                userRepository.save(user); // Zapisz zmiany w użytkowniku
+            }
+
+            // Zapisz zmiany w UserTask
             userTaskRepository.save(userTask);
         }
     }

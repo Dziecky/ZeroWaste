@@ -5,10 +5,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
 import projekt.zespolowy.zero_waste.entity.Review;
+import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.mapper.ReviewMapper;
 import projekt.zespolowy.zero_waste.repository.ReviewRepository;
+import projekt.zespolowy.zero_waste.repository.TaskRepository;
+import projekt.zespolowy.zero_waste.repository.UserRepository;
+import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +24,9 @@ import java.util.stream.Collectors;
 public class ReviewService implements IReviewService{
 
     private final ReviewRepository reviewRepository;
-    private final UserService userService;
+    private final UserTaskRepository userTaskRepository;
+    private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -30,6 +38,26 @@ public class ReviewService implements IReviewService{
         newReview.setRating(review.getRating());
         newReview.setTargetUserId(review.getTargetUserId());
         newReview.setUser(review.getUser());
+
+        Task createReviewTask = taskRepository.findByTaskName("Dodaj pierwszą recenzję na profilu użytkownika");
+
+        if (createReviewTask != null) {
+            // Pobierz zadanie użytkownika
+            UserTask userTask = userTaskRepository.findByUserAndTask(review.getUser(), createReviewTask);
+            // Zwiększ postęp zadania
+            userTask.setProgress(userTask.getProgress() + 1);
+
+            // Sprawdź, czy zadanie zostało ukończone
+            if (userTask.getProgress() >= createReviewTask.getRequiredActions()) {
+                userTask.setCompleted(true);
+                userTask.setCompletionDate(LocalDate.now());
+
+                review.getUser().setTotalPoints(review.getUser().getTotalPoints() + createReviewTask.getPointsAwarded());
+                userRepository.save(review.getUser()); // Zapisz zmiany w użytkowniku
+            }
+
+            userTaskRepository.save(userTask);
+        }
 
         return reviewRepository.save(newReview);
     }
