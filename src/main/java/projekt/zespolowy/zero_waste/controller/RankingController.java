@@ -1,5 +1,8 @@
 package projekt.zespolowy.zero_waste.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -30,13 +33,16 @@ public class RankingController {
     public String showGlobalRanking(
             @RequestParam(value = "search", required = false, defaultValue = "") String search,
             @RequestParam(value = "sortBy", required = false, defaultValue = "totalPoints") String sortBy,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
             Model model) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         User loggedUser = customUser.getUser();
 
-        List<User> rankedUsers = userService.getRankedAndFilteredUsers(search, sortBy);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> rankedUsers = userService.getRankedAndFilteredUsers(search, sortBy, pageable);
 
         List<User> allUsers = userService.getAllUsers();
 
@@ -50,12 +56,16 @@ public class RankingController {
             }
         }
 
+        model.addAttribute("ranking", rankedUsers.getContent());
+        model.addAttribute("totalPages", rankedUsers.getTotalPages());
+        model.addAttribute("currentPage", rankedUsers.getNumber());
+        model.addAttribute("totalElements", rankedUsers.getTotalElements());
         model.addAttribute("rankSize", rankSize);
-        model.addAttribute("ranking", rankedUsers);
         model.addAttribute("search", search);
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("userRank", userRank);
         model.addAttribute("loggedUserId", loggedUser.getId());
+        model.addAttribute("pageSize", size);
 
         return "Ranking/ranking";
     }
@@ -64,6 +74,8 @@ public class RankingController {
     public String showFriendsRanking(
             @RequestParam(value = "search", required = false, defaultValue = "") String search,
             @RequestParam(value = "sortBy", required = false, defaultValue = "totalPoints") String sortBy,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
             Model model) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -72,18 +84,6 @@ public class RankingController {
 
         // Pobierz listę znajomych
         List<User> friends = chatRoomService.getFriends(loggedUser);
-
-        // Obliczanie rankingu użytkownika przed filtrami
-        int userRank = 0;
-        int rankSize = friends.size();
-
-        // Sprawdzanie, w jakiej pozycji w rankingu jest aktualnie zalogowany użytkownik
-        for (int i = 0; i < friends.size(); i++) {
-            if (friends.get(i).getId().equals(loggedUser.getId())) {
-                userRank = i + 1; // Ranking zaczyna się od 1
-                break;
-            }
-        }
 
         // Zastosowanie filtrów wyszukiwania
         if (!search.isEmpty()) {
@@ -103,16 +103,37 @@ public class RankingController {
             friends.sort(Comparator.comparing(user -> user.getFirstName() + " " + user.getLastName()));
         }
 
-        // Przekazanie danych do widoku
-        model.addAttribute("rankSize", rankSize);
-        model.addAttribute("friendsRanking", friends);
-        model.addAttribute("userRank", userRank);
-        model.addAttribute("loggedUserId", loggedUser.getId());
+        // Paginacja
+        Pageable pageable = PageRequest.of(page, size);
+        int startIndex = page * size;
+        int endIndex = Math.min((startIndex + size), friends.size());
+
+        List<User> friendsPage = friends.subList(startIndex, endIndex);
+        int totalPages = (int) Math.ceil((double) friends.size() / size);
+
+        // Obliczanie rankingu
+        int userRank = 0;
+        for (int i = 0; i < friends.size(); i++) {
+            if (friends.get(i).getId().equals(loggedUser.getId())) {
+                userRank = i + 1;
+                break;
+            }
+        }
+
+        model.addAttribute("friendsRanking", friendsPage);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalElements", friends.size());
         model.addAttribute("search", search);
         model.addAttribute("sortBy", sortBy);
+        model.addAttribute("userRank", userRank);
+        model.addAttribute("loggedUserId", loggedUser.getId());
+        model.addAttribute("rankSize", friends.size());
+        model.addAttribute("startIndex", startIndex);
 
         return "Ranking/friends-ranking";
     }
+
 
     @GetMapping("/user/profile/{userId}")
     public String showUserProfile(@PathVariable Long userId, Model model) {
