@@ -15,6 +15,11 @@
     .table tbody tr:focus-within {
         background-color: #67db84;
     }
+
+    .pagination .active .page-link {
+        background-color: #007bff;
+        color: white;
+    }
   </style>
 </head>
 <body>
@@ -67,13 +72,31 @@
     <tr th:each="user, iterStat : ${ranking}"
         th:onclick="|window.location.href='/' + (${user.id} == ${loggedUserId} ? 'account' : 'user/profile/' + ${user.id});|"
         style="cursor: pointer;">
-      <td th:text="${iterStat.index + 1}"></td>
+      <td th:text="${(currentPage * pageSize) + iterStat.index + 1}"></td>
       <td th:text="${user.username}"></td>
       <td th:text="${user.firstName + ' ' + user.lastName}"></td>
       <td th:text="${user.totalPoints}"></td>
     </tr>
     </tbody>
   </table>
+
+  <ul class="pagination">
+    <!-- Poprzednia strona -->
+    <li class="page-item" th:if="${currentPage > 0}">
+      <a class="page-link" th:href="@{/ranking(page=${currentPage - 1}, search=${search}, sortBy=${sortBy})}">Previous</a>
+    </li>
+
+    <!-- Strona numerowana -->
+    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+        th:classappend="${i == currentPage} ? 'active' : ''">
+      <a class="page-link" th:href="@{/ranking(page=${i}, search=${search}, sortBy=${sortBy})}" th:text="${i + 1}"></a>
+    </li>
+
+    <!-- Następna strona -->
+    <li class="page-item" th:if="${currentPage < totalPages - 1}">
+      <a class="page-link" th:href="@{/ranking(page=${currentPage + 1}, search=${search}, sortBy=${sortBy})}">Next</a>
+    </li>
+  </ul>
 </div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
