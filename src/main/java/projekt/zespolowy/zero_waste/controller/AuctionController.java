@@ -12,6 +12,7 @@ import projekt.zespolowy.zero_waste.services.BidService;
 
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static projekt.zespolowy.zero_waste.controller.UserController.userService;
@@ -66,6 +67,7 @@ public class AuctionController {
     public String listAuctions(Model model) {
         List<Product> auctions = productService.getAuctionProducts();
         model.addAttribute("products", auctions);
+        model.addAttribute("bidService", bidService);
         return "product/auction-list";
     }
 
@@ -136,6 +138,69 @@ public class AuctionController {
         }
 
         return "redirect:/auctions/" + productId;
+    }
+
+
+    @GetMapping("/edit/{id}")
+    public String showEditAuctionForm(@PathVariable Long id, Model model, Authentication authentication) {
+        Product product = productService.getProductById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid auction ID"));
+
+        String username = authentication.getName();
+
+        // Sprawdź, czy użytkownik jest właścicielem produktu
+        if (!product.getOwner().getUsername().equals(username)) {
+            throw new IllegalArgumentException("You are not authorized to edit this auction");
+        }
+
+        // Sprawdź, czy produkt ma już oferty za pomocą BidService
+        if (bidService.hasAnyBids(product)) {
+            throw new IllegalArgumentException("This product already has bids and cannot be edited");
+        }
+
+        // Sformatuj datę końca aukcji (jeśli istnieje)
+        if (product.getEndDate() != null) {
+            model.addAttribute("formattedEndDate", product.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")));
+        }
+
+        model.addAttribute("product", product);
+        model.addAttribute("categories", ProductCategory.values());
+        model.addAttribute("units", UnitOfMeasure.values());
+
+        return "product/auction-edit-form";
+    }
+
+
+
+    @PostMapping("/update")
+    public String updateAuction(@ModelAttribute("product") Product updatedProduct,
+                                Authentication authentication,
+                                Model model) {
+        if (updatedProduct.getEndDate() == null || updatedProduct.getProductCategory() == null) {
+            model.addAttribute("categories", ProductCategory.values());
+            model.addAttribute("units", UnitOfMeasure.values());
+            model.addAttribute("error", "Please fill all required fields");
+            return "product/auction-edit-form";
+        }
+        Product existingProduct = productService.getProductById(updatedProduct.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Product ID"));
+
+        List<Bid> existingBids = bidService.getBidsForProduct(existingProduct);
+        if (!existingBids.isEmpty()) {
+            updatedProduct.setPrice(existingProduct.getPrice());
+        }
+
+        String username = authentication.getName();
+        if (!existingProduct.getOwner().getUsername().equals(username)) {
+            throw new IllegalArgumentException("You are not authorized to update this auction");
+        }
+        updatedProduct.setOwner(existingProduct.getOwner());
+        updatedProduct.setCreatedAt(existingProduct.getCreatedAt());
+        updatedProduct.setAuction(true);
+        updatedProduct.setAvailable(true);
+
+        productService.saveProduct(updatedProduct);
+        return "redirect:/auctions/list";
     }
 }
 
