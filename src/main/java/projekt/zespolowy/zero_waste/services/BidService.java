@@ -17,7 +17,6 @@ public class BidService {
 
     private final BidRepository bidRepository;
     private final ProductService productService;
-
     @Autowired
     public BidService(BidRepository bidRepository, ProductService productService) {
         this.bidRepository = bidRepository;
@@ -77,4 +76,9 @@ public class BidService {
     public void saveBid(Bid bid) {
         bidRepository.save(bid);
     }
+
+    public boolean hasAnyBids(Product product) {
+        return !getBidsForProduct(product).isEmpty();
+    }
+
 }
