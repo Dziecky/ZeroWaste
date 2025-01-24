@@ -12,6 +12,5 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     List<Bid> findByProductOrderByAmountDesc(Product product);
     List<Bid> findByUserOrderByCreatedAtDesc(User user);
     Optional<Bid> findFirstByProductOrderByAmountDesc(Product product);
-
 }
 

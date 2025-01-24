@@ -13,24 +13,26 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findByName(String name);
 
-    List<Product>findAllByOrderByCreatedAtDesc();
-    Page<Product> findAllByOrderByCreatedAtDesc(Pageable pageable);
-    Page<Product> findByProductCategory(ProductCategory productCategory, Pageable pageable);
+    List<Product>findByAuctionFalseOrderByCreatedAtDesc();
+    Page<Product> findByAuctionFalseOrderByCreatedAtDesc(Pageable pageable);
+    Page<Product> findByProductCategoryAndAuctionFalse(ProductCategory productCategory, Pageable pageable);
     Page<Product> findAllByOrderByCreatedAtAsc(Pageable pageable);
-    Page<Product> findByProductCategoryOrderByPriceAsc(ProductCategory productCategory, Pageable pageable);
-    Page<Product> findByProductCategoryOrderByPriceDesc(ProductCategory productCategory, Pageable pageable);
-    Page<Product> findAllByOrderByPriceAsc(Pageable pageable);
-    Page<Product> findAllByOrderByPriceDesc(Pageable pageable);
-    Page<Product> findByProductCategoryOrderByCreatedAtDesc(ProductCategory productCategory, Pageable pageable);
-    Page<Product> findByNameContainingIgnoreCaseOrderByPriceAsc(String name, Pageable pageable);
-    Page<Product> findByNameContainingIgnoreCaseOrderByPriceDesc(String name, Pageable pageable);
-    Page<Product> findByNameContainingIgnoreCaseOrderByCreatedAtDesc(String name, Pageable pageable);
+    Page<Product> findByProductCategoryAndAuctionFalseOrderByPriceAsc(ProductCategory productCategory, Pageable pageable);
+    Page<Product> findByProductCategoryAndAuctionFalseOrderByPriceDesc(ProductCategory productCategory, Pageable pageable);
+    Page<Product> findByAuctionFalseOrderByPriceAsc(Pageable pageable);
+    Page<Product> findByAuctionFalseOrderByPriceDesc(Pageable pageable);
+    Page<Product> findByProductCategoryAndAuctionFalseOrderByCreatedAtDesc(ProductCategory productCategory, Pageable pageable);
+    Page<Product> findByNameContainingIgnoreCaseAndAuctionFalseOrderByPriceAsc(String name, Pageable pageable);
+    Page<Product> findByNameContainingIgnoreCaseAndAuctionFalseOrderByPriceDesc(String name, Pageable pageable);
+    Page<Product> findByNameContainingIgnoreCaseAndAuctionFalseOrderByCreatedAtDesc(String name, Pageable pageable);
 
-    Page<Product> findByProductCategoryAndNameContainingIgnoreCaseOrderByPriceAsc(ProductCategory category, String name, Pageable pageable);
-    Page<Product> findByProductCategoryAndNameContainingIgnoreCaseOrderByPriceDesc(ProductCategory category, String name, Pageable pageable);
-    Page<Product> findByProductCategoryAndNameContainingIgnoreCaseOrderByCreatedAtDesc(ProductCategory category, String name, Pageable pageable);
+    Page<Product> findByProductCategoryAndNameContainingIgnoreCaseAndAuctionFalseOrderByPriceAsc(ProductCategory category, String name, Pageable pageable);
+    Page<Product> findByProductCategoryAndNameContainingIgnoreCaseAndAuctionFalseOrderByPriceDesc(ProductCategory category, String name, Pageable pageable);
+    Page<Product> findByProductCategoryAndNameContainingIgnoreCaseAndAuctionFalseOrderByCreatedAtDesc(ProductCategory category, String name, Pageable pageable);
 
     List<Product> findByAuctionTrueAndAvailableTrue();
 
     List<Product> findByAuctionFalseAndAvailableTrue();
+
+
 }

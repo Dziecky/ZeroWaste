@@ -61,14 +61,6 @@ public class ProductController {
                 pageProducts = productService.getProductsByNameContainingIgnoreCaseSortedByDateDesc(search, paging);
             }
         }
-        List<Product> nonAuctionProducts = pageProducts.getContent().stream()
-                .filter(product -> !product.isAuction())
-                .collect(Collectors.toList());
-
-
-        int start = Math.min(page * 10, nonAuctionProducts.size());
-        int end = Math.min((page + 1) * 10, nonAuctionProducts.size());
-        pageProducts = new PageImpl<>(nonAuctionProducts.subList(start, end), paging, nonAuctionProducts.size());
         model.addAttribute("products", pageProducts.getContent());
         model.addAttribute("categories", ProductCategory.values());
         model.addAttribute("selectedCategory", category);
