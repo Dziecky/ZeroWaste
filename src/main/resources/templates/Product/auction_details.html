@@ -12,11 +12,11 @@
     <link th:href="@{/styles/main.css}" rel="stylesheet"/>
     <style>
         :root {
-            --primary-color: #2563eb;
-            --success-color: #16a34a;
-            --warning-color: #ca8a04;
-            --background-color: #f8fafc;
-            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --primary-color: #28a745;
+            --secondary-color: #218838;
+            --background-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --card-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         body {
@@ -27,57 +27,89 @@
         }
 
         .auction-container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 2rem auto;
-            padding: 0 1rem;
+            padding: 0 15px;
         }
 
         .auction-card {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: var(--card-shadow);
-            padding: 2rem;
-            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
 
-        .auction-title {
-            font-size: 2.25rem;
+        .auction-header {
+            display: flex;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem;
+            align-items: center;
+        }
+        .auction-header h1 {
+            margin: 0;
+            font-size: 2rem;
             font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e2e8f0;
         }
-
         .auction-details {
             margin-bottom: 2rem;
         }
+        .auction-content {
+            display: flex;
+            padding: 2rem;
+        }
 
+        .auction-image {
+            flex: 1;
+            margin-right: 2rem;
+        }
         .price-info {
-            background: #f1f5f9;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
+            display: flex;
+            justify-content: space-between;
             margin: 1.5rem 0;
+            padding: 1rem;
+            background-color: #f1f3f5;
+            border-radius: 10px;
         }
 
         .current-price {
-            font-size: 2rem;
+            font-size: 1.5rem;
+            color: var(--primary-color);
             font-weight: 700;
-            color: var(--success-color);
-            margin-bottom: 0.5rem;
         }
 
         .end-date {
-            font-size: 1.1rem;
-            color: var(--warning-color);
-            font-weight: 600;
+            color: #6c757d;
         }
 
+        .auction-image {
+            flex: 1;
+            margin-right: 2rem;
+        }
+
+        .auction-image img {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .auction-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .auction-details {
+            flex: 1;
+        }
+
+
         .bid-form {
-            background: #f8fafc;
+            background-color: #f8f9fa;
             padding: 1.5rem;
-            border-radius: 0.75rem;
-            margin: 1.5rem 0;
+            border-radius: 15px;
         }
 
         .form-group {
@@ -101,12 +133,16 @@
         }
 
         .btn-bid:hover {
+            background-color: var(--primary-color);
             transform: translateY(-2px);
             box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
         }
 
         .bid-history {
             margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 15px;
         }
 
         .bid-history h3 {
@@ -114,6 +150,9 @@
             font-weight: 600;
             margin-bottom: 1rem;
             color: #1e293b;
+        }
+        .bid-history table {
+            background-color: white;
         }
 
         .table {
@@ -154,20 +193,13 @@
         }
 
         @media (max-width: 768px) {
-            .auction-title {
-                font-size: 1.75rem;
+            .auction-content {
+                flex-direction: column;
             }
 
-            .current-price {
-                font-size: 1.5rem;
-            }
-
-            .table {
-                font-size: 0.875rem;
-            }
-
-            .bid-form {
-                padding: 1rem;
+            .auction-image {
+                margin-right: 0;
+                margin-bottom: 1.5rem;
             }
         }
 
@@ -175,50 +207,65 @@
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
+
 <div class="container auction-container">
     <div class="auction-card">
-        <h1 class="auction-title" th:text="${product.name}">Product Name</h1>
+        <div class="auction-header">
+            <h1 th:text="${product.name}">Product Name</h1>
+        </div>
 
-        <div class="auction-details">
-            <p class="lead" th:text="${product.description}">Description</p>
-
-            <div class="price-info">
-                <div class="current-price">
-                    <i class="fas fa-gavel me-2"></i>
-                    Current Price: <span th:text="${product.price}">0.00</span> zł
-                </div>
-                <div class="end-date">
-                    <i class="fas fa-clock me-2"></i>
-                    Ends: <span th:text="${#temporals.format(product.endDate, 'dd-MM-yyyy HH:mm')}">End Date</span>
-                </div>
+        <div class="auction-content">
+            <div class="auction-image">
+                <img th:src="${product.imageUrl}" alt="Product Image">
             </div>
 
-            <div th:if="${product.available && !product.endDate.isBefore(T(java.time.LocalDateTime).now())}"
-                 class="bid-form">
-                <form th:action="@{/auctions/bid}" method="post">
-                    <input type="hidden" name="productId" th:value="${product.id}" />
-                    <div class="form-group">
-                        <label for="amount" class="form-label">Your Bid Amount (zł):</label>
-                        <input type="number"
-                               class="form-control"
-                               id="amount"
-                               name="amount"
-                               th:min="${product.price + 0.01}"
-                               step="0.01"
-                               required />
-                        <small class="text-muted">Minimum bid: <span th:text="${product.price + 0.01}">0.01</span> zł</small>
+            <div class="auction-details">
+                <p class="lead" th:text="${product.description}">Product Description</p>
+
+                <div class="price-info">
+                    <div>
+                        <div class="text-muted">Current Bid</div>
+                        <div class="current-price">
+                            <i class="fas fa-gavel me-2"></i>
+                            <span th:text="${product.price + ' zł'}">0.00 zł</span>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-bid">
-                        <i class="fas fa-gavel me-2"></i>
-                        Place Bid
-                    </button>
-                </form>
-            </div>
+                    <div>
+                        <div class="text-muted">Auction Ends</div>
+                        <div class="end-date">
+                            <i class="fas fa-clock me-2"></i>
+                            <span th:text="${#temporals.format(product.endDate, 'dd-MM-yyyy HH:mm')}">End Date</span>
+                        </div>
+                    </div>
+                </div>
 
-            <div th:if="${product.endDate.isBefore(T(java.time.LocalDateTime).now())}"
-                 class="auction-ended">
-                <i class="fas fa-hourglass-end me-2"></i>
-                This auction has ended.
+                <div th:if="${product.available && !product.endDate.isBefore(T(java.time.LocalDateTime).now())}"
+                     class="bid-form">
+                    <form th:action="@{/auctions/bid}" method="post">
+                        <input type="hidden" name="productId" th:value="${product.id}" />
+                        <div class="form-group mb-3">
+                            <label for="amount" class="form-label">Your Bid Amount (zł):</label>
+                            <input type="number"
+                                   class="form-control"
+                                   id="amount"
+                                   name="amount"
+                                   th:min="${product.price + 0.01}"
+                                   step="0.01"
+                                   required />
+                            <small class="text-muted">Minimum bid: <span th:text="${product.price + 0.01}">0.01</span> zł</small>
+                        </div>
+                        <button type="submit" class="btn btn-bid w-100">
+                            <i class="fas fa-gavel me-2"></i>
+                            Place Bid
+                        </button>
+                    </form>
+                </div>
+
+                <div th:if="${product.endDate.isBefore(T(java.time.LocalDateTime).now())}"
+                     class="auction-ended alert alert-warning mt-3">
+                    <i class="fas fa-hourglass-end me-2"></i>
+                    This auction has ended.
+                </div>
             </div>
         </div>
 
@@ -227,7 +274,7 @@
                 <i class="fas fa-history me-2"></i>
                 Bid History
             </h3>
-            <table class="table">
+            <table class="table table-striped">
                 <thead>
                 <tr>
                     <th>Bidder</th>
@@ -252,15 +299,16 @@
         </div>
     </div>
 
-    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+    <div th:if="${successMessage}" class="alert alert-success mt-3" role="alert">
         <i class="fas fa-check-circle me-2"></i>
         <span th:text="${successMessage}"></span>
     </div>
-    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+    <div th:if="${errorMessage}" class="alert alert-danger mt-3" role="alert">
         <i class="fas fa-exclamation-circle me-2"></i>
         <span th:text="${errorMessage}"></span>
     </div>
 </div>
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="

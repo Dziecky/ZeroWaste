@@ -164,6 +164,26 @@
             transform: translateY(-3px);
             color: white;
         }
+        .edit-auction-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .edit-auction-button:hover {
+            background-color: #138496;
+            transform: scale(1.1);
+        }
+
     </style>
 </head>
 <body>
@@ -180,6 +200,11 @@
                 <span class="badge-auction">
                     <i class="fas fa-gavel"></i> Active Auction
                 </span>
+                <a th:if="${#authentication.name == product.owner.username && !bidService.hasAnyBids(product)}"
+                   th:href="@{/auctions/edit/{productId}(productId=${product.id})}"
+                   class="edit-auction-button">
+                    <i class="fas fa-edit"></i>
+                </a>
             </div>
 
             <div class="auction-content">
@@ -196,7 +221,7 @@
                 <div class="auction-details">
                     <span>
                         <i class="fas fa-users"></i>
-                        <span>2 bids</span>
+                        <span>x bids</span>
                     </span>
                     <span>
                         <i class="fas fa-user"></i>

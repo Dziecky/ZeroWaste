@@ -105,54 +105,63 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<Product> getProductsByCategory(ProductCategory category, Pageable pageable) {
-        return productRepository.findByProductCategory(category, pageable);
+        return productRepository.findByProductCategoryAndAuctionFalse(category, pageable);
     }
 
 
     public Page<Product> getProductsByNameContainingIgnoreCaseSortedByPriceAsc(String search, Pageable pageable) {
         if (search == null || search.trim().isEmpty()) {
-            return productRepository.findAllByOrderByPriceAsc(pageable);
+            return productRepository.findByAuctionFalseOrderByPriceAsc(pageable);
         }
-        return productRepository.findByNameContainingIgnoreCaseOrderByPriceAsc(search.trim(), pageable);
+        return productRepository.findByNameContainingIgnoreCaseAndAuctionFalseOrderByPriceAsc(search.trim(), pageable);
     }
 
     public Page<Product> getProductsByNameContainingIgnoreCaseSortedByPriceDesc(String search, Pageable pageable) {
         if (search == null || search.trim().isEmpty()) {
-            return productRepository.findAllByOrderByPriceDesc(pageable);
+            return productRepository.findByAuctionFalseOrderByPriceDesc(pageable);
         }
-        return productRepository.findByNameContainingIgnoreCaseOrderByPriceDesc(search.trim(), pageable);
+        return productRepository.findByNameContainingIgnoreCaseAndAuctionFalseOrderByPriceDesc(search.trim(), pageable);
     }
 
     public Page<Product> getProductsByNameContainingIgnoreCaseSortedByDateDesc(String search, Pageable pageable) {
         if (search == null || search.trim().isEmpty()) {
-            return productRepository.findAllByOrderByCreatedAtDesc(pageable);
+            return productRepository.findByAuctionFalseOrderByCreatedAtDesc(pageable);
         }
-        return productRepository.findByNameContainingIgnoreCaseOrderByCreatedAtDesc(search.trim(), pageable);
+        return productRepository.findByNameContainingIgnoreCaseAndAuctionFalseOrderByCreatedAtDesc(search.trim(), pageable);
     }
+
     public Page<Product> getProductsByCategoryAndNameContainingIgnoreCaseSortedByPriceAsc(ProductCategory category, String search, Pageable pageable) {
         if (search == null || search.trim().isEmpty()) {
-            return productRepository.findByProductCategoryOrderByPriceAsc(category, pageable);
+            return productRepository.findByProductCategoryAndAuctionFalseOrderByPriceAsc(category, pageable);
         }
-        return productRepository.findByProductCategoryAndNameContainingIgnoreCaseOrderByPriceAsc(category, search.trim(), pageable);
+        return productRepository.findByProductCategoryAndNameContainingIgnoreCaseAndAuctionFalseOrderByPriceAsc(category, search.trim(), pageable);
     }
 
     public Page<Product> getProductsByCategoryAndNameContainingIgnoreCaseSortedByPriceDesc(ProductCategory category, String search, Pageable pageable) {
         if (search == null || search.trim().isEmpty()) {
-            return productRepository.findByProductCategoryOrderByPriceDesc(category, pageable);
+            return productRepository.findByProductCategoryAndAuctionFalseOrderByPriceDesc(category, pageable);
         }
-        return productRepository.findByProductCategoryAndNameContainingIgnoreCaseOrderByPriceDesc(category, search.trim(), pageable);
+        return productRepository.findByProductCategoryAndNameContainingIgnoreCaseAndAuctionFalseOrderByPriceDesc(category, search.trim(), pageable);
     }
 
     public Page<Product> getProductsByCategoryAndNameContainingIgnoreCaseSortedByDateDesc(ProductCategory category, String search, Pageable pageable) {
         if (search == null || search.trim().isEmpty()) {
-            return productRepository.findByProductCategoryOrderByCreatedAtDesc(category, pageable);
+            return productRepository.findByProductCategoryAndAuctionFalseOrderByCreatedAtDesc(category, pageable);
         }
-        return productRepository.findByProductCategoryAndNameContainingIgnoreCaseOrderByCreatedAtDesc(category, search.trim(), pageable);
+        return productRepository.findByProductCategoryAndNameContainingIgnoreCaseAndAuctionFalseOrderByCreatedAtDesc(category, search.trim(), pageable);
     }
+
+    public Page<Product> getProductsNotOnAuction(Pageable pageable) {
+        return productRepository.findByAuctionFalseOrderByCreatedAtDesc(pageable);
+    }
+
     public List<Product> getAuctionProducts() {
         return productRepository.findByAuctionTrueAndAvailableTrue();
     }
     public List<Product> getProductsNotOnAuction() {
         return productRepository.findByAuctionFalseAndAvailableTrue();
     }
+
+
+
 }

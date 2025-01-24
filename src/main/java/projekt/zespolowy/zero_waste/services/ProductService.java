@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
-
- List<Product>getAllProducts();
+ List<Product> getAllProducts();
  Page<Product> getAllProducts(Pageable pageable);
 
  Product saveProduct(Product product);
@@ -30,8 +29,6 @@ public interface ProductService {
  Page<Product> getProductsByCategoryAndNameContainingIgnoreCaseSortedByPriceDesc(ProductCategory category, String search, Pageable pageable);
  Page<Product> getProductsByCategoryAndNameContainingIgnoreCaseSortedByDateDesc(ProductCategory category, String search, Pageable pageable);
 
+ Page<Product> getProductsNotOnAuction(Pageable pageable);
  List<Product> getAuctionProducts();
- List<Product> getProductsNotOnAuction();
-
-
 }
