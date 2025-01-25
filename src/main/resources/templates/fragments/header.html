@@ -51,9 +51,6 @@
             <li class="nav-item" th:class="${activePage == 'faq'} ? 'nav-item active' : 'nav-item'">
                 <a class="nav-link" th:href="@{/faq}">FAQ</a>
             </li>
-            <li class="nav-item" th:class="${activePage == 'orders'} ? 'nav-item active' : 'nav-item'">
-                <a class="nav-link" th:href="@{/orders}">Orders</a>
-            </li>
         </ul>
 
         <ul class="navbar-nav ml-auto">
@@ -86,7 +83,8 @@
                     <span sec:authentication="name"></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                    <a class="dropdown-item" th:href="@{/accountDetails}">Your Account</a>
+                    <a class="dropdown-item" th:href="@{/accountDetails}">My Account</a>
+                    <a class="dropdown-item" th:href="@{/orders}">My Orders</a>
                     <div class="dropdown-divider"></div>
                     <form th:action="@{/logout}" method="post" style="margin: 0;">
                         <!-- TODO Token CSRF -->
