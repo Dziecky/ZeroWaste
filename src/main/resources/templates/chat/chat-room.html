@@ -6,10 +6,12 @@
   <title>Chat</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="/styles/chat.css" rel="stylesheet"> <!-- Ensure correct path -->
+  <link th:href="@{/styles/chat.css}" rel="stylesheet">
+  <link th:href="@{/styles/main.css}" rel="stylesheet">
+  <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
-  <script src="/scripts/chat.js" defer></script> <!-- Ensure correct path -->
+  <script src="/scripts/chat.js" defer></script>
 </head>
 <body class="d-flex flex-column bg-light vh-100">
 

@@ -1,10 +1,4 @@
 /* faq.css */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    margin: 0;
-    padding: 0;
-}
 
 .faq-container {
     max-width: 900px;
@@ -95,6 +89,30 @@ button:hover {
 
 .text-secondary {
     color: #888;
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+    background-color: #343a40; /* Dark background */
+    border: none;
+}
+
+.dropdown-menu .dropdown-item {
+    color: #cfd8dc; /* Light gray text */
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #495057; /* Slightly lighter background */
+    color: #ffffff; /* White text */
+}
+
+/* Toggler button (mobile view) */
+.navbar-toggler {
+    border-color: #cfd8dc;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba%28207, 216, 220, 1%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 
 /* Animations */
