@@ -19,18 +19,18 @@
             <p class="lead">Your environmental contribution overview.</p>
         </div>
 
-
+        <!-- Eco Impact Section (Only if points are available) -->
         <div th:if="${points != null and points > 0}">
             <div class="row">
-
                 <div class="col-md-6">
                     <h3>Summary</h3>
                     <ul>
-                        <li><strong>Water Saved:</strong> <span th:text="${#numbers.formatDecimal(waterSaved, 0, 2)}"></span> liters</li>
-                        <li><strong>CO₂ Reduced:</strong> <span th:text="${#numbers.formatDecimal(co2Saved, 0, 2)}"></span> kg</li>
-                        <li><strong>Energy Saved:</strong> <span th:text="${#numbers.formatDecimal(energySaved, 0, 2)}"></span> kWh</li>
-                        <li><strong>Waste Reduced:</strong> <span th:text="${#numbers.formatDecimal(wasteReduced, 0, 2)}"></span> kg</li>
+                        <li><strong>Water Saved:</strong> <span th:text="${waterSaved}"></span> liters</li>
+                        <li><strong>CO₂ Reduced:</strong> <span th:text="${co2Saved}"></span> kg</li>
+                        <li><strong>Energy Saved:</strong> <span th:text="${energySaved}"></span> kWh</li>
+                        <li><strong>Waste Reduced:</strong> <span th:text="${wasteReduced}"></span> kg</li>
                     </ul>
+
                 </div>
 
                 <!-- Historical Data Section -->
@@ -49,11 +49,12 @@
                         <tbody>
                         <tr th:each="history, iterStat : ${historyDates}">
                             <td th:text="${history}"></td>
-                            <td th:text="${#numbers.formatDecimal(waterSavedHistory[iterStat.index], 0, 2)}"></td>
-                            <td th:text="${#numbers.formatDecimal(co2SavedHistory[iterStat.index], 0, 2)}"></td>
-                            <td th:text="${#numbers.formatDecimal(energySavedHistory[iterStat.index], 0, 2)}"></td>
-                            <td th:text="${#numbers.formatDecimal(wasteReducedHistory[iterStat.index], 0, 2)}"></td>
+                            <td th:text="${waterSavedHistory[iterStat.index]}"></td>
+                            <td th:text="${co2SavedHistory[iterStat.index]}"></td>
+                            <td th:text="${energySavedHistory[iterStat.index]}"></td>
+                            <td th:text="${wasteReducedHistory[iterStat.index]}"></td>
                         </tr>
+
                         </tbody>
                     </table>
                 </div>
@@ -71,6 +72,53 @@
                 <button type="submit" class="btn btn-primary">Generate Monthly Report</button>
             </form>
         </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h3>Purchases</h3>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Category</th> <!-- Добавляем столбец категории -->
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="purchase : ${purchases}">
+                        <td th:text="${purchase.productName}"></td>
+                        <td th:text="${purchase.productCategory}"></td>
+                        <td th:text="${purchase.quantity}"></td>
+                        <td th:text="${purchase.totalPrice}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-6">
+                <h3>Sales</h3>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="sale : ${sales}">
+                        <td th:text="${sale.productName}"></td>
+                        <td th:text="${sale.productCategory}"></td>
+                        <td th:text="${sale.quantity}"></td>
+                        <td th:text="${sale.totalPrice}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </main>
 
