@@ -17,7 +17,7 @@ public interface ProductService {
  Optional<Product> getProductById(Long id);
 
  void deleteProduct(Long id);
-
+ List<Product> getAvailableProducts();
  List<Product> getProductsByIds(List<Long> ids);
  Page<Product> getProductsByCategory(ProductCategory category, Pageable pageable);
 

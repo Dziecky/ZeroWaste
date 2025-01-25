@@ -2,7 +2,6 @@ package projekt.zespolowy.zero_waste.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,7 +18,6 @@ import projekt.zespolowy.zero_waste.services.ProductService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/products")
@@ -73,7 +71,12 @@ public class ProductController {
         return "/product/list-products";
     }
 
-
+    @GetMapping("/")
+    public String index(Model model) {
+        List<Product> availableProducts = productService.getAvailableProducts();
+        model.addAttribute("products", availableProducts);
+        return "index";
+    }
 
     @GetMapping("/showFormForAddProduct")
     public String showFormForAddProduct(Model model) {

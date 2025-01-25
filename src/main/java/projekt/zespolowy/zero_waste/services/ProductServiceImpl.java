@@ -99,6 +99,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> getAvailableProducts() {
+        return productRepository.findAllByAvailableTrue();
+    }
+
+    @Override
     public List<Product> getProductsByIds(List<Long> ids) {
         return productRepository.findAllById(ids);
     }
