@@ -13,6 +13,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findByName(String name);
 
+    List<Product> findAllByAvailableTrue();
     List<Product>findByAuctionFalseOrderByCreatedAtDesc();
     Page<Product> findByAuctionFalseOrderByCreatedAtDesc(Pageable pageable);
     Page<Product> findByProductCategoryAndAuctionFalse(ProductCategory productCategory, Pageable pageable);
