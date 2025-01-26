@@ -72,7 +72,7 @@
                     <a th:href="@{/orders}" class="dropdown-item">My Orders</a>
                     <div class="dropdown-divider"></div>
                     <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="dropdown-item">Logout</button>
+                        <button type="submit" class="dropdown-item logout">Logout</button>
                     </form>
                 </div>
             </li>
@@ -86,6 +86,15 @@
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notificationsDropdown">
                     <div id="notifications-list" class="dropdown-item">No new notifications</div>
                 </div>
+            </li>
+
+<!--            Chat-->
+            <li class="nav-links" sec:authorize="isAuthenticated()"
+                th:class="${activePage == 'chat-room'} ? 'nav-item active' : 'nav-item'">
+                <a class="nav-links" th:href="@{/chat-room}">
+                    <i class="bi bi-chat-dots"></i>
+<!--                    Messages-->
+                </a>
             </li>
 
 <!--            Burger menu-->
