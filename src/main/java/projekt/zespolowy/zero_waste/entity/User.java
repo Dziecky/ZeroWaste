@@ -9,6 +9,7 @@ import projekt.zespolowy.zero_waste.entity.EducationalEntities.Challenge;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Tip;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
+import projekt.zespolowy.zero_waste.entity.PrivacySettings;
 
 import java.util.Collection;
 import java.util.List;
@@ -100,6 +101,9 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "challenge_id"))
     private List<Challenge> challenges;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PrivacySettings privacySettings;
 }
 
 
