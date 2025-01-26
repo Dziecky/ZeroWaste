@@ -12,6 +12,10 @@
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
   <script src="/scripts/chat.js" defer></script>
+
+  <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+  <script src="/scripts/navbar.js" defer></script>
+
 </head>
 <body class="d-flex flex-column bg-light vh-100">
 
@@ -19,7 +23,7 @@
   <div th:replace="~{fragments/header :: header}"></div>
 </header>
 
-<main class="d-flex flex-grow-1 mt-3 mx-auto shadow rounded bg-white" style="width: 80%; min-width: 600px;">
+<main class="container d-flex flex-grow-1 mx-auto shadow rounded bg-white" style="width: 80%; min-width: 600px;">
 
   <!-- Chat Room List -->
   <aside id="chat-room-list" class="border-right p-3" style="width: 25%; background-color: #f8f9fa;">

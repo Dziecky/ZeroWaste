@@ -4,9 +4,13 @@
   <title>Ustawienia Preferencji</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+  <script src="/scripts/navbar.js" defer></script>
+
 </head>
 <body>
-<div class="container mt-5">
+<div class="container">
   <h1>Ustawienia Preferencji</h1>
   <form th:action="@{/preferences}" method="post">
     <div class="form-group">

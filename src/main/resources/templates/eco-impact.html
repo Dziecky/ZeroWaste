@@ -7,13 +7,17 @@
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link th:href="@{styles/main.css}" rel="stylesheet"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+
 </head>
 <body class="d-flex flex-column h-100">
 
 <div th:replace="~{fragments/header :: header}"></div>
 
 <main role="main" class="flex-shrink-0">
-    <div class="container mt-5">
+    <div class="container">
         <div class="jumbotron text-center bg-success text-white shadow">
             <h1 class="display-4">Eco Impact</h1>
             <p class="lead">Your environmental contribution overview.</p>
@@ -91,6 +95,12 @@
                         <td th:text="${purchase.price}"></td>
                     </tr>
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-right"><strong>Total Purchases:</strong></td>
+                        <td th:text="${totalPurchases}"></td>
+                    </tr>
+                    </tfoot>
                 </table>
             </div>
 
@@ -113,6 +123,12 @@
                         <td th:text="${sale.price}"></td>
                     </tr>
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-right"><strong>Total Sales:</strong></td>
+                        <td th:text="${totalSales}"></td>
+                    </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
