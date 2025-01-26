@@ -91,6 +91,12 @@
                         <td th:text="${purchase.price}"></td>
                     </tr>
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-right"><strong>Total Purchases:</strong></td>
+                        <td th:text="${totalPurchases}"></td>
+                    </tr>
+                    </tfoot>
                 </table>
             </div>
 
@@ -113,6 +119,12 @@
                         <td th:text="${sale.price}"></td>
                     </tr>
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-right"><strong>Total Sales:</strong></td>
+                        <td th:text="${totalSales}"></td>
+                    </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
