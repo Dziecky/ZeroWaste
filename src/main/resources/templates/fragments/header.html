@@ -7,6 +7,9 @@
     <title>Zero Waste</title>
     <link th:href="@{/styles/main.css}" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
 </head>
 <body>
 <nav class="navbar" th:fragment="header">
@@ -85,8 +88,6 @@
                 </div>
             </li>
 
-
-
 <!--            Burger menu-->
             <div class="menu-icon" onclick="toggleMenu()">
                 <div class="line line1"></div>
@@ -97,37 +98,7 @@
 
     </div>
 </nav>
-<script>
-    function toggleMenu() {
-        const menuIcon = document.querySelector('.menu-icon');
-        const navMenu = document.querySelector('.nav-menu');
-        const navMenuRight = document.querySelector('.nav-menu-right');
 
-        menuIcon.classList.toggle('toggle');
-        navMenu.classList.toggle('active');
-        navMenuRight.classList.toggle('active');
-    }
-
-    // Dropdown functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const dropdownToggle = document.querySelector('.dropdown-toggle');
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-
-        if (dropdownToggle) {
-            dropdownToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                dropdownMenu.classList.toggle('show');
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.remove('show');
-                }
-            });
-        }
-    });
-</script>
 
 </body>
 </html>
