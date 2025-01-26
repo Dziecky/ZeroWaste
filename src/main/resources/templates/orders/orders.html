@@ -21,16 +21,22 @@
     <table>
         <thead>
         <tr>
+            <th>Image</th>
+            <th>Order Identifier</th>
             <th>Product Name</th>
             <th>Quantity</th>
             <th>Total Price</th>
+            <th>Bought From</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="order : ${orders}">
-            <td th:text="${order.product.name}"></td>
-            <td th:text="${order.product.quantity}"></td>
-            <td th:text="${order.product.price}"></td>
+            <td><img th:src="${order.imageUrl}" alt="Product Image"></td>
+            <td th:text="${order.orderId}"></td>
+            <td th:text="${order.productName}"></td>
+            <td th:text="${order.quantity}"></td>
+            <td th:text="${order.price}"></td>
+            <td th:text="${order.ownerName}"></td>
         </tr>
         </tbody>
     </table>
