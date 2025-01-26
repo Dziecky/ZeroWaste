@@ -94,7 +94,13 @@ public class EcoImpactController {
 
 
         User user = userService.findById(userId);
+        int totalPurchases = purchases.stream()
+                .mapToInt(p -> (int) p.getProduct().getQuantity())
+                .sum();
 
+        int totalSales = sales.stream()
+                .mapToInt(p -> (int) p.getQuantity())
+                .sum();
 
         double waterSaved = history.stream().mapToDouble(EcoImpactHistory::getWaterSaved).sum();
         double co2Saved = history.stream().mapToDouble(EcoImpactHistory::getCo2Saved).sum();
@@ -139,6 +145,8 @@ public class EcoImpactController {
 
         model.addAttribute("purchases", purchaseDTOs);
         model.addAttribute("sales", salesDTOs);
+        model.addAttribute("totalPurchases", totalPurchases);
+        model.addAttribute("totalSales", totalSales);
 
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -153,11 +161,11 @@ public class EcoImpactController {
     @PostMapping("/generate-report")
     public String generateMonthlyReports(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = userService.findByUsername(auth.getName());
+        User sender = userService.findByUsername("Administration");
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
         if (isAdmin) {
-            monthlyReportService.generateAndSendMonthlyReports(currentUser);
+            monthlyReportService.generateAndSendMonthlyReports(sender);
             model.addAttribute("reportGenerated", true);
         }
 
