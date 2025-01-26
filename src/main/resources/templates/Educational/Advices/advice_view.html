@@ -3,6 +3,10 @@
 <head>
     <title th:text="${adviceDTO.title}">Advice Details</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
