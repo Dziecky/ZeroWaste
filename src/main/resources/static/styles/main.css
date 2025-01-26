@@ -4,8 +4,12 @@ body {
 }
 
 .container {
-  margin-top: 10vh;
+  margin-top: 8vh;
 }
+.container .mt-5{
+  margin-top: 8vh;
+}
+
 
 /* Buttons styling */
 .btn-outline-light {

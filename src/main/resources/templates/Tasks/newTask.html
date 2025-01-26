@@ -37,7 +37,7 @@
 
 <div th:replace="~{fragments/header :: header}"></div>
 
-<div class="container mt-5">
+<div class="container">
     <h1>Create New Task</h1>
     <form th:action="@{/tasks/newTask}" th:object="${task}" method="post">
         <div class="form-group">
