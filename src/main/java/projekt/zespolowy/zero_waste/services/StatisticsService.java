@@ -7,6 +7,7 @@ import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.repository.OrderRepository;
 import projekt.zespolowy.zero_waste.repository.ProductRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,8 +22,19 @@ public class StatisticsService {
         return orderRepository.findByUserId(userId);
     }
 
-
     public List<Product> getSalesByUser(Long userId) {
-        return productRepository.findByOwnerIdAndAvailableFalse(userId);
+        List<Order> allOrders = orderRepository.findAll();
+        List<Product> productsSoldByUser = new ArrayList<>();
+        for (Order order : allOrders) {
+            Product product = order.getProduct();
+
+            if (product.getOwner().getId().equals(userId)) {
+                productsSoldByUser.add(product);
+            }
+        }
+
+        return productsSoldByUser;
     }
+
+
 }
