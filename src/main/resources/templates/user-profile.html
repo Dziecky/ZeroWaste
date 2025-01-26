@@ -23,15 +23,18 @@
              class="profile-image mb-4"/>
         <div class="user-card card mb-4">
           <div class="card-body">
-            <h2 class="card-title h4" th:text="${user.firstName} + ' ' + ${user.lastName}"></h2>
+            <h2 class="card-title h4">
+              <span th:text="${user.firstName}"></span>
+              <span th:if="${surnameVisible == 'PUBLIC'}" th:text="' ' + ${user.lastName}"></span>
+            </h2>
             <p class="text-muted mb-3">@<span th:text="${user.username}"></span></p>
             <hr class="my-3">
             <div class="row">
-              <div class="col-sm-6 mb-3">
+              <div class="col-sm-6 mb-3" th:if="${emailVisible == 'PUBLIC'}">
                 <p class="mb-1"><strong>Email</strong></p>
                 <p class="text-muted" th:text="${user.email}"></p>
               </div>
-              <div class="col-sm-6 mb-3">
+              <div class="col-sm-6 mb-3" th:if="${phoneVisible == 'PUBLIC'}">
                 <p class="mb-1"><strong>Phone Number</strong></p>
                 <p class="text-muted" th:text="${user.phoneNumber} ?: 'Not provided'"></p>
               </div>

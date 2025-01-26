@@ -25,17 +25,20 @@
                 <span th:text="${#strings.substring(user.firstName,0,1)}"></span>
             </div>
             <div class="profile-title">
-                <h2 class="user-name" th:text="${user.firstName} + ' ' + ${user.lastName}"></h2>
+                <h2 class="user-name">
+                    <span th:text="${user.firstName}"></span>
+                    <span th:if="${surnameVisible == 'PUBLIC'}" th:text="' ' + ${user.lastName}"></span>
+                </h2>
                 <p class="username" th:text="${user.username}"></p>
             </div>
         </div>
 
         <div class="profile-details">
-            <div class="detail-item">
+            <div class="detail-item" th:if="${emailVisible == 'PUBLIC'}">
                 <span class="detail-label">Email</span>
                 <span class="detail-value" th:text="${user.email}"></span>
             </div>
-            <div class="detail-item">
+            <div class="detail-item" th:if="${phoneVisible == 'PUBLIC'}">
                 <span class="detail-label">Phone Number</span>
                 <span class="detail-value" th:text="${user.phoneNumber} ?: 'Not provided'"></span>
             </div>

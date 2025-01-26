@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
 import projekt.zespolowy.zero_waste.entity.Review;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
 import projekt.zespolowy.zero_waste.security.CustomUser;
 import projekt.zespolowy.zero_waste.services.ReviewService;
 import projekt.zespolowy.zero_waste.services.UserService;
@@ -54,6 +55,13 @@ public class UserPageController {
         model.addAttribute("newReview", new Review());
         model.addAttribute("reviewOwnership", reviewOwnership);
 
+        PrivacyOptions phoneVisible = user.getPrivacySettings().getPhoneVisible();
+        PrivacyOptions emailVisible = user.getPrivacySettings().getEmailVisible();
+        PrivacyOptions surnameVisible = user.getPrivacySettings().getSurnameVisible();
+
+        model.addAttribute("phoneVisible", phoneVisible.toString());
+        model.addAttribute("emailVisible", emailVisible.toString());
+        model.addAttribute("surnameVisible", surnameVisible.toString());
         return "user";
     }
 

@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Your Account</title>
-  <link rel="stylesheet"
-        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-  <link th:href="@{/styles/main.css}" rel="stylesheet" />
-    <link th:href="@{/styles/user.css}" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <title>Your Account</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/styles/main.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/user.css}"/>
 </head>
 <body class="d-flex flex-column min-vh-100">
 
 <div th:replace="~{fragments/header :: header}"></div>
 
 <!-- Alerts -->
-<div class="alert alert-danger alert-dismissible fade show" th:if="${error}" role="alert">
+<div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
     <p class="mb-0" th:text="${error}"></p>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
 </div>
 
-<div class="alert alert-success alert-dismissible fade show" th:if="${success}" role="alert">
+<div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
     <p class="mb-0" th:text="${success}"></p>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
 </div>
 
 <!-- Profile Section -->
@@ -28,10 +28,10 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8 text-center">
-                <img th:if="${user.imageUrl != null}"
-                     th:src="@{${user.imageUrl}}"
-                     alt="Profile Image"
-                     class="profile-image mb-4"/>
+                <img alt="Profile Image"
+                     class="profile-image mb-4"
+                     th:if="${user.imageUrl != null}"
+                     th:src="@{${user.imageUrl}}"/>
                 <h1 class="mb-4">Your Account Details</h1>
                 <div class="user-card card mb-4">
                     <div class="card-body">
@@ -49,28 +49,31 @@
                             </div>
                         </div>
                         <div class="mt-4">
-                            <a th:href="@{/editAccount}" class="btn btn-primary me-2">
+                            <a class="btn btn-primary me-2" th:href="@{/editAccount}">
                                 <i class="bi bi-pencil"></i> Edit Profile
                             </a>
-                            <a th:href="@{/editProfilePhoto}" class="btn btn-outline-primary me-2">
+                            <a class="btn btn-outline-primary me-2" th:href="@{/editProfilePhoto}">
                                 <i class="bi bi-camera"></i> Change Photo
                             </a>
-                            <a href="/user/tasks" class="btn btn-outline-secondary">
+                            <a class="btn btn-outline-secondary" th:href="@{/editPrivacySettings}">
+                                <i class="bi bi-envelope"></i> Edit Privacy Settings
+                            </a>
+                            <a class="btn btn-outline-secondary" href="/user/tasks">
                                 <i class="bi bi-list-task"></i> My Tasks
                             </a>
-                            <a th:href="@{/likedArticles}" class = "btn btn-outline-secondary">
+                            <a class="btn btn-outline-secondary" th:href="@{/likedArticles}">
                                 <i class="bi bi-heart"></i> Liked Articles
                             </a>
-                            <a th:href="@{/likedAdvices}" class = "btn btn-outline-secondary">
+                            <a class="btn btn-outline-secondary" th:href="@{/likedAdvices}">
                                 <i class="bi bi-heart"></i> Liked Advices
                             </a>
-                            <a th:href="@{/readArticles}" class = "btn btn-outline-secondary">
+                            <a class="btn btn-outline-secondary" th:href="@{/readArticles}">
                                 <i class="bi bi-book"></i> Read Articles
                             </a>
-                            <a th:href="@{/readAdvices}" class = "btn btn-outline-secondary">
+                            <a class="btn btn-outline-secondary" th:href="@{/readAdvices}">
                                 <i class="bi bi-book"></i> Read Advices
                             </a>
-                            <a th:href="@{/newsletter}" class = "btn btn-outline-secondary">
+                            <a class="btn btn-outline-secondary" th:href="@{/newsletter}">
                                 <i class="bi bi-envelope"></i> Newsletter
                             </a>
                         </div>

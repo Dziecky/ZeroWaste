@@ -14,6 +14,7 @@ import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.ProductCategory;
 import projekt.zespolowy.zero_waste.entity.UnitOfMeasure;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
 import projekt.zespolowy.zero_waste.services.ProductService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
@@ -149,6 +150,11 @@ public class ProductController {
         Product product = productService.getProductById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Product ID: " + id));
         model.addAttribute("product", product);
+
+        PrivacyOptions phoneVisible =product.getOwner().getPrivacySettings().getPhoneVisible();
+
+        model.addAttribute("phoneVisible", phoneVisible.toString());
+
         return "/product/product-detail";
     }
 }
