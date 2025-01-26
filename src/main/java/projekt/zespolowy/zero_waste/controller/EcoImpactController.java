@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import projekt.zespolowy.zero_waste.dto.ProductDTO;
 import projekt.zespolowy.zero_waste.entity.EcoImpactHistory;
 import projekt.zespolowy.zero_waste.entity.Order;
 import projekt.zespolowy.zero_waste.entity.Product;
@@ -16,8 +17,11 @@ import projekt.zespolowy.zero_waste.services.MonthlyReportService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import projekt.zespolowy.zero_waste.services.StatisticsService;
+import projekt.zespolowy.zero_waste.services.ProductService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.text.DecimalFormat;
 
 @Controller
@@ -29,6 +33,7 @@ public class EcoImpactController {
     private final UserService userService;
     private final MonthlyReportService monthlyReportService;
     private final StatisticsService statisticsService;
+    private final ProductService productService;
 
     private Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -36,7 +41,6 @@ public class EcoImpactController {
         User user = userService.findByUsername(username);
         return user.getId();
     }
-
 
     @GetMapping("/eco-impact")
     public String getEcoImpact(Model model) {
@@ -46,24 +50,57 @@ public class EcoImpactController {
 
         boolean hasImpactData = !history.isEmpty();
 
+
         List<Order> purchases = statisticsService.getPurchasesByUser(userId);
         List<Product> sales = statisticsService.getSalesByUser(userId);
-        List<String> productCategoriesPurchases = new ArrayList<>();
-        List<String> productCategoriesSales = new ArrayList<>();
 
-        for (Order purchase : purchases) {
-            productCategoriesPurchases.add(purchase.getProduct().getProductCategory().name());
-        }
+        List<ProductDTO> purchaseDTOs = purchases.stream()
+                .map(order -> new ProductDTO(
+                        order.getProduct().getId(),
+                        order.getProduct().getName(),
+                        order.getProduct().getDescription(),
+                        order.getProduct().getImageUrl(),
+                        order.getProduct().isAvailable(),
+                        order.getProduct().getPrice(),
+                        order.getProduct().getCreatedAt(),
+                        order.getProduct().getProductCategory(),
+                        order.getProduct().getQuantity(),
+                        order.getProduct().getUnitOfMeasure(),
+                        order.getProduct().isAuction(),
+                        order.getProduct().getEndDate(),
+                        order.getProduct().getTags().stream()
+                                .map(tag -> tag.getName())
+                                .collect(Collectors.toSet())
+                )).collect(Collectors.toList());
 
-        for (Product sale : sales) {
-            productCategoriesSales.add(sale.getProductCategory().name());
-        }
+        List<ProductDTO> salesDTOs = sales.stream()
+                .map(product -> new ProductDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getDescription(),
+                        product.getImageUrl(),
+                        product.isAvailable(),
+                        product.getPrice(),
+                        product.getCreatedAt(),
+                        product.getProductCategory(),
+                        product.getQuantity(),
+                        product.getUnitOfMeasure(),
+                        product.isAuction(),
+                        product.getEndDate(),
+                        product.getTags().stream()
+                                .map(tag -> tag.getName())
+                                .collect(Collectors.toSet())
+                )).collect(Collectors.toList());
+
 
         User user = userService.findById(userId);
+
+
         double waterSaved = history.stream().mapToDouble(EcoImpactHistory::getWaterSaved).sum();
         double co2Saved = history.stream().mapToDouble(EcoImpactHistory::getCo2Saved).sum();
         double energySaved = history.stream().mapToDouble(EcoImpactHistory::getEnergySaved).sum();
         double wasteReduced = history.stream().mapToDouble(EcoImpactHistory::getWasteReduced).sum();
+
 
         DecimalFormat df = new DecimalFormat("0.00");
         String formattedWaterSaved = df.format(waterSaved);
@@ -85,6 +122,7 @@ public class EcoImpactController {
             wasteReducedHistory.add(df.format(record.getWasteReduced()));
         }
 
+
         model.addAttribute("ecoImpactMessage", ecoImpactMessage);
         model.addAttribute("waterSaved", formattedWaterSaved);
         model.addAttribute("co2Saved", formattedCo2Saved);
@@ -99,10 +137,9 @@ public class EcoImpactController {
         model.addAttribute("points", user.getTotalPoints());
         model.addAttribute("ecoImpactMessage", ecoImpactMessage);
 
-        model.addAttribute("purchases", purchases);
-        model.addAttribute("sales", sales);
-        model.addAttribute("productCategoriesPurchases", productCategoriesPurchases);
-        model.addAttribute("productCategoriesSales", productCategoriesSales);
+        model.addAttribute("purchases", purchaseDTOs);
+        model.addAttribute("sales", salesDTOs);
+
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = auth.getAuthorities().stream()
@@ -112,8 +149,6 @@ public class EcoImpactController {
 
         return "eco-impact";
     }
-
-
 
     @PostMapping("/generate-report")
     public String generateMonthlyReports(Model model) {

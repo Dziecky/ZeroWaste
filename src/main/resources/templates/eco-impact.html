@@ -33,7 +33,7 @@
 
                 </div>
 
-                <!-- Historical Data Section -->
+
                 <div class="col-md-6">
                     <h3>Historical Data</h3>
                     <table class="table table-striped">
@@ -54,13 +54,11 @@
                             <td th:text="${energySavedHistory[iterStat.index]}"></td>
                             <td th:text="${wasteReducedHistory[iterStat.index]}"></td>
                         </tr>
-
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-
 
         <div th:if="${points == null or points <= 0}">
             <p class="text-muted text-center">You haven't contributed yet. Start earning points by completing tasks to see your eco impact here!</p>
@@ -80,17 +78,17 @@
                     <thead>
                     <tr>
                         <th>Product Name</th>
-                        <th>Category</th> <!-- Добавляем столбец категории -->
+                        <th>Category</th>
                         <th>Quantity</th>
                         <th>Price</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="purchase : ${purchases}">
-                        <td th:text="${purchase.productName}"></td>
+                        <td th:text="${purchase.name}"></td>
                         <td th:text="${purchase.productCategory}"></td>
                         <td th:text="${purchase.quantity}"></td>
-                        <td th:text="${purchase.totalPrice}"></td>
+                        <td th:text="${purchase.price}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -109,10 +107,10 @@
                     </thead>
                     <tbody>
                     <tr th:each="sale : ${sales}">
-                        <td th:text="${sale.productName}"></td>
+                        <td th:text="${sale.name}"></td>
                         <td th:text="${sale.productCategory}"></td>
                         <td th:text="${sale.quantity}"></td>
-                        <td th:text="${sale.totalPrice}"></td>
+                        <td th:text="${sale.price}"></td>
                     </tr>
                     </tbody>
                 </table>
