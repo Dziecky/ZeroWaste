@@ -5,65 +5,11 @@
     <title>Announcements</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/styles/announcements.css}" rel="stylesheet"/>
     <link th:href="@{/styles/main.css}" rel="stylesheet"/>
-
+    <link th:href="@{/styles/buttons.css}" rel="stylesheet"/>
     <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
     <script src="/scripts/navbar.js" defer></script>
-
-    <style>
-        :root {
-            --primary-color: #28a745;
-            --secondary-color: #218838;
-            --background-color: #f4f6f8;
-            --text-color: #2c3e50;
-        }
-
-        body {
-            background-color: var(--background-color);
-            font-family: 'Inter', 'Arial', sans-serif;
-        }
-
-        .pagination {
-            justify-content: center;
-            margin-top: 20px;
-            margin-bottom: 50px;
-        }
-
-        .pagination .page-item {
-            margin: 0 2px;
-        }
-
-        .pagination .page-link {
-            color: var(--text-color);
-            background-color: #fff;
-            border: 1px solid var(--primary-color);
-            border-radius: 4px;
-            padding: 6px 12px;
-            transition: all 0.3s ease;
-            font-size: 0.9em;
-        }
-
-        .pagination .page-link:hover {
-            background-color: var(--primary-color);
-            color: #fff;
-            border-color: var(--primary-color);
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            color: #fff;
-        }
-
-        .pagination .page-item.disabled .page-link {
-            opacity: 0.5;
-            pointer-events: none;
-            background-color: #f4f6f8;
-            border-color: #ddd;
-            color: #999;
-        }
-
-    </style>
 </head>
 <body class="d-flex flex-column h-100">
 
@@ -80,25 +26,25 @@
                     <option value="">All Products</option>
                     <option th:each="product : ${products}" th:value="${product.name}" th:text="${product.name}"></option>
                 </select>
-                <button type="submit" class="btn btn-primary">Search</button>
+                <button type="submit" class="btn btn-primary submit-button">Search</button>
             </div>
             <div class="form-inline" th:if="${accountType == 'BUSINESS'}">
                 <label class="mr-2">
                     <input type="checkbox" name="myAnnouncementsOnly" th:checked="${myAnnouncementsOnly ? 'checked' : ''}"/>
                     Show only my announcements
                 </label>
-                <button type="submit" class="btn btn-secondary ml-2">Filter</button>
+                <button type="submit" class="btn btn-secondary submit-button ml-2">Filter</button>
             </div>
         </form>
 
         <!-- Button for creating a new announcement if the user is BUSINESS -->
         <div th:if="${accountType == 'BUSINESS'}" class="d-flex justify-content-between mb-3">
-            <a class="btn btn-success" th:href="@{/announcements/create}">Create Announcement</a>
+            <a class="btn btn-success submit-button" th:href="@{/announcements/create}">Create Announcement</a>
         </div>
 
         <div>
-            <ul class="list-group">
-                <li th:each="announcement : ${announcements}" class="list-group-item d-flex justify-content-between align-items-start">
+            <ul class="announcement-list">
+                <li th:each="announcement : ${announcements}" class="announcement-item">
                     <div>
                         <!-- Make the title a link to the details page -->
                         <h4>
@@ -109,19 +55,35 @@
 
                         <div th:if="${not #lists.isEmpty(announcement.products)}">
                             <strong>Products:</strong>
-                            <ul>
-                                <li th:each="product : ${announcement.products}" th:text="${product.name}"></li>
-                            </ul>
+                            <div id="imageCarousel" class="carousel slide" data-ride="carousel">
+                                <!-- Carousel Indicators -->
+                                <ol class="carousel-indicators">
+                                    <li th:each="product, iterStat : ${announcement.products}"
+                                        data-target="#imageCarousel"
+                                        th:data-slide-to="${iterStat.index}"
+                                        th:classappend="${iterStat.index == 0} ? 'active' : ''"></li>
+                                </ol>
+
+                                <!-- Carousel Images -->
+                                <div class="carousel-inner">
+                                    <div th:each="product, iterStat : ${announcement.products}"
+                                         th:classappend="${iterStat.index == 0} ? 'carousel-item active' : 'carousel-item'">
+                                        <div class="carousel-image-container">
+                                            <img th:src="${product.imageUrl}" class="d-block" alt="Product Image">
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
-                    <div th:if="${accountType == 'BUSINESS'}">
+                    <div th:if="${accountType == 'BUSINESS'}" class="action-buttons">
                         <!-- Only show delete button if current user is the owner of the announcement -->
                         <form th:if="${announcement.owner.id == currentUser.id}"
                               th:action="@{/announcements/{id}(id=${announcement.id})}"
                               method="post" style="margin-left:10px;">
-
                             <input type="hidden" name="_method" value="delete"/>
-                            <button type="submit" class="btn btn-danger">Delete</button>
+                            <button type="submit" class="action-button delete">Delete</button>
                         </form>
                     </div>
                 </li>
@@ -145,11 +107,12 @@
                 </li>
             </ul>
         </div>
-
     </div>
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
+
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
