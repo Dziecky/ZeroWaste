@@ -199,10 +199,7 @@
     display: none; /* Hide the actual checkbox */
 }
 
-.product-checkbox:checked + .product-label {
-    border-color: #007bff;
-    background-color: #f0f8ff;
-}
+
 
 .product-label {
     display: block;
@@ -228,4 +225,11 @@
     margin: 4px 0 0;
     font-size: 0.9em;
     color: #555;
+}
+
+.product-card.selected {
+    border-color: #007bff;
+    background-color: #f0f8ff;
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
