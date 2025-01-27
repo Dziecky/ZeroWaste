@@ -7,6 +7,7 @@
     <link th:href="@{/styles/main.css}" rel="stylesheet"/>
     <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
     <link th:href="@{/styles/announcements.css}" rel="stylesheet"/>
+
     <script src="/scripts/navbar.js" defer></script>
     <style>
         /* Custom styles for the form */
@@ -95,7 +96,7 @@
 
                 <!-- Product Selection -->
                 <div class="form-group">
-                    <label for="products">Attach Products</label>
+                    <label >Attach Products</label>
                     <div id="products-grid" class="products-grid">
                         <div th:each="product : ${products}" class="product-card">
                             <input type="checkbox" name="productIds" th:value="${product.id}" id="product-${product.id}" class="product-checkbox">
@@ -108,7 +109,7 @@
                             </label>
                         </div>
                     </div>
-                    <small class="form-text text-muted">Click on the products to select multiple.</small>
+
                 </div>
 
                 <!-- Submit Button -->
@@ -126,7 +127,8 @@
 </script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
 
-<!-- Add your JavaScript code here -->
+
+<script src="/scripts/announcements.js"></script>
 <script>
     document.querySelectorAll('.product-card').forEach(card => {
         card.addEventListener('click', (event) => {
