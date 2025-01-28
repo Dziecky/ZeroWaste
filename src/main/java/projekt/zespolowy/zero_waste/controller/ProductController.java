@@ -72,13 +72,6 @@ public class ProductController {
         return "/product/list-products";
     }
 
-    @GetMapping("/")
-    public String index(Model model) {
-        List<Product> availableProducts = productService.getAvailableProducts();
-        model.addAttribute("products", availableProducts);
-        return "index";
-    }
-
     @GetMapping("/showFormForAddProduct")
     public String showFormForAddProduct(Model model) {
         Product product = new Product();

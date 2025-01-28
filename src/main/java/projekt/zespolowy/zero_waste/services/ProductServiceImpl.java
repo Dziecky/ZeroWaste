@@ -100,7 +100,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getAvailableProducts() {
-        return productRepository.findAllByAvailableTrue();
+        return productRepository.findAllByAvailableTrueAndAuctionFalse();
     }
 
     @Override
