@@ -20,16 +20,20 @@ import projekt.zespolowy.zero_waste.dto.AdviceDTO;
 import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
 import projekt.zespolowy.zero_waste.dto.chat.UserChatDto;
+import projekt.zespolowy.zero_waste.dto.user.UserPrivacyDto;
 import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Tip;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.UserPreference;
+import projekt.zespolowy.zero_waste.entity.PrivacySettings;
 import projekt.zespolowy.zero_waste.entity.Review;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 import projekt.zespolowy.zero_waste.entity.enums.Frequency;
+import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
+import projekt.zespolowy.zero_waste.repository.UserRepository;
 import projekt.zespolowy.zero_waste.security.CustomUser;
 import projekt.zespolowy.zero_waste.services.EducationalServices.UserPreferenceService;
 import projekt.zespolowy.zero_waste.services.ReviewService;
@@ -50,11 +54,14 @@ public class UserController {
 
     private final ReviewService reviewService;
     private final UserPreferenceService userPreferenceService;
+    private final UserRepository userRepository;
+
     // Konstruktorowe wstrzykiwanie zależności
-    public UserController(UserService userService, ReviewService reviewService, UserPreferenceService userPreferenceService) {
+    public UserController(UserService userService, ReviewService reviewService, UserPreferenceService userPreferenceService, UserRepository userRepository) {
         this.userService = userService;
         this.reviewService = reviewService;
         this.userPreferenceService = userPreferenceService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/accountDetails")
@@ -156,6 +163,47 @@ public class UserController {
         return "redirect:/accountDetails";
     }
 
+    @GetMapping("/editPrivacySettings")
+    public String editPrivacySettingsForm(Model model) {
+        User user = findOrInitializePrivacySettings(getUser().getUsername());
+        UserPrivacyDto userPrivacyDto = new UserPrivacyDto();
+        userPrivacyDto.setPhoneVisible(user.getPrivacySettings().getPhoneVisible());
+        userPrivacyDto.setEmailVisible(user.getPrivacySettings().getEmailVisible());
+        userPrivacyDto.setSurnameVisible(user.getPrivacySettings().getSurnameVisible());
+
+        AuthProvider authProvider = user.getProvider();
+
+        model.addAttribute("privacyOptions", PrivacyOptions.values());
+        model.addAttribute("userPrivacyDto", userPrivacyDto);
+        model.addAttribute("authProvider", authProvider.toString());
+
+        return "User/editPrivacySettings";
+    }
+
+    @PostMapping("/editPrivacySettings")
+    public String editPrivacySettings(@Valid @ModelAttribute("userPrivacyDto") UserPrivacyDto userPrivacyDto, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "User/editPrivacySettings";
+        }
+
+        // Pobierz aktualnie zalogowanego użytkownika
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        String username = customUser.getUsername();
+
+        try {
+            User updatedUser = userService.updatePrivacySettings(username, userPrivacyDto);
+            refreshAuthentication(updatedUser, authentication);
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "User/editPrivacySettings";
+        }
+
+        model.addAttribute("success", "Ustawienia prywatności zaktualizowane pomyślnie");
+        redirectAttributes.addFlashAttribute("success", "Ustawienia prywatności zaktualizowane pomyślnie");
+        return "redirect:/accountDetails";
+    }
+
     private void refreshAuthentication(User updatedUser, Authentication aut) {
         CustomUser updatedCustomUser;
         if (aut instanceof OAuth2AuthenticationToken) {
@@ -232,5 +280,22 @@ public class UserController {
         User user = UserService.findByUsername(principal.getName());
         UserChatDto userDto = new UserChatDto(user.getId(), user.getUsername());
         return ResponseEntity.ok(userDto);
+    }
+
+
+    public User findOrInitializePrivacySettings(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Użytkownik nie istnieje"));
+        PrivacySettings ps = user.getPrivacySettings();
+        if (ps == null) {
+            ps = new PrivacySettings();
+            ps.setPhoneVisible(PrivacyOptions.PUBLIC);
+            ps.setEmailVisible(PrivacyOptions.PUBLIC);
+            ps.setSurnameVisible(PrivacyOptions.PUBLIC);
+            ps.setUser(user);
+            user.setPrivacySettings(ps);
+            userRepository.save(user);
+        }
+        return user;
     }
 }

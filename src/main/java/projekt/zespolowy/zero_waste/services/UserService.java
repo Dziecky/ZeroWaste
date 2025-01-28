@@ -7,16 +7,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import projekt.zespolowy.zero_waste.dto.AdviceDTO;
 import projekt.zespolowy.zero_waste.dto.ArticleDTO;
+import projekt.zespolowy.zero_waste.dto.user.UserPrivacyDto;
 import projekt.zespolowy.zero_waste.dto.user.UserRegistrationDto;
 import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Tip;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.UserPreference;
+import projekt.zespolowy.zero_waste.entity.PrivacySettings;
 import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
+import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
 import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.repository.TaskRepository;
@@ -86,6 +89,14 @@ public class UserService implements UserDetailsService {
         user.setAccountType(userDto.isBusinessAccount() ? AccountType.BUSINESS : AccountType.NORMAL);
         user.setProvider(AuthProvider.LOCAL);
         user.setImageUrl("https://www.mkm.szczecin.pl/images/default-avatar.svg?id=26d9452357b428b99ab97f2448b5d803");
+
+        PrivacySettings ps = new PrivacySettings();
+        ps.setEmailVisible(PrivacyOptions.PUBLIC);
+        ps.setPhoneVisible(PrivacyOptions.PUBLIC);
+        ps.setSurnameVisible(PrivacyOptions.PUBLIC);
+        ps.setUser(user);
+
+        user.setPrivacySettings(ps);
 
         userRepository.save(user);
 
@@ -250,6 +261,24 @@ public class UserService implements UserDetailsService {
     public void updatePassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    public User updatePrivacySettings(String username, UserPrivacyDto userPrivacyDto) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalStateException("User " + username + " not found"));
+
+        PrivacySettings ps = user.getPrivacySettings();
+        if (ps==null) {
+            ps = new PrivacySettings();
+            ps.setUser(user);
+            user.setPrivacySettings(ps);
+        }
+
+        ps.setEmailVisible(userPrivacyDto.getEmailVisible());
+        ps.setPhoneVisible(userPrivacyDto.getPhoneVisible());
+        ps.setSurnameVisible(userPrivacyDto.getSurnameVisible());
+
+        return userRepository.save(user);
     }
 
     public Set<AdviceDTO> getReadAdvices() {

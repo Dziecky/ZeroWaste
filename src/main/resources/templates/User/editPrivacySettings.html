@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Privacy Setting</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <!-- Dodatkowe Style (opcjonalnie) -->
+    <style>
+
+        .error {
+            color: #dc3545;
+            font-size: 0.875em;
+        }
+        .form-section {
+            margin-bottom: 30px;
+        }
+    </style>
+
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+
+</head>
+<body>
+<!-- Nagłówek (Header) -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- Główna zawartość strony -->
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="mb-4 text-center">Edit Privacy Settings</h1>
+
+            <!-- Komunikaty o błędach -->
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <p th:text="${error}"></p>
+            </div>
+
+            <!-- Komunikaty o sukcesie -->
+            <div th:if="${success}" class="alert alert-success" role="alert">
+                Ustawienia prywatności zostały zaktualizowane pomyślnie.
+            </div>
+
+            <!-- Formularz edycji ustawień prywatności -->
+            <!-- Zakładamy, że kontroler obsługuje POST pod /privacySettings/edit -->
+            <form th:action="@{/editPrivacySettings}"
+                  th:object="${userPrivacyDto}"
+                  method="post"
+                  novalidate>
+
+                <!-- Sekcja ustawień prywatności dla telefonu -->
+                <div class="form-section">
+                    <h3>Phone Privacy</h3>
+                    <div class="form-group">
+                        <label for="phoneVisible">Privacy for Phone Number</label>
+                        <!-- Rozwijana lista (select) z wartościami enuma Visibility -->
+                        <select class="form-control"
+                                id="phoneVisible"
+                                th:field="*{phoneVisible}">
+                            <option disabled selected value=""> -- Select Visibility -- </option>
+                            <!-- Iterujemy po wszystkich wartościach enuma Visibility -->
+                            <option th:each="v : ${privacyOptions}"
+                                    th:value="${v}"
+                                    th:text="${v}">
+                            </option>
+                        </select>
+                        <div th:if="${#fields.hasErrors('phoneVisible')}"
+                             th:errors="*{phoneVisible}"
+                             class="error">
+                        </div>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <!-- Sekcja ustawień prywatności dla e-mail -->
+                <div class="form-section">
+                    <h3>Phone Privacy</h3>
+                    <div class="form-group">
+                        <label for="emailVisible">Privacy for Email</label>
+                        <!-- Rozwijana lista (select) z wartościami enuma Visibility -->
+                        <select class="form-control"
+                                id="emailVisible"
+                                th:field="*{emailVisible}">
+                            <option disabled selected value=""> -- Select Visibility -- </option>
+                            <!-- Iterujemy po wszystkich wartościach enuma Visibility -->
+                            <option th:each="v : ${privacyOptions}"
+                                    th:value="${v}"
+                                    th:text="${v}">
+                            </option>
+                        </select>
+                        <div th:if="${#fields.hasErrors('emailVisible')}"
+                             th:errors="*{emailVisible}"
+                             class="error">
+                        </div>
+                    </div>
+                </div>
+
+                <hr/>
+
+                <div class="form-section">
+                    <h3>Surname Privacy</h3>
+                    <div class="form-group">
+                        <label for="surnameVisible">Privacy for Surname</label>
+                        <!-- Rozwijana lista (select) z wartościami enuma Visibility -->
+                        <select class="form-control"
+                                id="surnameVisible"
+                                th:field="*{surnameVisible}">
+                            <option disabled selected value=""> -- Select Visibility -- </option>
+                            <!-- Iterujemy po wszystkich wartościach enuma Visibility -->
+                            <option th:each="v : ${privacyOptions}"
+                                    th:value="${v}"
+                                    th:text="${v}">
+                            </option>
+                        </select>
+                        <div th:if="${#fields.hasErrors('surnameVisible')}"
+                             th:errors="*{surnameVisible}"
+                             class="error">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Możesz dodać kolejne sekcje, np. dla adresu, zdjęcia profilowego itd. -->
+
+                <!-- Przycisk do zatwierdzenia formularza -->
+                <div class="form-group d-flex justify-content-start">
+                    <button type="submit" class="btn btn-primary mr-2">Save Privacy Settings</button>
+                    <a href="/accountDetails" class="btn btn-outline-danger">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+</html>
