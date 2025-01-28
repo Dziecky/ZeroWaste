@@ -3,31 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <title>Announcement Details</title>
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link th:href="@{styles/main.css}" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link th:href="@{/styles/buttons.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+    <style>
+        /* Custom styles for the announcement details page */
+        .announcement-details {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .announcement-details h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+
+        .announcement-details p {
+            font-size: 1.1rem;
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .product-list {
+            margin-top: 30px;
+        }
+
+        .product-list .media {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .product-list .media:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-list img {
+            border-radius: 10px;
+        }
+
+        .product-list h5 {
+            font-size: 1.25rem;
+            color: #343a40;
+            margin-bottom: 10px;
+        }
+
+        .product-list p {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .btn-back {
+            margin-top: 30px;
+            background-color: #28a745;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background-color: #22873a;
+            transform: translateY(-2px);
+        }
+
+        .owner-section {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-top: 20px;
+        }
+
+        .owner-nick {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #3498db;
+        }
+
+        .owner-image {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .btn-owner {
+            font-size: 0.9rem;
+            padding: 0.6rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-owner i {
+            font-size: 1.1rem;
+        }
+
+        .btn-custom {
+            border-radius: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body class="d-flex flex-column h-100">
 
 <div th:replace="~{fragments/header :: header}"></div>
 
 <main role="main" class="flex-shrink-0">
-    <div class="container mt-5">
-        <h1 th:text="${announcement.title}">Announcement Title</h1>
-        <p th:text="${announcement.description}">Announcement Description</p>
-        <hr>
+    <div class="container">
+        <div class="announcement-details">
+            <h1 th:text="${announcement.title}">Announcement Title</h1>
+            <p th:text="${announcement.description}">Announcement Description</p>
+            <hr>
 
-        <ul class="list-unstyled">
-            <li th:each="product : ${announcement.products}" class="media mb-3">
-                <img th:src="${product.imageUrl}" class="mr-3" alt="Product Image" style="width: 64px; height: 64px; object-fit: cover;">
-                <div class="media-body">
-                    <h5 th:text="${product.name}" class="mt-0 mb-1">Product Name</h5>
-                    <p th:text="${product.description}">Product Description</p>
+            <div class="product-list">
+                <ul class="list-unstyled">
+                    <li th:each="product : ${announcement.products}" class="media mb-3">
+                        <img th:src="${product.imageUrl}" class="mr-3" alt="Product Image" style="width: 100px; height: 100px; object-fit: cover;">
+                        <div class="media-body">
+                            <h5 th:text="${product.name}" class="mt-0 mb-1">Product Name</h5>
+                            <p th:text="${product.description}">Product Description</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="owner-section">
+                <img th:src="${announcement.owner.imageUrl}" class="owner-image" alt="Owner Profile Image">
+                <div class="flex-grow-1">
+                    <span class="detail-label">Owner:</span>
+                    <span class="owner-nick" th:text="${announcement.owner.username}">Owner's Name</span>
                 </div>
-            </li>
-        </ul>
 
-        <a class="btn btn-primary" th:href="@{/announcements}">Back to Announcements</a>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/chat-room/{announcementOwnerUsername}(announcementOwnerUsername=${announcement.owner.username})}"
+                       class="btn btn-info btn-custom btn-owner">
+                        <i class="bi bi-chat-fill"></i> Chat with Owner
+                    </a>
+                    <button class="btn btn-info btn-custom btn-owner" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#phoneNumber"
+                            aria-expanded="false"
+                            aria-controls="phoneNumber" th:if="${phoneVisible == 'PUBLIC'}">
+                        <i class="bi bi-telephone-fill"></i> Show Phone
+                    </button>
+                </div>
+            </div>
+
+            <div class="collapse mt-2" id="phoneNumber">
+                <div class="card card-body">
+                    <span th:text="${announcement.owner.phoneNumber}">Owner's Phone</span>
+                </div>
+            </div>
+
+            <a class="btn btn-back" th:href="@{/announcements}">Back to Announcements</a>
+        </div>
     </div>
 </main>
 

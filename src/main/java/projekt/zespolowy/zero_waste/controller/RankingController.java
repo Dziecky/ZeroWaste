@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
 import projekt.zespolowy.zero_waste.security.CustomUser;
 import projekt.zespolowy.zero_waste.services.UserService;
 import projekt.zespolowy.zero_waste.services.chat.ChatRoomService;
@@ -151,7 +152,14 @@ public class RankingController {
             return "redirect:/account";
         }
 
+        PrivacyOptions phoneVisible = user.getPrivacySettings().getPhoneVisible();
+        PrivacyOptions emailVisible = user.getPrivacySettings().getEmailVisible();
+        PrivacyOptions surnameVisible = user.getPrivacySettings().getSurnameVisible();
+
         model.addAttribute("user", user);
+        model.addAttribute("phoneVisible", phoneVisible.toString());
+        model.addAttribute("emailVisible", emailVisible.toString());
+        model.addAttribute("surnameVisible", surnameVisible.toString());
 
         return "user-profile";
     }

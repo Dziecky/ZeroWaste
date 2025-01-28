@@ -35,5 +35,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByAuctionFalseAndAvailableTrue();
 
-
+    List<Product> findByOwnerIdAndAvailableFalse(Long ownerId);
 }
