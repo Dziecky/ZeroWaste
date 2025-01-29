@@ -2,6 +2,8 @@ package projekt.zespolowy.zero_waste.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
 
 @Entity
@@ -18,6 +20,8 @@ public class PrivacySettings {
     @Enumerated(EnumType.STRING)
     private PrivacyOptions surnameVisible;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
