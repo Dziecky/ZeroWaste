@@ -18,10 +18,7 @@ import projekt.zespolowy.zero_waste.entity.enums.SubscriptionType;
 import projekt.zespolowy.zero_waste.services.EducationalServices.UserPreferenceService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 @RequestMapping("/newsletter")
@@ -36,9 +33,10 @@ public class UserPreferenceController {
     }
 
     // Wyświetla formularz ze starymi ustawieniami
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public String showNewsletterSettings(Model model) {
-        User currentUser = userService.getUser(); // pobiera aktualnie zalogowanego
+        User currentUser = UserService.getUser(); // pobiera aktualnie zalogowanego
         // Pobierzemy preferencje z bazy lub stworzymy domyślne
         UserPreference preference = userPreferenceService
                 .getUserPreference(currentUser)
@@ -49,12 +47,13 @@ public class UserPreferenceController {
                     p.setSubscribedTo(new HashSet<>());
                     return p;
                 });
-
         model.addAttribute("userPreference", preference);
-        return "/newsletter"; // nazwa widoku Thymeleaf: newsletter.html
+        model.addAttribute("subscriptionTypes", SubscriptionType.values());
+        return "/newsletter";
     }
 
     // Odbiera dane z formularza i zapisuje w bazie
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public String updateNewsletterSettings(
             @RequestParam("frequency") Frequency frequency,

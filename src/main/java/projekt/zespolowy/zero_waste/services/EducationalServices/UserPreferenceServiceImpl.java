@@ -25,19 +25,17 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     }
 
     @Override
-    public UserPreference saveUserPreference(User user, Frequency frequency, Set<SubscriptionType> subscriptions) {
+    public void saveUserPreference(User user, Frequency frequency, Set<SubscriptionType> subscriptions) {
         Optional<UserPreference> existing = userPreferenceRepository.findByUser(user);
         UserPreference preference;
         if (existing.isPresent()) {
             preference = existing.get();
-            preference.setFrequency(frequency);
-            preference.setSubscribedTo(subscriptions);
         } else {
             preference = new UserPreference();
             preference.setUser(user);
-            preference.setFrequency(frequency);
-            preference.setSubscribedTo(subscriptions);
         }
-        return userPreferenceRepository.save(preference);
+        preference.setFrequency(frequency);
+        preference.setSubscribedTo(subscriptions);
+        userPreferenceRepository.save(preference);
     }
 }

@@ -9,6 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface UserPreferenceService {
-    UserPreference saveUserPreference(User user, Frequency frequency, Set<SubscriptionType> subscriptions);
+    void saveUserPreference(User user, Frequency frequency, Set<SubscriptionType> subscriptions);
     Optional<UserPreference> getUserPreference(User user);
 }
