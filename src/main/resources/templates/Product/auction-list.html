@@ -229,7 +229,9 @@
                     </span>
                     <span>
                         <i class="fas fa-user"></i>
-                        <span th:text="${product.owner.username}">Owner</span>
+                        <a th:href="@{/user/{id}(id=${product.owner.id})}">
+                            <span th:text="${product.owner.username}">Owner</span>
+                        </a>
                     </span>
                 </div>
 

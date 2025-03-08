@@ -166,7 +166,9 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> getProductsNotOnAuction() {
         return productRepository.findByAuctionFalseAndAvailableTrue();
     }
-
+    public int getProductsCountByUserId(Long userId) {
+        return productRepository.countByOwnerId(userId);
+    }
 
 
 }
