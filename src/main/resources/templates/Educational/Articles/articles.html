@@ -57,6 +57,7 @@
         <ul class="list-group">
             <li th:each="article : ${articlePage.content}" class="list-group-item">
                 <h5 th:text="${article.title}">Article Title</h5>
+                <a th:href=""
                 <p th:text="'Author: ' + ${article.authorUsername}">Author</p>
                 <p th:text="'Category: ' + ${article.articleCategory}">Category</p>
                 <p th:text="'Tags: ' + ${article.tags}">Tags</p>

@@ -151,7 +151,9 @@
                 <img th:src="${announcement.owner.imageUrl}" class="owner-image" alt="Owner Profile Image">
                 <div class="flex-grow-1">
                     <span class="detail-label">Owner:</span>
-                    <span class="owner-nick" th:text="${announcement.owner.username}">Owner's Name</span>
+                    <a th:href="@{/user/{id}(id=${announcement.owner.id})}">
+                        <span class="owner-nick" th:text="${announcement.owner.username}">Owner's Name</span>
+                    </a>
                 </div>
 
                 <div class="d-flex gap-2">

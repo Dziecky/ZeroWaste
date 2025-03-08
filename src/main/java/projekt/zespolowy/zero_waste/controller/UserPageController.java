@@ -10,6 +10,7 @@ import projekt.zespolowy.zero_waste.entity.Review;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
 import projekt.zespolowy.zero_waste.security.CustomUser;
+import projekt.zespolowy.zero_waste.services.ProductServiceImpl;
 import projekt.zespolowy.zero_waste.services.ReviewService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
@@ -23,11 +24,13 @@ import java.util.stream.Collectors;
 public class UserPageController {
     private final UserService userService;
     private final ReviewService reviewService;
+    private final ProductServiceImpl productServiceImpl;
 
     // Konstruktorowe wstrzykiwanie zależności
-    public UserPageController(UserService userService, ReviewService reviewService) {
+    public UserPageController(UserService userService, ReviewService reviewService, ProductServiceImpl productServiceImpl) {
         this.userService = userService;
         this.reviewService = reviewService;
+        this.productServiceImpl = productServiceImpl;
     }
 
     @GetMapping("/{id}")
@@ -48,6 +51,8 @@ public class UserPageController {
         Map<Long, Boolean> reviewOwnership = reviewsAboutUser.stream()
                 .collect(Collectors.toMap(ReviewDto::getId, r -> r.getUserId().equals(currentUserId)));
 
+
+        model.addAttribute("productCount", productServiceImpl.getProductsCountByUserId(userId));
         model.addAttribute("user", user);
         model.addAttribute("currentUserId", currentUserId);
         model.addAttribute("reviewsAboutUser", reviewsAboutUser);
