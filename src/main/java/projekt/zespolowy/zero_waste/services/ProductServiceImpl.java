@@ -169,6 +169,9 @@ public class ProductServiceImpl implements ProductService {
     public int getProductsCountByUserId(Long userId) {
         return productRepository.countByOwnerId(userId);
     }
+    public int getProductsCountByUserIdAndAuction(Long userId, boolean auction) {
+        return productRepository.countByOwnerIdAndAuction(userId, auction);
+    }
 
 
 }

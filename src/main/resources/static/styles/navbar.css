@@ -17,6 +17,7 @@
     position: fixed;
     top: 0;
     z-index: 1000;
+    min-height: 2vh;
 }
 
 .navbar-container {
@@ -279,6 +280,13 @@
     .navbar-logo {
         font-size: 18px;
         letter-spacing: 3px;
+    }
+    .dropdown-toggle {
+        font-size: 15px;
+    }
+    .navbar-logo{
+        font-size: 15px;
+        margin-left: -1rem;
     }
 }
 

@@ -13,6 +13,8 @@
     background-color: #22873a;
     transform: translateY(-2px);
     transition: all 0.3s ease;
+    text-decoration: none;
+    color: white;
 }
 
 .submit-button:active {
