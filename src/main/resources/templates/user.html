@@ -48,7 +48,15 @@
                 <span class="detail-value" th:text="${user.phoneNumber} ?: 'Not provided'"></span>
             </div>
             <div class="detail-item">
+                <span class="detail-label">Number of all auctions and products</span>
+                <span class="detail-value" th:text="${allCount} ?: 'Not auctions'"></span>
+            </div>
+            <div class="detail-item">
                 <span class="detail-label">Number of active auctions</span>
+                <span class="detail-value" th:text="${auctionCount} ?: 'Not auctions'"></span>
+            </div
+            ><div class="detail-item">
+                <span class="detail-label">Number of active products</span>
                 <span class="detail-value" th:text="${productCount} ?: 'Not auctions'"></span>
             </div>
         </div>

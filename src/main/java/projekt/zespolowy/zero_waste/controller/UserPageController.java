@@ -51,8 +51,9 @@ public class UserPageController {
         Map<Long, Boolean> reviewOwnership = reviewsAboutUser.stream()
                 .collect(Collectors.toMap(ReviewDto::getId, r -> r.getUserId().equals(currentUserId)));
 
-
-        model.addAttribute("productCount", productServiceImpl.getProductsCountByUserId(userId));
+        model.addAttribute("auctionCount", productServiceImpl.getProductsCountByUserIdAndAuction(userId, true));
+        model.addAttribute("productCount", productServiceImpl.getProductsCountByUserIdAndAuction(userId, false));
+        model.addAttribute("allCount", productServiceImpl.getProductsCountByUserId(userId));
         model.addAttribute("user", user);
         model.addAttribute("currentUserId", currentUserId);
         model.addAttribute("reviewsAboutUser", reviewsAboutUser);
