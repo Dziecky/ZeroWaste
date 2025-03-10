@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "orders")
 @Getter
@@ -26,9 +28,13 @@ public class Order {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
     public Order(User user, Product product) {
         this.user = user;
         this.product = product;
+        this.createdAt = LocalDateTime.now();
     }
 
 }
