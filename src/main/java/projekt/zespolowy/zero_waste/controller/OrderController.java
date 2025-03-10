@@ -45,7 +45,8 @@ public class OrderController {
                         product.getQuantity(),
                         product.getPrice(),
                         product.getImageUrl(),
-                        product.getOwner().getUsername()
+                        product.getOwner().getUsername(),
+                        order.getCreatedAt()
                 );
                 orderDTOS.add(orderDTO);
             }
@@ -54,5 +55,27 @@ public class OrderController {
         model.addAttribute("orders", orderDTOS);
 
         return "orders/orders";
+    }
+
+    @GetMapping("/orders/{orderId}")
+    public String getOrderDetails(@PathVariable("orderId") String orderId, Model model) {
+        Long id = Long.parseLong(orderId);
+        Order order = orderService.getOrderById(id);
+        Optional<Product> maybeProduct = productService.getProductById(order.getProduct().getId());
+        OrderDTO orderDTO = null;
+        if(maybeProduct.isPresent()) {
+            Product product = maybeProduct.get();
+            orderDTO = new OrderDTO(
+                    order.getId(),
+                    product.getName(),
+                    product.getQuantity(),
+                    product.getPrice(),
+                    product.getImageUrl(),
+                    product.getOwner().getUsername(),
+                    order.getCreatedAt()
+            );
+        }
+        model.addAttribute("order", orderDTO);
+        return "orders/order-details";
     }
 }
