@@ -1,0 +1,43 @@
+        .table-task {
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: white;
+        }
+
+        .section-header {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+        .task-card {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .task-card h2 {
+            font-size: 1.5rem;
+        }
+
+        .table td, .table th {
+            padding: 15px 10px;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table tbody tr {
+            transition: background-color 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: #e8f5e9;
+        }
+
+        .table thead {
+            background-color: #4CAF50;
+            color: white;
+        }
