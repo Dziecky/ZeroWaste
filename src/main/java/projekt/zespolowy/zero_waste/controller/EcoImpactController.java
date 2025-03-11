@@ -1,10 +1,12 @@
 package projekt.zespolowy.zero_waste.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import projekt.zespolowy.zero_waste.dto.ProductDTO;
 import projekt.zespolowy.zero_waste.entity.EcoImpactHistory;
 import projekt.zespolowy.zero_waste.entity.Order;
@@ -43,10 +45,14 @@ public class EcoImpactController {
     }
 
     @GetMapping("/eco-impact")
-    public String getEcoImpact(Model model) {
+    public String getEcoImpact(@RequestParam(defaultValue = "0") int page, Model model) {
         Long userId = getCurrentUserId();
         String ecoImpactMessage = ecoImpactService.calculateEcoImpact(userId);
-        List<EcoImpactHistory> history = ecoImpactService.getEcoImpactHistory(userId);
+        Page<EcoImpactHistory> historyPage = ecoImpactService.getEcoImpactHistoryPaginated(userId, page, 5);
+        List<EcoImpactHistory> history = historyPage.getContent();
+        model.addAttribute("historyPage", historyPage);
+        model.addAttribute("currentPage", page);
+
 
         boolean hasImpactData = !history.isEmpty();
 

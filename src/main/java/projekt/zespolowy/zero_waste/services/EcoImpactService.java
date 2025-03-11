@@ -1,12 +1,14 @@
 package projekt.zespolowy.zero_waste.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.repository.EcoImpactHistoryRep;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
 import projekt.zespolowy.zero_waste.entity.EcoImpactHistory;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -64,7 +66,8 @@ public class EcoImpactService {
     }
 
 
-    public List<EcoImpactHistory> getEcoImpactHistory(Long userId) {
-        return ecoImpactHistoryRepository.findByUserId(userId);
+    public Page<EcoImpactHistory> getEcoImpactHistoryPaginated(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ecoImpactHistoryRepository.findByUserIdOrderByDateDesc(userId, pageable);
     }
 }
