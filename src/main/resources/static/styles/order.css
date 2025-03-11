@@ -1,3 +1,14 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
 
 table {
     width: 90%;
@@ -5,73 +16,85 @@ table {
     margin: 30px auto;
     border-collapse: collapse;
     border: 1px solid #ddd;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-    background: linear-gradient(to bottom, #f9f9f9, #ffffff);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: #fff;
+}
+
+table th, table td {
+    padding: 12px;
+    font-size: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
 }
 
 table th {
-    background: linear-gradient(135deg, #28a745, #34ce57);
-    color: white;
+    background: #28a745;
+    color: #1e1f22;
     font-weight: bold;
     text-transform: uppercase;
-    font-size: 1rem;
-    padding: 16px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-    position: sticky;
-    top: 0;
-    z-index: 2;
 }
 
-table td {
-    padding: 14px 20px;
-    font-size: 1rem;
-    color: #333;
-    background: #fdfdfd;
-    border-bottom: 1px solid #ddd;
-    transition: all 0.3s ease;
-}
-
-table tr:nth-child(even) td {
+table tr:nth-child(even) {
     background: #f7f7f7;
 }
 
-table tr:hover td {
+table tr:hover {
     background: #e6f9ed;
-    transform: scale(1.01);
-    cursor: pointer;
-    transition: all 0.3s ease, transform 0.2s ease;
+    transition: background 0.3s ease;
 }
 
-table img {
-    width: 80px;
-    height: 80px;
-    border-radius: 12px;
-    object-fit: cover;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 20px 0;
+    margin: 20px auto;
 }
 
-table img:hover {
-    transform: scale(1.1);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+.pagination .page-item {
+    margin: 0 5px;
+}
+
+.pagination .page-link {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    color: #28a745;
+    text-decoration: none;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.pagination .page-link:hover {
+    background: #28a745;
+    color: white;
+}
+
+.pagination .page-item.active .page-link {
+    background: #28a745;
+    color: white;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #ccc;
+    pointer-events: none;
+    border-color: #ddd;
 }
 
 @media (max-width: 768px) {
     table {
         font-size: 0.9rem;
-        margin: 20px auto;
     }
 
-    table th,
-    table td {
-        padding: 12px;
+    table th, table td {
+        padding: 10px;
     }
 
-    table img {
-        width: 70px;
-        height: 70px;
+    .pagination .page-link {
+        padding: 6px 10px;
+        font-size: 0.9rem;
     }
 }
 
@@ -80,41 +103,20 @@ table img:hover {
         font-size: 0.85rem;
     }
 
-    table th,
-    table td {
-        padding: 10px;
+    table th, table td {
+        padding: 8px;
     }
 
-    table img {
-        width: 60px;
-        height: 60px;
+    .pagination {
+        flex-wrap: wrap;
     }
-}
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
+    .pagination .page-item {
+        margin: 3px;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-table tr:hover td {
-    box-shadow: 0 4px 10px rgba(50, 200, 100, 0.3);
-}
-
-table th {
-    animation: glow 2s infinite alternate;
-}
-
-@keyframes glow {
-    from {
-        box-shadow: 0 0 10px rgba(50, 200, 100, 0.4);
-    }
-    to {
-        box-shadow: 0 0 20px rgba(50, 200, 100, 0.7);
+    .pagination .page-link {
+        padding: 5px 8px;
+        font-size: 0.85rem;
     }
 }
