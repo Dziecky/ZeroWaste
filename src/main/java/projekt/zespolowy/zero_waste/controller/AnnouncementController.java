@@ -32,11 +32,12 @@ public class AnnouncementController {
             @RequestParam(name = "myAnnouncementsOnly", required = false, defaultValue = "false") boolean myAnnouncementsOnly,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sort", defaultValue = "newest") String sort,
             Model model) {
         User user = UserService.getUser();
 
         // Fetch products for dropdown
-        List<Product> products = productService.getAllProducts(); // Assuming you have a service to fetch all products
+        List<Product> products = productService.getAllProducts();
 
         List<Announcement> announcements = myAnnouncementsOnly
                 ? announcementRepository.findByOwner(user)
@@ -48,6 +49,27 @@ public class AnnouncementController {
                     .filter(a -> a.getProducts().stream()
                             .anyMatch(p -> p.getName().toLowerCase().contains(productSearch.toLowerCase())))
                     .collect(Collectors.toList());
+        }
+
+        // Sort announcements based on the sort parameter
+        switch (sort) {
+            case "mostViewed":
+                announcements.sort((a1, a2) -> Integer.compare(
+                        a2.getViewedByUsers().size(),
+                        a1.getViewedByUsers().size()));
+                break;
+            case "leastViewed":
+                announcements.sort((a1, a2) -> Integer.compare(
+                        a1.getViewedByUsers().size(),
+                        a2.getViewedByUsers().size()));
+                break;
+            case "oldest":
+                announcements.sort((a1, a2) -> a1.getCreatedAt().compareTo(a2.getCreatedAt()));
+                break;
+            case "newest":
+            default:
+                announcements.sort((a1, a2) -> a2.getCreatedAt().compareTo(a1.getCreatedAt()));
+                break;
         }
 
         // Pagination logic
@@ -69,6 +91,7 @@ public class AnnouncementController {
         model.addAttribute("currentUser", user);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
+        model.addAttribute("selectedSort", sort);
 
         return "/Announcement/announcements";
     }
@@ -106,6 +129,15 @@ public class AnnouncementController {
         Announcement announcement = announcementRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid announcement ID: " + id));
 
+        User currentUser = UserService.getUser();
+        
+        // Add view if user hasn't viewed before
+        if (!announcement.getViewedByUsers().contains(currentUser)) {
+            announcement.getViewedByUsers().add(currentUser);
+            currentUser.getViewedAnnouncements().add(announcement);
+            announcementRepository.save(announcement);
+        }
+
         // Format dates as strings
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String createdAtFormatted = announcement.getCreatedAt().format(formatter);
@@ -114,6 +146,7 @@ public class AnnouncementController {
         model.addAttribute("announcement", announcement);
         model.addAttribute("createdAtFormatted", createdAtFormatted);
         model.addAttribute("updatedAtFormatted", updatedAtFormatted);
+        model.addAttribute("viewCount", announcement.getViewedByUsers().size());
 
         return "/Announcement/details";
     }
