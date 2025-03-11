@@ -1,3 +1,15 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
 table {
     width: 90%;
     max-width: 1200px;
@@ -18,7 +30,7 @@ table th, table td {
 
 table th {
     background: #28a745;
-    color: white;
+    color: #1e1f22;
     font-weight: bold;
     text-transform: uppercase;
 }
@@ -32,6 +44,45 @@ table tr:hover {
     transition: background 0.3s ease;
 }
 
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 20px 0;
+    margin: 20px auto;
+}
+
+.pagination .page-item {
+    margin: 0 5px;
+}
+
+.pagination .page-link {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    color: #28a745;
+    text-decoration: none;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.pagination .page-link:hover {
+    background: #28a745;
+    color: white;
+}
+
+.pagination .page-item.active .page-link {
+    background: #28a745;
+    color: white;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #ccc;
+    pointer-events: none;
+    border-color: #ddd;
+}
+
 @media (max-width: 768px) {
     table {
         font-size: 0.9rem;
@@ -39,6 +90,11 @@ table tr:hover {
 
     table th, table td {
         padding: 10px;
+    }
+
+    .pagination .page-link {
+        padding: 6px 10px;
+        font-size: 0.9rem;
     }
 }
 
@@ -49,5 +105,18 @@ table tr:hover {
 
     table th, table td {
         padding: 8px;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+    }
+
+    .pagination .page-item {
+        margin: 3px;
+    }
+
+    .pagination .page-link {
+        padding: 5px 8px;
+        font-size: 0.85rem;
     }
 }

@@ -24,7 +24,7 @@
 <div th:if="${order != null}">
     <table class="table table-bordered">
         <tr>
-            <th>Order ID</th>
+            <th>Order Identifier</th>
             <td th:text="${order.orderId}"></td>
         </tr>
         <tr>
@@ -37,7 +37,7 @@
         </tr>
         <tr>
             <th>Total Price</th>
-            <td th:text="${order.price}"></td>
+            <td th:text="${order.price} + ' PLN'"></td>
         </tr>
         <tr>
             <th>Bought From</th>
@@ -45,7 +45,7 @@
         </tr>
         <tr>
             <th>Bought at</th>
-            <td th:text="${order.createdAt}"></td>
+            <td th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}"></td>
         </tr>
         <tr>
             <th>Product Image</th>
