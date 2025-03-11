@@ -42,6 +42,17 @@
             <a class="btn btn-success submit-button" th:href="@{/announcements/create}">Create Announcement</a>
         </div>
 
+        <!-- Add this before the announcements list -->
+        <div class="sorting-options mb-3">
+            <label for="sortSelect">Sort by:</label>
+            <select id="sortSelect" class="form-control" onchange="updateSort(this.value)">
+                <option value="newest" th:selected="${selectedSort == 'newest'}">Newest First</option>
+                <option value="oldest" th:selected="${selectedSort == 'oldest'}">Oldest First</option>
+                <option value="mostViewed" th:selected="${selectedSort == 'mostViewed'}">Most Viewed</option>
+                <option value="leastViewed" th:selected="${selectedSort == 'leastViewed'}">Least Viewed</option>
+            </select>
+        </div>
+
         <div>
             <ul class="announcement-list">
                 <li th:each="announcement : ${announcements}" class="announcement-item">
@@ -75,6 +86,12 @@
                                 </div>
 
                             </div>
+                        </div>
+
+                        <!-- Add this inside your announcement list item -->
+                        <div class="announcement-views">
+                            <i class="fas fa-eye"></i>
+                            <span th:text="${announcement.viewedByUsers.size() == 1 ? '1 view' : announcement.viewedByUsers.size() + ' views'}">0 views</span>
                         </div>
                     </div>
                     <div th:if="${accountType == 'BUSINESS'}" class="action-buttons">
@@ -118,5 +135,13 @@
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
         crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+<script>
+function updateSort(sortValue) {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('sort', sortValue);
+    urlParams.set('page', '0'); // Reset to first page when sorting changes
+    window.location.href = window.location.pathname + '?' + urlParams.toString();
+}
+</script>
 </body>
 </html>

@@ -133,6 +133,10 @@
         <div class="announcement-details">
             <h1 th:text="${announcement.title}">Announcement Title</h1>
             <p th:text="${announcement.description}">Announcement Description</p>
+            <div class="views">
+                <span>Wyświetlenia: </span>
+                <span th:text="${announcement.viewedByUsers.size() == 1 ? '1 view' : announcement.viewedByUsers.size() + ' views'}">0 views</span>
+            </div>
             <hr>
 
             <div class="product-list">
