@@ -1,5 +1,6 @@
 package projekt.zespolowy.zero_waste.services;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,8 +13,12 @@ import projekt.zespolowy.zero_waste.repository.UserRepository;
 import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -21,6 +26,9 @@ public class ProductServiceImpl implements ProductService {
     private final UserTaskRepository userTaskRepository;
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+
+    static final String VIEWED_PRODUCTS_SESSION_KEY = "viewedProducts";
+    private static final int MAX_HISTORY_SIZE = 6;
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository, UserTaskRepository userTaskRepository, UserRepository userRepository, TaskRepository taskRepository) {
@@ -173,5 +181,42 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.countByOwnerIdAndAuction(userId, auction);
     }
 
+    @Override
+    public void addToViewHistory(HttpSession session, Long productId) {
+        LinkedList<Long> viewedProducts = (LinkedList<Long>) session.getAttribute(VIEWED_PRODUCTS_SESSION_KEY);
+        if (viewedProducts == null) {
+            viewedProducts = new LinkedList<>();
+        }
+        viewedProducts.remove(productId);
+        viewedProducts.addFirst(productId);
+        while (viewedProducts.size() > MAX_HISTORY_SIZE) {
+            viewedProducts.removeLast();
+        }
+
+        session.setAttribute(VIEWED_PRODUCTS_SESSION_KEY, viewedProducts);
+    }
+
+    @Override
+    public List<Product> getRecentlyViewedProducts(HttpSession session) {
+        LinkedList<Long> viewedProductIds = (LinkedList<Long>) session.getAttribute(VIEWED_PRODUCTS_SESSION_KEY);
+        List<Product> recentlyViewedProducts = new ArrayList<>();
+
+        if (viewedProductIds != null && !viewedProductIds.isEmpty()) {
+            for (Long id : viewedProductIds) {
+                getProductById(id).ifPresent(recentlyViewedProducts::add);
+            }
+        }
+
+        return recentlyViewedProducts;
+    }
+
+    @Override
+    public List<Product> getRecentlyViewedProductsExcept(HttpSession session, Long excludeProductId) {
+        List<Product> viewHistory = getRecentlyViewedProducts(session);
+
+        return viewHistory.stream()
+                .filter(product -> !product.getId().equals(excludeProductId))
+                .collect(Collectors.toList());
+    }
 
 }
