@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -35,9 +36,11 @@ public class Task {
     private TaskType taskType;
 
     @Column(name = "task_start_date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate; // tylko dla zadan okresowych
 
     @Column(name = "task_end_date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate; // tylko dla zadan okresowych
 }
 

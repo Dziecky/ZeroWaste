@@ -36,6 +36,8 @@
             <td th:text="${task.taskType}"></td>
             <td>
                 <a th:href="@{/tasks/delete/{id}(id=${task.id})}" class="btn btn-danger">Delete</a>
+                <p></p>
+                <a th:href="@{'/tasks/edit/' + ${task.id}}" class="btn btn-warning btn-sm">Edit</a>
             </td>
         </tr>
         </tbody>
