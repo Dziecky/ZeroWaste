@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Task</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+
+    <script>
+        $(document).ready(function() {
+            function toggleDateFields() {
+                var taskType = $('#taskType').val();
+                if (taskType === 'BASIC') {
+                    $('#startDate').prop('disabled', true);
+                    $('#endDate').prop('disabled', true);
+                } else {
+                    $('#startDate').prop('disabled', false);
+                    $('#endDate').prop('disabled', false);
+                }
+            }
+
+            toggleDateFields();
+
+            $('#taskType').change(function() {
+                toggleDateFields();
+            });
+        });
+    </script>
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container">
+    <h1>Edit Task</h1>
+    <h5>In case of changes, the implementation must be changed as well.</h5>
+    <form th:action="@{/tasks/edit/{id}(id=${task.id})}" th:object="${task}" method="post">
+        <div class="form-group">
+            <label for="task_name">Task Name</label>
+            <input type="text" id="task_name" th:field="*{task_name}" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="taskDescription">Description</label>
+            <textarea id="taskDescription" th:field="*{taskDescription}" class="form-control" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="requiredActions">Required Actions</label>
+            <input type="number" id="requiredActions" th:field="*{requiredActions}" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="pointsAwarded">Points Awarded</label>
+            <input type="number" id="pointsAwarded" th:field="*{pointsAwarded}" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="taskType">Task Type</label>
+            <select id="taskType" th:field="*{taskType}" class="form-control">
+                <option th:each="taskType : ${T(projekt.zespolowy.zero_waste.entity.TaskType).values()}"
+                        th:value="${taskType}"
+                        th:text="${taskType}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" th:field="*{startDate}" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" th:field="*{endDate}" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Task</button>
+    </form>
+    <a href="/tasks/showAllTasks" class="btn btn-secondary mt-3">Back to Task List</a>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

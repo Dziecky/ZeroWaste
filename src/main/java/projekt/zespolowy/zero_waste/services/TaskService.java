@@ -59,6 +59,25 @@ public class TaskService {
         taskRepository.deleteById(id);
     }
 
+    public Task getTaskById(Long id) {
+        return taskRepository.findById(id).orElse(null);
+    }
+
+    @Transactional
+    public void updateTask(Long id, Task updatedTask) {
+        Task existingTask = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
+
+        existingTask.setTask_name(updatedTask.getTask_name());
+        existingTask.setTaskDescription(updatedTask.getTaskDescription());
+        existingTask.setRequiredActions(updatedTask.getRequiredActions());
+        existingTask.setPointsAwarded(updatedTask.getPointsAwarded());
+        existingTask.setTaskType(updatedTask.getTaskType());
+        existingTask.setStartDate(updatedTask.getStartDate());
+        existingTask.setEndDate(updatedTask.getEndDate());
+
+        taskRepository.save(existingTask);
+    }
+
     public List<UserTask> getAllTasksForUser(User user) {
         return userTaskRepository.findByUser(user);
     }
