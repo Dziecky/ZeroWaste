@@ -1,5 +1,6 @@
 package projekt.zespolowy.zero_waste.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,9 @@ public class ProductController {
 
     private final ProductService productService;
     private final UserService userService;
+
+    private static final String VIEWED_PRODUCTS_SESSION_KEY = "viewedProducts";
+    private static final int MAX_HISTORY_SIZE = 3;
 
     @Autowired
     public ProductController(ProductService productService, UserService userService) {
@@ -139,15 +143,24 @@ public class ProductController {
     }
 
     @GetMapping("/view/{id}")
-    public String viewProductDetails(@PathVariable("id") Long id, Model model) {
+    public String viewProductDetails(@PathVariable("id") Long id, Model model, HttpSession session) {
         Product product = productService.getProductById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Product ID: " + id));
         model.addAttribute("product", product);
 
-        PrivacyOptions phoneVisible =product.getOwner().getPrivacySettings().getPhoneVisible();
-
+        PrivacyOptions phoneVisible = product.getOwner().getPrivacySettings().getPhoneVisible();
         model.addAttribute("phoneVisible", phoneVisible.toString());
+        productService.addToViewHistory(session, id);
+        model.addAttribute("recentlyViewedProducts", productService.getRecentlyViewedProductsExcept(session, id));
 
         return "/product/product-detail";
     }
+
+    @GetMapping("/recently-viewed")
+    public String showRecentlyViewedProducts(Model model, HttpSession session) {
+        List<Product> recentlyViewedProducts = productService.getRecentlyViewedProducts(session);
+        model.addAttribute("recentlyViewedProducts", recentlyViewedProducts);
+        return "/product/recently-viewed";
+    }
+
 }

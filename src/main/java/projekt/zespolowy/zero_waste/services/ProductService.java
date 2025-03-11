@@ -1,5 +1,6 @@
 package projekt.zespolowy.zero_waste.services;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import projekt.zespolowy.zero_waste.entity.Product;
@@ -31,4 +32,8 @@ public interface ProductService {
 
  Page<Product> getProductsNotOnAuction(Pageable pageable);
  List<Product> getAuctionProducts();
+
+ void addToViewHistory(HttpSession session, Long productId);
+ List<Product> getRecentlyViewedProducts(HttpSession session);
+ List<Product> getRecentlyViewedProductsExcept(HttpSession session, Long excludeProductId);
 }
