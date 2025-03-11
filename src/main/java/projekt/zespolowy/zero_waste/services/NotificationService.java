@@ -33,10 +33,12 @@ public class NotificationService {
         this.tipRepository = tipRepository;
         this.challengeRepository = challengeRepository;
     }
-
+    LocalDate getCurrentDate() {
+        return LocalDate.now();
+    }
     @Scheduled(cron = "0 0 8 * * *")
     public void sendNotification() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = getCurrentDate();
         DayOfWeek dayOfWeek = today.getDayOfWeek();
         int dayOfMonth = today.getDayOfMonth();
 

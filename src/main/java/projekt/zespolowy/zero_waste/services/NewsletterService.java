@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.UserPreference;
 import projekt.zespolowy.zero_waste.services.EducationalServices.UserPreferenceService;
 
+import java.time.LocalDate;
+
 @Service
 public class NewsletterService {
     private final UserPreferenceService userPreferenceService;
@@ -13,5 +15,6 @@ public class NewsletterService {
     public NewsletterService(UserPreferenceService userPreferenceService) {
         this.userPreferenceService = userPreferenceService;
     }
+
 
 }
