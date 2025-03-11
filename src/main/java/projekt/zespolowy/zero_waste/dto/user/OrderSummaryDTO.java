@@ -1,4 +1,4 @@
-package projekt.zespolowy.zero_waste.dto;
+package projekt.zespolowy.zero_waste.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,19 +11,9 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDTO {
+public class OrderSummaryDTO {
 
     Long orderId;
 
-    String productName;
-
-    double quantity;
-
     double price;
-
-    String imageUrl;
-
-    String ownerName;
-
-    LocalDateTime createdAt;
 }
