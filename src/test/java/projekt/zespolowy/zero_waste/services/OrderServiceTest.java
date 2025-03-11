@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 import projekt.zespolowy.zero_waste.entity.Order;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.User;
@@ -86,5 +87,27 @@ class OrderServiceTest {
         assertEquals(1, result.size());
         assertEquals(100L, result.get(0).getId());
         verify(orderRepository, times(1)).findByUserId(1L);
+    }
+
+    @Test
+    void getOrdersByUser_shouldReturnPagedOrders() {
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "id"));
+
+        Order order2 = new Order(user, product);
+        order2.setId(101L);
+
+        Page<Order> mockPage = new PageImpl<>(List.of(order2, order));
+
+        when(orderRepository.findByUser(user, pageable)).thenReturn(mockPage);
+
+        Page<Order> result = orderService.getOrdersByUser(user, pageable);
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(2, result.getTotalElements());
+        assertEquals(101L, result.getContent().get(0).getId());
+        assertEquals(100L, result.getContent().get(1).getId());
+
+        verify(orderRepository, times(1)).findByUser(user, pageable);
     }
 }
