@@ -187,8 +187,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         User currentUser = userService.getUser();
         if(article.getReadByUsers().contains(currentUser)) {
-            article.getReadByUsers().remove(currentUser);
-            currentUser.getReadArticles().remove(article);
+            return;
         } else {
             article.getReadByUsers().add(currentUser);
             currentUser.getReadArticles().add(article);

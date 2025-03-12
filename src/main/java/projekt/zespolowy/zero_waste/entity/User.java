@@ -112,6 +112,10 @@ public class User {
     @EqualsAndHashCode.Exclude
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private PrivacySettings privacySettings;
+
+/*    @ManyToMany
+    @JoinTable
+    private*/
 }
 
 

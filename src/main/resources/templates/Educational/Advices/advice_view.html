@@ -17,7 +17,7 @@
     <div th:if="${adviceDTO.imageUrl}">
         <img th:src="${adviceDTO.imageUrl}" alt="Advice Image" class="img-fluid">
     </div>
-    <p th:text="${adviceDTO.content}">Advice Content</p>
+
     <!-- Display Tags -->
     <p>
         <strong>Tags:</strong>
@@ -26,8 +26,26 @@
         <span th:if="${!iterStat.last}">, </span>
     </span>
     </p>
-    <a th:href="@{/advices}" class="btn btn-secondary">Back to Advices</a>
+    <p>
+        <strong>Likes count:</strong>
+        <span th:text="${adviceDTO.likesCount}">Likes Count</span>
+    </p>
+    <p>
+        <strong>Reads count:</strong>
+        <span th:text="${adviceDTO.readsCount}">Read Count</span>
+    </p>
+    <form th:action="@{/advices/like/{id}(id=${adviceDTO.id})}" method="post" style="display:inline;">
+        <button type="submit" class="btn btn-outline-primary">
+            <span th:text="${adviceDTO.likedByCurrentUser} ? 'Odlub' : 'Polub'">Polub/Odlub</span>
+        </button>
+    </form>
 
+
+
+
+
+    <a th:href="@{/advices}" class="btn btn-secondary">Back to Advices</a>
 </div>
+
 </body>
 </html>
