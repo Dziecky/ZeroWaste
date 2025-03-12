@@ -33,9 +33,11 @@ public class NotificationService {
         this.tipRepository = tipRepository;
         this.challengeRepository = challengeRepository;
     }
+
     LocalDate getCurrentDate() {
         return LocalDate.now();
     }
+
     @Scheduled(cron = "0 0 8 * * *")
     public void sendNotification() {
         LocalDate today = getCurrentDate();
@@ -54,12 +56,12 @@ public class NotificationService {
                             user.getTips().add(tip);
                             userService.save(user);
                         }
-                        if (subscribedTo.contains(SubscriptionType.CHALLENGE)) {
-                            Challenge challenge = getRandomChallenge();
-                            if (challenge != null) {
-                                user.getChallenges().add(challenge);
-                                userService.save(user);
-                            }
+                    }
+                    if (subscribedTo.contains(SubscriptionType.CHALLENGE)) {
+                        Challenge challenge = getRandomChallenge();
+                        if (challenge != null) {
+                            user.getChallenges().add(challenge);
+                            userService.save(user);
                         }
                     }
                 }
