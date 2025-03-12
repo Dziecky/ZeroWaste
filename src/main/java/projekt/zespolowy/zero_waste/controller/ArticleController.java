@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -105,6 +106,7 @@ public class ArticleController {
         Optional<Article> optionalArticle = articleService.getArticleById(id);
         if (optionalArticle.isPresent()) {
             Article article = optionalArticle.get();
+            articleService.toggleReadArticle(id);
             ArticleDTO articleDTO = articleMapper.toDTO(article);
             User currentUser = userService.getUser();
             articleDTO.setLikedByCurrentUser(article.getLikedByUsers().contains(currentUser));
@@ -118,17 +120,12 @@ public class ArticleController {
         }
     }
 
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/like/{id}")
-    public String likeArticle(@PathVariable("id") Long id) {
+    @PreAuthorize("isAuthenticated()")
+    public String likeArticle(@PathVariable("id") Long id, @RequestHeader("Referer") String referer) {
         articleService.toggleLikeArticle(id);
-        return "redirect:/articles";
+        return "redirect:" + referer; // Powrót na stronę, z której przyszło żądanie
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/read/{id}")
-    public String readArticle(@PathVariable("id") Long id) {
-        articleService.toggleReadArticle(id);
-        return "redirect:/articles";
-    }
+
 }

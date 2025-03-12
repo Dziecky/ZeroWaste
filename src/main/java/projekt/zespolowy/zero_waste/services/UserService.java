@@ -1,5 +1,6 @@
 package projekt.zespolowy.zero_waste.services;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import projekt.zespolowy.zero_waste.dto.user.UserPrivacyDto;
 import projekt.zespolowy.zero_waste.dto.user.UserRegistrationDto;
 import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Challenge;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Tip;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.UserPreference;
 import projekt.zespolowy.zero_waste.entity.PrivacySettings;
@@ -234,8 +236,16 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public static User getUser(){
+    public static User getUser(){ //chyba nie powinno byc static
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        return findByUsername(customUser.getUsername());
+    }
+    public User getUserTest() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("Test: Użytkownik nie jest zalogowany!");
+        }
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         return findByUsername(customUser.getUsername());
     }
@@ -291,6 +301,22 @@ public class UserService implements UserDetailsService {
     public User getAdminById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("Admin with id " + id + " not found"));
+    }
+
+    public List<Tip> getUserTips(User user) {
+        return user.getTips();
+    }
+
+    public List<Challenge> getUserChallenges(User user) {
+        return user.getChallenges();
+    }
+    @Transactional
+    public void addTipToUser(User user, Tip tip) {
+        user.getTips().add(tip);
+    }
+    @Transactional
+    public void addChallengeToUser(User user, Challenge challenge) {
+        user.getChallenges().add(challenge);
     }
 
 

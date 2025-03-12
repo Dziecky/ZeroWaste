@@ -15,7 +15,7 @@ import java.util.Set;
 @Setter
 public class UserPreference {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne

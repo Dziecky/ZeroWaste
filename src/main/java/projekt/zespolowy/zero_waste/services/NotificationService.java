@@ -34,9 +34,13 @@ public class NotificationService {
         this.challengeRepository = challengeRepository;
     }
 
+    LocalDate getCurrentDate() {
+        return LocalDate.now();
+    }
+
     @Scheduled(cron = "0 0 8 * * *")
     public void sendNotification() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = getCurrentDate();
         DayOfWeek dayOfWeek = today.getDayOfWeek();
         int dayOfMonth = today.getDayOfMonth();
 
@@ -52,12 +56,12 @@ public class NotificationService {
                             user.getTips().add(tip);
                             userService.save(user);
                         }
-                        if (subscribedTo.contains(SubscriptionType.CHALLENGE)) {
-                            Challenge challenge = getRandomChallenge();
-                            if (challenge != null) {
-                                user.getChallenges().add(challenge);
-                                userService.save(user);
-                            }
+                    }
+                    if (subscribedTo.contains(SubscriptionType.CHALLENGE)) {
+                        Challenge challenge = getRandomChallenge();
+                        if (challenge != null) {
+                            user.getChallenges().add(challenge);
+                            userService.save(user);
                         }
                     }
                 }
