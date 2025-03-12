@@ -163,8 +163,7 @@ public class AdviceServiceImpl implements AdviceService {
         User currentUser = userService.getUser();
 
         if(advice.getReadByUsers().contains(currentUser)){
-            advice.getReadByUsers().remove(currentUser);
-            currentUser.getReadAdvices().remove(advice);
+            return;
         }else{
             advice.getReadByUsers().add(currentUser);
             currentUser.getReadAdvices().add(advice);
