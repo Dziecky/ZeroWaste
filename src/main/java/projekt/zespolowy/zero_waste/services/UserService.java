@@ -241,6 +241,14 @@ public class UserService implements UserDetailsService {
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         return findByUsername(customUser.getUsername());
     }
+    public User getUserTest() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("Test: Użytkownik nie jest zalogowany!");
+        }
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        return findByUsername(customUser.getUsername());
+    }
 
     public Set<ArticleDTO> getLikedArticles() {
         User currentUser = getUser();

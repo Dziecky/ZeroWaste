@@ -18,9 +18,9 @@
 
 
 <div class="container mt-5">
-    <h1>Your Readw Advices</h1>
+    <h1>Your Read Advices</h1>
     <ul class="list-group">
-        <li th:each="advice : ${likedAdvices}" class="list-group-item">
+        <li th:each="advice : ${readAdvices}" class="list-group-item">
             <h5 th:text="${advice.title}">Advice Title</h5>
             <p th:text="'Author: ' + ${advice.authorUsername}">Author</p>
             <p th:text="'Category: ' + ${advice.adviceCategory}">Category</p>
