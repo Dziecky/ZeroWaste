@@ -125,20 +125,12 @@ public class AdviceController {
             return "redirect:/advices";
         }
     }
-
-    @PostMapping("/advices/like/{id}")
-    @PreAuthorize("isAuthenticated()")
-    public String likeAdvice(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
-        adviceService.toggleLikeAdvice(id);
-        return "redirect:/current-page";
-    }
     @PostMapping("/like/{id}")
     @PreAuthorize("isAuthenticated()")
     public String likeAdvice(@PathVariable("id") Long id, @RequestHeader("Referer") String referer) {
         adviceService.toggleLikeAdvice(id);
         return "redirect:" + referer; // Powrót na stronę, z której przyszło żądanie
     }
-
 
 
 }
