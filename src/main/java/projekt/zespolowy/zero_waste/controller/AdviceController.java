@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import projekt.zespolowy.zero_waste.dto.AdviceDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.Advice;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.AdviceCategory;
@@ -33,6 +35,7 @@ public class AdviceController {
         this.adviceMapper = adviceMapper;
         this.userService = userService;
     }
+
     @GetMapping
     public String listAdvices(@RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "10") int size,
@@ -64,6 +67,7 @@ public class AdviceController {
         model.addAttribute("categories", AdviceCategory.values());
         return "Educational/Advices/advice_form";
     }
+
     // Save the new advice
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/save")
@@ -71,10 +75,11 @@ public class AdviceController {
         adviceService.createAdvice(adviceDTO);
         return "redirect:/advices";
     }
+
     // Show the form to edit an advice
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/edit/{id}")
-    public String showEditForm (@PathVariable("id")Long id, Model model) {
+    public String showEditForm(@PathVariable("id") Long id, Model model) {
         Optional<Advice> optionalAdvice = adviceService.getAdviceById(id);
         if (optionalAdvice.isPresent()) {
             AdviceDTO adviceDTO = adviceMapper.toDTO(optionalAdvice.get());
@@ -85,10 +90,11 @@ public class AdviceController {
             return "redirect:/advices";
         }
     }
+
     // Delete an advice
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/delete/{id}") //do poprawienia na DeleteMapping
-    public String deleteAdvice(@PathVariable("id")Long id) {
+    public String deleteAdvice(@PathVariable("id") Long id) {
         adviceService.deleteAdvice(id);
         return "redirect:/advices";
     }
@@ -102,28 +108,37 @@ public class AdviceController {
 
     //View an advice
     @GetMapping("/{id}")
-    public String viewAdvice(@PathVariable("id")Long id, Model model) {
+    public String viewAdvice(@PathVariable("id") Long id, Model model) {
         Optional<Advice> optionalAdvice = adviceService.getAdviceById(id);
         if (optionalAdvice.isPresent()) {
+            Advice advice = optionalAdvice.get();
+            adviceService.toggleReadAdvice(id);
+            User currentUser = userService.getUser();
             AdviceDTO adviceDTO = adviceMapper.toDTO(optionalAdvice.get());
             model.addAttribute("adviceDTO", adviceDTO);
+            adviceDTO.setLikedByCurrentUser(advice.getLikedByUsers().contains(currentUser));
+            adviceDTO.setLikesCount(advice.getLikedByUsers().size());
+            adviceDTO.setReadByCurrentUser(advice.getReadByUsers().contains(currentUser));
+            adviceDTO.setReadsCount(advice.getReadByUsers().size());
             return "Educational/Advices/advice_view";
         } else {
             return "redirect:/advices";
         }
     }
+
+    @PostMapping("/advices/like/{id}")
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/like/{id}")
-    public String likeAdvice(@PathVariable("id") Long id) {
+    public String likeAdvice(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         adviceService.toggleLikeAdvice(id);
-        return "redirect:/advices";
+        return "redirect:/current-page";
+    }
+    @PostMapping("/like/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public String likeAdvice(@PathVariable("id") Long id, @RequestHeader("Referer") String referer) {
+        adviceService.toggleLikeAdvice(id);
+        return "redirect:" + referer; // Powrót na stronę, z której przyszło żądanie
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/read/{id}")
-    public String readAdvice(@PathVariable("id") Long id) {
-        adviceService.toggleReadAdvice(id);
-        return "redirect:/advices";
-    }
+
 
 }
