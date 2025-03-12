@@ -88,12 +88,11 @@ class NotificationServiceTest {
         when(userPreferenceService.getUserPreference(user)).thenReturn(Optional.of(preference));
         when(challengeRepository.findRandomChallenge()).thenReturn(sampleChallenge);
 
-        NotificationService serviceSpy = spy(notificationService);
-        doReturn(LocalDate.of(2025, 3, 10)).when(serviceSpy).getCurrentDate(); // Ustawienie poniedziałku
+        NotificationService notificationServiceSpy = spy(notificationService);
+        doReturn(LocalDate.of(2025, 3, 10)).when(notificationServiceSpy).getCurrentDate();
 
         // when
-        serviceSpy.sendNotification();
-
+        notificationServiceSpy.sendNotification();
         // then
         verify(userService).save(user);
         assertTrue(user.getChallenges().contains(sampleChallenge));
