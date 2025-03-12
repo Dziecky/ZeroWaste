@@ -71,11 +71,6 @@
                         <span th:text="${article.likedByCurrentUser} ? 'Odlub' : 'Polub'">Polub/Odlub</span>
                     </button>
                 </form>
-                <form th:action="@{/articles/read/{id}(id=${article.id})}" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-outline-primary">
-                        <span th:text="${article.readByCurrentUser} ? 'Odznacz przeczytanie' : 'Przeczytany'">Przeczytany/Odznacz przeczytanie</span>
-                    </button>
-                </form>
                 <a th:text="'Likes: ' + ${article.likesCount}">Likes</a>
                 <a th:text="'Reads: ' + ${article.readsCount}">Reads</a>
             </li>
@@ -110,5 +105,20 @@
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
         src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".like-form").forEach(form => {
+            form.querySelector(".like-btn").addEventListener("click", function() {
+                let articleId = form.getAttribute("data-id");
+                fetch(`/articles/like/${articleId}`, {
+                    method: "POST",
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                }).then(() => {
+                    location.reload(); // Opcjonalne: Można zamiast tego zmienić tekst guzika bez odświeżania strony
+                });
+            });
+        });
+    });
+</script>
 </body>
 </html>

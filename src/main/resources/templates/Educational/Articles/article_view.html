@@ -38,8 +38,27 @@
         <strong>Reads count:</strong>
         <span th:text="${articleDTO.readsCount}">Read Count</span>
     </p>
-    <a th:href="@{/articles}" class="btn btn-secondary">Back to articles</a>
+    <form th:action="@{/articles/like/{id}(id=${articleDTO.id})}" method="post" style="display:inline;">
+        <button type="submit" class="btn btn-outline-primary">
+            <span th:text="${articleDTO.likedByCurrentUser} ? 'Odlub' : 'Polub'">Polub/Odlub</span>
+        </button>
+    </form>
 
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".like-form").forEach(form => {
+            form.querySelector(".like-btn").addEventListener("click", function() {
+                let articleId = form.getAttribute("data-id");
+                fetch(`/articles/like/${articleId}`, {
+                    method: "POST",
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                }).then(() => {
+                    location.reload(); // Opcjonalne: Można zamiast tego zmienić tekst guzika bez odświeżania strony
+                });
+            });
+        });
+    });
+</script>
 </body>
 </html>
