@@ -126,8 +126,11 @@
 			<artifactId>stripe-java</artifactId>
 			<version>22.0.0</version>
 		</dependency>
-
-
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itextpdf</artifactId>
+			<version>5.5.13.3</version>
+		</dependency>
 
 	</dependencies>
 
