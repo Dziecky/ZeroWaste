@@ -60,3 +60,14 @@ a.btn-secondary {
 a.btn-secondary:hover {
     background-color: #5a6268;
 }
+
+a.btn-primary {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: 0.3s;
+}
