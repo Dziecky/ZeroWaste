@@ -46,13 +46,16 @@ public class OrderController {
     public String viewOrders(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortField,
+            @RequestParam(defaultValue = "asc") String sortDirection,
             Principal principal,
             Model model
     ) {
 
         User user = userService.findByUsername(principal.getName());
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Sort sort = sortDirection.equalsIgnoreCase("asc") ? Sort.by(sortField).ascending() : Sort.by(sortField).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<Order> ordersPage = orderService.getOrdersByUser(user, pageable);
 
         List<OrderSummaryDTO> orderDTOS = ordersPage.stream()
@@ -65,6 +68,9 @@ public class OrderController {
         model.addAttribute("orders", orderDTOS);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", ordersPage.getTotalPages());
+        model.addAttribute("size", size);
+        model.addAttribute("sortField", sortField);
+        model.addAttribute("sortDirection", sortDirection);
 
         return "orders/orders";
     }
