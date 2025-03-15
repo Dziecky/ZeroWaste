@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Refund Order</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/styles/order.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container mt-4">
+    <h1>Refund Request for Order #<span th:text="${order.orderId}"></span></h1>
+
+    <div>
+        <p><strong>Amount: </strong><span th:text="${order.price}"></span></p>
+        <p><strong>Order Date: </strong><span th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy HH:mm')}"></span></p>
+        <p><strong>Owner: </strong><span th:text="${order.ownerName}"></span></p>
+    </div>
+
+    <h3>Refund Details</h3>
+    <form th:action="@{'/orders/{orderId}/refund'(orderId=${order.orderId})}" method="post">
+        <div class="mb-3">
+            <label for="refundReason" class="form-label">Reason for Refund</label>
+            <textarea class="form-control" id="refundReason" name="refundReason" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="refundAmount" class="form-label">Refund Amount</label>
+            <input type="number" class="form-control" id="refundAmount" name="refundAmount" th:value="${order.price}" required readonly>
+        </div>
+
+        <button type="submit" class="btn btn-danger">Request Refund</button>
+    </form>
+
+    <br>
+    <a href="#" th:href="@{/orders}" class="btn btn-secondary">Back to Orders</a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous">
+</script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
