@@ -63,6 +63,9 @@ public class RefundController {
     OrderDTO getOrderDTOByOrderId(String orderId) {
         Long id = Long.parseLong(orderId);
         Order order = orderService.getOrderById(id);
+        if (order == null) {
+            return null;
+        }
         Optional<Product> maybeProduct = productService.getProductById(order.getProduct().getId());
         OrderDTO orderDTO = null;
         if(maybeProduct.isPresent()) {
