@@ -160,7 +160,7 @@ public class OrderController {
         return cell;
     }
 
-    private OrderDTO getOrderDTOByOrderId(String orderId) {
+    OrderDTO getOrderDTOByOrderId(String orderId) {
         Long id = Long.parseLong(orderId);
         Order order = orderService.getOrderById(id);
         Optional<Product> maybeProduct = productService.getProductById(order.getProduct().getId());
