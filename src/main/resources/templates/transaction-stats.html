@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+  <meta charset="UTF-8">
+  <title>Transactions</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+  <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+  <script src="/scripts/navbar.js" defer></script>
+</head>
+<body class="d-flex flex-column h-100">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main role="main" class="flex-shrink-0">
+  <div class="container">
+    <div class="jumbotron text-center bg-success text-white shadow">
+      <h1 class="display-4">Transactions</h1>
+      <p class="lead">Overview of your purchases and sales.</p>
+    </div>
+
+    <!-- Purchases Table -->
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <h3>Purchases</h3>
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Date</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="purchase : ${purchases}">
+            <td th:text="${purchase.name}"></td>
+            <td th:text="${purchase.productCategory}"></td>
+            <td th:text="${purchase.quantity}"></td>
+            <td th:text="${purchase.price} + ' PLN'"></td>
+            <td th:text="${#temporals.format(purchase.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
+          </tr>
+          </tbody>
+          <tfoot>
+          <tr>
+            <td colspan="4" class="text-right"><strong>Total Purchases:</strong></td>
+            <td th:text="${totalPurchases}"></td>
+          </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sales Table -->
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <h3>Sales</h3>
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Date</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="sale : ${sales}">
+            <td th:text="${sale.name}"></td>
+            <td th:text="${sale.productCategory}"></td>
+            <td th:text="${sale.quantity}"></td>
+            <td th:text="${sale.price} + ' PLN'"></td>
+            <td th:text="${#temporals.format(sale.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
+          </tr>
+          </tbody>
+          <tfoot>
+          <tr>
+            <td colspan="4" class="text-right"><strong>Total Sales:</strong></td>
+            <td th:text="${totalSales}"></td>
+          </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous">
+</script>
+<script
+        src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js">
+</script>
+</body>
+</html>

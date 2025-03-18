@@ -22,10 +22,8 @@ import projekt.zespolowy.zero_waste.services.StatisticsService;
 import projekt.zespolowy.zero_waste.services.ProductService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.text.DecimalFormat;
-
 @Controller
 @RequiredArgsConstructor
 public class EcoImpactController {
@@ -45,6 +43,7 @@ public class EcoImpactController {
     }
 
     @GetMapping("/eco-impact")
+
     public String getEcoImpact(@RequestParam(defaultValue = "0") int page, Model model) {
         Long userId = getCurrentUserId();
         String ecoImpactMessage = ecoImpactService.calculateEcoImpact(userId);
@@ -54,11 +53,76 @@ public class EcoImpactController {
         model.addAttribute("currentPage", page);
 
 
-        boolean hasImpactData = !history.isEmpty();
+        List<String> historyDates = new ArrayList<>();
+        List<Double> totalPointsHistory = new ArrayList<>();
+
+        for (EcoImpactHistory record : history) {
+            historyDates.add(record.getDate().toString());
+            totalPointsHistory.add((double) record.getTotalPoints());
+        }
+
+        model.addAttribute("historyDates", historyDates);
+        model.addAttribute("totalPointsHistory", totalPointsHistory);
+
+
+        double waterSaved = history.stream().mapToDouble(EcoImpactHistory::getWaterSaved).sum();
+        double co2Saved = history.stream().mapToDouble(EcoImpactHistory::getCo2Saved).sum();
+        double energySaved = history.stream().mapToDouble(EcoImpactHistory::getEnergySaved).sum();
+        double wasteReduced = history.stream().mapToDouble(EcoImpactHistory::getWasteReduced).sum();
+
+        DecimalFormat df = new DecimalFormat("0.00");
+        String formattedWaterSaved = df.format(waterSaved);
+        String formattedCo2Saved = df.format(co2Saved);
+        String formattedEnergySaved = df.format(energySaved);
+        String formattedWasteReduced = df.format(wasteReduced);
+
+
+        List<String> waterSavedHistory = new ArrayList<>();
+        List<String> co2SavedHistory = new ArrayList<>();
+        List<String> energySavedHistory = new ArrayList<>();
+        List<String> wasteReducedHistory = new ArrayList<>();
+
+        for (EcoImpactHistory record : history) {
+            waterSavedHistory.add(df.format(record.getWaterSaved()));
+            co2SavedHistory.add(df.format(record.getCo2Saved()));
+            energySavedHistory.add(df.format(record.getEnergySaved()));
+            wasteReducedHistory.add(df.format(record.getWasteReduced()));
+        }
+
+        model.addAttribute("ecoImpactMessage", ecoImpactMessage);
+        model.addAttribute("waterSaved", formattedWaterSaved);
+        model.addAttribute("co2Saved", formattedCo2Saved);
+        model.addAttribute("energySaved", formattedEnergySaved);
+        model.addAttribute("wasteReduced", formattedWasteReduced);
+        model.addAttribute("historyDates", historyDates);
+        model.addAttribute("waterSavedHistory", waterSavedHistory);
+        model.addAttribute("co2SavedHistory", co2SavedHistory);
+        model.addAttribute("energySavedHistory", energySavedHistory);
+        model.addAttribute("wasteReducedHistory", wasteReducedHistory);
+
+
+        User user = userService.findById(userId);
+        model.addAttribute("points", user.getTotalPoints());
+
+        model.addAttribute("showTransactionsLink", true);
+
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "eco-impact";
+    }
+
+    @GetMapping("/transaction-stats")
+    public String getTransactionsStats(Model model) {
+        Long userId = getCurrentUserId();
 
 
         List<Order> purchases = statisticsService.getPurchasesByUser(userId);
         List<Product> sales = statisticsService.getSalesByUser(userId);
+
 
         List<ProductDTO> purchaseDTOs = purchases.stream()
                 .map(order -> new ProductDTO(
@@ -68,7 +132,7 @@ public class EcoImpactController {
                         order.getProduct().getImageUrl(),
                         order.getProduct().isAvailable(),
                         order.getProduct().getPrice(),
-                        order.getProduct().getCreatedAt(),
+                        order.getCreatedAt(),
                         order.getProduct().getProductCategory(),
                         order.getProduct().getQuantity(),
                         order.getProduct().getUnitOfMeasure(),
@@ -78,6 +142,7 @@ public class EcoImpactController {
                                 .map(tag -> tag.getName())
                                 .collect(Collectors.toSet())
                 )).collect(Collectors.toList());
+
 
         List<ProductDTO> salesDTOs = sales.stream()
                 .map(product -> new ProductDTO(
@@ -99,69 +164,20 @@ public class EcoImpactController {
                 )).collect(Collectors.toList());
 
 
-        User user = userService.findById(userId);
         int totalPurchases = purchases.stream()
                 .mapToInt(p -> (int) p.getProduct().getQuantity())
                 .sum();
-
         int totalSales = sales.stream()
                 .mapToInt(p -> (int) p.getQuantity())
                 .sum();
 
-        double waterSaved = history.stream().mapToDouble(EcoImpactHistory::getWaterSaved).sum();
-        double co2Saved = history.stream().mapToDouble(EcoImpactHistory::getCo2Saved).sum();
-        double energySaved = history.stream().mapToDouble(EcoImpactHistory::getEnergySaved).sum();
-        double wasteReduced = history.stream().mapToDouble(EcoImpactHistory::getWasteReduced).sum();
-
-
-        DecimalFormat df = new DecimalFormat("0.00");
-        String formattedWaterSaved = df.format(waterSaved);
-        String formattedCo2Saved = df.format(co2Saved);
-        String formattedEnergySaved = df.format(energySaved);
-        String formattedWasteReduced = df.format(wasteReduced);
-
-        List<String> historyDates = new ArrayList<>();
-        List<String> waterSavedHistory = new ArrayList<>();
-        List<String> co2SavedHistory = new ArrayList<>();
-        List<String> energySavedHistory = new ArrayList<>();
-        List<String> wasteReducedHistory = new ArrayList<>();
-
-        for (EcoImpactHistory record : history) {
-            historyDates.add(record.getDate().toString());
-            waterSavedHistory.add(df.format(record.getWaterSaved()));
-            co2SavedHistory.add(df.format(record.getCo2Saved()));
-            energySavedHistory.add(df.format(record.getEnergySaved()));
-            wasteReducedHistory.add(df.format(record.getWasteReduced()));
-        }
-
-
-        model.addAttribute("ecoImpactMessage", ecoImpactMessage);
-        model.addAttribute("waterSaved", formattedWaterSaved);
-        model.addAttribute("co2Saved", formattedCo2Saved);
-        model.addAttribute("energySaved", formattedEnergySaved);
-        model.addAttribute("wasteReduced", formattedWasteReduced);
-        model.addAttribute("historyDates", historyDates);
-        model.addAttribute("waterSavedHistory", waterSavedHistory);
-        model.addAttribute("co2SavedHistory", co2SavedHistory);
-        model.addAttribute("energySavedHistory", energySavedHistory);
-        model.addAttribute("wasteReducedHistory", wasteReducedHistory);
-
-        model.addAttribute("points", user.getTotalPoints());
-        model.addAttribute("ecoImpactMessage", ecoImpactMessage);
 
         model.addAttribute("purchases", purchaseDTOs);
         model.addAttribute("sales", salesDTOs);
         model.addAttribute("totalPurchases", totalPurchases);
         model.addAttribute("totalSales", totalSales);
 
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAdmin = auth.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
-
-        model.addAttribute("isAdmin", isAdmin);
-
-        return "eco-impact";
+        return "transaction-stats";
     }
 
     @PostMapping("/generate-report")
