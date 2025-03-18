@@ -93,6 +93,16 @@
                             <i class="fas fa-eye"></i>
                             <span th:text="${announcement.viewedByUsers.size() == 1 ? '1 view' : announcement.viewedByUsers.size() + ' views'}">0 views</span>
                         </div>
+                        <div class="announcement-votes">
+                            <span class="upvotes">
+                                <i class="bi bi-arrow-up"></i>
+                                <span th:text="${announcement.upvotedByUsers.size()}">0</span>
+                            </span>
+                            <span class="downvotes">
+                                <i class="bi bi-arrow-down"></i>
+                                <span th:text="${announcement.downvotedByUsers.size()}">0</span>
+                            </span>
+                        </div>
                     </div>
                     <div th:if="${accountType == 'BUSINESS'}" class="action-buttons">
                         <!-- Only show delete button if current user is the owner of the announcement -->
@@ -143,5 +153,33 @@ function updateSort(sortValue) {
     window.location.href = window.location.pathname + '?' + urlParams.toString();
 }
 </script>
+
+<style>
+    /* Add these styles to your existing styles */
+    .announcement-votes {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+        color: #6c757d;
+    }
+
+    .upvotes, .downvotes {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .upvotes i {
+        color: #28a745;
+    }
+
+    .downvotes i {
+        color: #dc3545;
+    }
+
+    .announcement-votes span {
+        font-size: 0.9rem;
+    }
+</style>
 </body>
 </html>

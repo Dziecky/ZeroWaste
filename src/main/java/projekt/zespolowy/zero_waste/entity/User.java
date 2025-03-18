@@ -109,6 +109,18 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "announcement_id"))
     private Set<Announcement> viewedAnnouncements = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(name = "announcement_upvotes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "announcement_id"))
+    private Set<Announcement> upvotedAnnouncements = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "announcement_downvotes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "announcement_id"))
+    private Set<Announcement> downvotedAnnouncements = new HashSet<>();
+
     @EqualsAndHashCode.Exclude
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private PrivacySettings privacySettings;
