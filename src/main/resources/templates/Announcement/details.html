@@ -122,6 +122,43 @@
             transform: translateY(-3px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
+        .votes {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .vote-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .vote-btn.active {
+            transform: scale(1.1);
+        }
+
+        .vote-btn i {
+            font-size: 1.2rem;
+        }
+
+        .vote-btn span {
+            font-weight: bold;
+        }
+
+        .btn-outline-success.active {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-outline-danger.active {
+            background-color: #dc3545;
+            color: white;
+        }
     </style>
 </head>
 <body class="d-flex flex-column h-100">
@@ -136,6 +173,18 @@
             <div class="views">
                 <span>Wyświetlenia: </span>
                 <span th:text="${announcement.viewedByUsers.size() == 1 ? '1 view' : announcement.viewedByUsers.size() + ' views'}">0 views</span>
+            </div>
+            <div class="votes">
+                <button class="btn btn-outline-success vote-btn" th:classappend="${announcement.upvotedByUsers.contains(currentUser)} ? 'active' : ''"
+                        th:onclick="'vote(' + ${announcement.id} + ', \'upvote\')'">
+                    <i class="bi bi-arrow-up"></i>
+                    <span th:text="${announcement.upvotedByUsers.size()}">0</span>
+                </button>
+                <button class="btn btn-outline-danger vote-btn" th:classappend="${announcement.downvotedByUsers.contains(currentUser)} ? 'active' : ''"
+                        th:onclick="'vote(' + ${announcement.id} + ', \'downvote\')'">
+                    <i class="bi bi-arrow-down"></i>
+                    <span th:text="${announcement.downvotedByUsers.size()}">0</span>
+                </button>
             </div>
             <hr>
 
@@ -192,5 +241,42 @@
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
         crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    function vote(announcementId, voteType) {
+        const upvoteBtn = document.querySelector('.btn-outline-success');
+        const downvoteBtn = document.querySelector('.btn-outline-danger');
+        
+        fetch(`/announcements/${announcementId}/${voteType}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update vote counts
+            upvoteBtn.querySelector('span').textContent = data.upvotes;
+            downvoteBtn.querySelector('span').textContent = data.downvotes;
+            
+            // Update button states
+            if (voteType === 'upvote') {
+                if (upvoteBtn.classList.contains('active')) {
+                    upvoteBtn.classList.remove('active');
+                } else {
+                    upvoteBtn.classList.add('active');
+                    downvoteBtn.classList.remove('active');
+                }
+            } else {
+                if (downvoteBtn.classList.contains('active')) {
+                    downvoteBtn.classList.remove('active');
+                } else {
+                    downvoteBtn.classList.add('active');
+                    upvoteBtn.classList.remove('active');
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
 </body>
 </html>

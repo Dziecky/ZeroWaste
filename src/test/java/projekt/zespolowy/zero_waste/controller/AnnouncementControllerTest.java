@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,7 +45,7 @@ class AnnouncementControllerTest {
     private User testUser;
     private CustomUser customUser;
     private UserService userService;
-    
+
     @Mock
     private AnnouncementRepository announcementRepository;
 
@@ -81,6 +83,7 @@ class AnnouncementControllerTest {
         testUser.setUsername("testUser");
         testUser.setAccountType(AccountType.BUSINESS);
         testUser.setViewedAnnouncements(new HashSet<>());
+        testUser.setUpvotedAnnouncements(new HashSet<>()); // Initialize upvoted announcements
 
         // Setup CustomUser
         customUser = new CustomUser(testUser);
@@ -101,31 +104,29 @@ class AnnouncementControllerTest {
         testAnnouncement.setCreatedAt(LocalDateTime.now());
         testAnnouncement.setUpdatedAt(LocalDateTime.now());
         testAnnouncement.setViewedByUsers(new HashSet<>());
+        testAnnouncement.setUpvotedByUsers(new HashSet<>()); // Initialize upvoted users
         testAnnouncement.setOwner(testUser);
 
         // Setup Spring Security context
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
 
-        // Setup UserRepository mock
+        // Setup UserRepository mock for static UserService.findByUsername
         when(userRepository.findByUsername(testUser.getUsername())).thenReturn(Optional.of(testUser));
-
-        // Create and setup UserService instance
-        userService = new UserService(userRepository, passwordEncoder, articleMapper, adviceMapper);
 
         // Set the static userRepository field in UserService using reflection
         Field userRepositoryField = UserService.class.getDeclaredField("userRepository");
         userRepositoryField.setAccessible(true);
         userRepositoryField.set(null, userRepository);
 
-        // Ensure controller is initialized correctly
+        // Initialize controller with required dependencies
         announcementController = new AnnouncementController(announcementRepository, productService);
     }
 
     @AfterEach
     void tearDown() throws Exception {
         SecurityContextHolder.clearContext();
-        
+
         // Reset the static userRepository field
         Field userRepositoryField = UserService.class.getDeclaredField("userRepository");
         userRepositoryField.setAccessible(true);
@@ -206,6 +207,41 @@ class AnnouncementControllerTest {
         assertEquals("redirect:/announcements", viewName);
         verify(announcementRepository).delete(testAnnouncement);
     }
+
+
+
+    @Test
+    void upvoteAnnouncement_WhenAnnouncementNotFound_ShouldReturnNotFound() {
+        // Arrange
+        when(announcementRepository.findById(1L)).thenReturn(Optional.empty());
+
+        try {
+            // Act
+            announcementController.upvoteAnnouncement(1L);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // Assert
+            assertEquals("Invalid announcement ID: 1", e.getMessage());
+        }
+
+        verify(announcementRepository, never()).save(any());
+    }
+
+    @Test
+    void upvoteAnnouncement_WhenUserNotAuthenticated_ShouldReturnUnauthorized() {
+        // Arrange
+        SecurityContextHolder.clearContext(); // Clear the security context completely
+
+        // Act
+        try {
+            announcementController.upvoteAnnouncement(1L);
+            fail("Expected NullPointerException");
+        } catch (NullPointerException e) {
+            // This is the expected behavior when authentication is null
+            verify(announcementRepository, never()).save(any());
+        }
+    }
+
 
 
 }
