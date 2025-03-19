@@ -23,17 +23,26 @@
         <table class="table table-bordered">
             <thead>
             <tr>
-                <th>Order</th>
+                <th>
+                    <a th:href="@{/orders(page=${currentPage}, size=${size}, sortField='id', sortDirection=${sortField == 'id' and sortDirection == 'asc' ? 'desc' : 'asc'})}">
+                        Order identifier
+                        <i th:if="${sortField == 'id'}" th:classappend="${sortDirection == 'asc' ? 'bi bi-arrow-up' : 'bi bi-arrow-down'}"></i>
+                    </a>
+                </th>
                 <th>Amount</th>
                 <th>Details</th>
+                <th>Refund</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="order : ${orders}">
-                <td th:text="'#30' + ${order.orderId}"></td>
+                <td th:text="${order.orderId}"></td>
                 <td th:text="${order.price}"></td>
                 <td>
                     <a th:href="@{'/orders/{orderId}'(orderId=${order.orderId})}" class="btn btn-info">View Details</a>
+                </td>
+                <td>
+                    <a th:href="@{'/orders/{orderId}/refund'(orderId=${order.orderId})}" class="btn btn-danger">Apply for Refund</a>
                 </td>
             </tr>
             </tbody>
@@ -42,17 +51,17 @@
         <nav aria-label="Order pagination">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                    <a class="page-link" th:href="@{/orders(page=${currentPage - 1}, size=${size})}">Previous</a>
+                    <a class="page-link" th:href="@{/orders(page=${currentPage - 1}, size=${size}, sortField=${sortField}, sortDirection=${sortDirection})}">Previous</a>
                 </li>
 
                 <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                     class="page-item"
                     th:classappend="${i == currentPage} ? 'active'">
-                    <a class="page-link" th:href="@{/orders(page=${i}, size=${size})}" th:text="${i + 1}"></a>
+                    <a class="page-link" th:href="@{/orders(page=${i}, size=${size}, sortField=${sortField}, sortDirection=${sortDirection})}" th:text="${i + 1}"></a>
                 </li>
 
                 <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
-                    <a class="page-link" th:href="@{/orders(page=${currentPage + 1}, size=${size})}">Next</a>
+                    <a class="page-link" th:href="@{/orders(page=${currentPage + 1}, size=${size}, sortField=${sortField}, sortDirection=${sortDirection})}">Next</a>
                 </li>
             </ul>
         </nav>

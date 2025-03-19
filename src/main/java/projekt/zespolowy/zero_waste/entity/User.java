@@ -12,6 +12,7 @@ import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 import projekt.zespolowy.zero_waste.entity.forum.Comment;
 import projekt.zespolowy.zero_waste.entity.forum.ForumThread;
 
+import projekt.zespolowy.zero_waste.entity.enums.UserRole;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -56,11 +57,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
-    // Metoda getAuthorities() do użycia w CustomUser
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Dla uproszczenia, wszyscy użytkownicy mają rolę ADMIN podczas produkcji
-        return List.of(() -> "ROLE_ADMIN");
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private UserRole role;
+
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
     @Column
@@ -78,7 +78,6 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "article_id"))
     private List<Article> likedArticles;
-
     @ManyToMany
     @JoinTable(name = "advice_likes",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -89,7 +88,6 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "article_id"))
     private List<Article> readArticles;
-
     @ManyToMany
     @JoinTable(name = "advice_read",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -105,13 +103,21 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "challenge_id"))
     private List<Challenge> challenges;
-
     @ManyToMany
     @JoinTable(name = "announcement_views",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "announcement_id"))
     private Set<Announcement> viewedAnnouncements = new HashSet<>();
-
+    @ManyToMany
+    @JoinTable(name = "announcement_upvotes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "announcement_id"))
+    private Set<Announcement> upvotedAnnouncements = new HashSet<>();
+    @ManyToMany
+    @JoinTable(name = "announcement_downvotes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "announcement_id"))
+    private Set<Announcement> downvotedAnnouncements = new HashSet<>();
     @EqualsAndHashCode.Exclude
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private PrivacySettings privacySettings;
@@ -120,6 +126,10 @@ public class User {
     private List<ForumThread> threads;
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
+    // Metoda getAuthorities() do użycia w CustomUser
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(() -> role.name());
+    }
 }
 
 
