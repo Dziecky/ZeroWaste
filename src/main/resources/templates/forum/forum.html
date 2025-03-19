@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Forum</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link th:href="@{styles/main.css}" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+
+</head>
+<body class="d-flex flex-column h-100">
+<div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="container">
+        <a class="navbar-brand" href="#">Forum</a>
+        <div class="ms-auto">
+            <a class="btn btn-primary" href="/forum/create">Utwórz nowy wątek</a>
+        </div>
+    </div>
+</nav>
+<div class="container mt-4">
+    <div th:if="${threads != null}">
+        <div class="list-group">
+            <a th:each="thread : ${threads}"
+               th:href="@{'/forum/thread/' + ${thread.id}}"
+               th:text="${thread.title}"
+               class="list-group-item list-group-item-action">
+                Tytuł wątku
+            </a>
+        </div>
+    </div>
+</div>
+<!-- Ładowanie Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
