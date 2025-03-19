@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${thread.title}">Szczegóły wątku</title>
+</head>
+<body>
+<h1 th:text="${thread.title}">Tytuł wątku</h1>
+<p th:text="${thread.content}">Treść wątku</p>
+
+<h2>Komentarze</h2>
+<div th:if="${thread.comments != null}">
+    <ul>
+        <li th:each="comment : ${thread.comments}">
+            <p th:text="${comment.message}">Treść komentarza</p>
+            <!-- Zakładamy, że encja User posiada pole username -->
+            <p>Autor: <span th:text="${comment.author.username}">username</span></p>
+            <hr/>
+        </li>
+    </ul>
+</div>
+
+<!-- Formularz dodawania komentarza -->
+<h3>Dodaj komentarz</h3>
+<form th:action="@{/forum/thread/{id}/comment(id=${thread.id})}" method="post">
+    <textarea name="message" rows="5" cols="50" placeholder="Wpisz komentarz"></textarea>
+    <br/>
+    <button type="submit">Dodaj</button>
+</form>
+</body>
+</html>

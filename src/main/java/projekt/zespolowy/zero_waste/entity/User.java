@@ -9,6 +9,9 @@ import projekt.zespolowy.zero_waste.entity.EducationalEntities.Challenge;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Tip;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
+import projekt.zespolowy.zero_waste.entity.forum.Comment;
+import projekt.zespolowy.zero_waste.entity.forum.ForumThread;
+
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -113,9 +116,10 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private PrivacySettings privacySettings;
 
-/*    @ManyToMany
-    @JoinTable
-    private*/
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ForumThread> threads;
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 }
 
 
