@@ -11,17 +11,15 @@ import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.dto.user.UserPrivacyDto;
 import projekt.zespolowy.zero_waste.dto.user.UserRegistrationDto;
 import projekt.zespolowy.zero_waste.dto.user.UserUpdateDto;
+import projekt.zespolowy.zero_waste.entity.*;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Challenge;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Tip;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.UserPreference;
-import projekt.zespolowy.zero_waste.entity.PrivacySettings;
-import projekt.zespolowy.zero_waste.entity.Task;
-import projekt.zespolowy.zero_waste.entity.User;
-import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
 import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
+import projekt.zespolowy.zero_waste.entity.enums.UserRole;
 import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.repository.TaskRepository;
@@ -91,6 +89,7 @@ public class UserService implements UserDetailsService {
         user.setAccountType(userDto.isBusinessAccount() ? AccountType.BUSINESS : AccountType.NORMAL);
         user.setProvider(AuthProvider.LOCAL);
         user.setImageUrl("https://www.mkm.szczecin.pl/images/default-avatar.svg?id=26d9452357b428b99ab97f2448b5d803");
+        user.setRole(UserRole.ROLE_USER);
 
         PrivacySettings ps = new PrivacySettings();
         ps.setEmailVisible(PrivacyOptions.PUBLIC);
@@ -99,6 +98,7 @@ public class UserService implements UserDetailsService {
         ps.setUser(user);
 
         user.setPrivacySettings(ps);
+
 
         userRepository.save(user);
 
