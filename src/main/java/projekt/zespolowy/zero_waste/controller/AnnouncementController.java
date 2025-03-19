@@ -2,6 +2,7 @@ package projekt.zespolowy.zero_waste.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -177,5 +179,76 @@ public class AnnouncementController {
         return "redirect:/announcements";
     }
 
+    @PostMapping("/{id}/upvote")
+    @ResponseBody
+    public ResponseEntity<?> upvoteAnnouncement(@PathVariable Long id) {
+        User currentUser = UserService.getUser();
+        Announcement announcement = announcementRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid announcement ID: " + id));
+
+        // Check if already upvoted
+        if (announcement.getUpvotedByUsers().contains(currentUser)) {
+            // Remove upvote
+            announcement.getUpvotedByUsers().remove(currentUser);
+            currentUser.getUpvotedAnnouncements().remove(announcement);
+            announcementRepository.save(announcement);
+            return ResponseEntity.ok(Map.of(
+                "upvotes", announcement.getUpvotedByUsers().size(),
+                "downvotes", announcement.getDownvotedByUsers().size()
+            ));
+        }
+
+        // Remove downvote if exists
+        if (announcement.getDownvotedByUsers().contains(currentUser)) {
+            announcement.getDownvotedByUsers().remove(currentUser);
+            currentUser.getDownvotedAnnouncements().remove(announcement);
+        }
+
+        // Add upvote
+        announcement.getUpvotedByUsers().add(currentUser);
+        currentUser.getUpvotedAnnouncements().add(announcement);
+
+        announcementRepository.save(announcement);
+        return ResponseEntity.ok(Map.of(
+            "upvotes", announcement.getUpvotedByUsers().size(),
+            "downvotes", announcement.getDownvotedByUsers().size()
+        ));
+    }
+
+    @PostMapping("/{id}/downvote")
+    @ResponseBody
+    public ResponseEntity<?> downvoteAnnouncement(@PathVariable Long id) {
+        User currentUser = UserService.getUser();
+        Announcement announcement = announcementRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid announcement ID: " + id));
+
+        // Check if already downvoted
+        if (announcement.getDownvotedByUsers().contains(currentUser)) {
+            // Remove downvote
+            announcement.getDownvotedByUsers().remove(currentUser);
+            currentUser.getDownvotedAnnouncements().remove(announcement);
+            announcementRepository.save(announcement);
+            return ResponseEntity.ok(Map.of(
+                "upvotes", announcement.getUpvotedByUsers().size(),
+                "downvotes", announcement.getDownvotedByUsers().size()
+            ));
+        }
+
+        // Remove upvote if exists
+        if (announcement.getUpvotedByUsers().contains(currentUser)) {
+            announcement.getUpvotedByUsers().remove(currentUser);
+            currentUser.getUpvotedAnnouncements().remove(announcement);
+        }
+
+        // Add downvote
+        announcement.getDownvotedByUsers().add(currentUser);
+        currentUser.getDownvotedAnnouncements().add(announcement);
+
+        announcementRepository.save(announcement);
+        return ResponseEntity.ok(Map.of(
+            "upvotes", announcement.getUpvotedByUsers().size(),
+            "downvotes", announcement.getDownvotedByUsers().size()
+        ));
+    }
 }
 

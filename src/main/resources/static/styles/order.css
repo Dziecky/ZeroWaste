@@ -11,22 +11,35 @@ body {
 }
 
 table {
-    width: 90%;
-    max-width: 1200px;
+    width: 100%;
     margin: 30px auto;
     border-collapse: collapse;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background: #fff;
 }
 
 table th, table td {
-    padding: 12px;
+    width: 25%;
+    padding: 10px;
     font-size: 1rem;
     text-align: left;
     border-bottom: 1px solid #ddd;
+    word-wrap: break-word;
 }
+
+table th {
+    background: #28a745;
+    color: white;
+    font-weight: bold;
+}
+
+table tr:nth-child(even) {
+    background: #f7f7f7;
+}
+
+table tr:hover {
+    background: #e6f9ed;
+}
+
 
 table th {
     background: #28a745;

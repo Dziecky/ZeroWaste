@@ -52,4 +52,10 @@ public class Announcement {
 
     @ManyToMany(mappedBy = "viewedAnnouncements")
     private Set<User> viewedByUsers = new HashSet<>();
+
+    @ManyToMany(mappedBy = "upvotedAnnouncements")
+    private Set<User> upvotedByUsers = new HashSet<>();
+
+    @ManyToMany(mappedBy = "downvotedAnnouncements")
+    private Set<User> downvotedByUsers = new HashSet<>();
 }
