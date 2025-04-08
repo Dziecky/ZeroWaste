@@ -15,7 +15,9 @@ import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.forum.Comment;
 import projekt.zespolowy.zero_waste.entity.forum.ForumThread;
+import projekt.zespolowy.zero_waste.services.CommentService;
 import projekt.zespolowy.zero_waste.services.ForumThreadService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
@@ -30,6 +32,9 @@ public class ForumThreadControllerTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private CommentService commentService;
 
     private Model model;
 
@@ -75,5 +80,20 @@ public class ForumThreadControllerTest {
         assertTrue(model.containsAttribute("thread"));
         ForumThread returnedThread = (ForumThread) model.getAttribute("thread");
         assertEquals(1L, returnedThread.getId());
+    }
+
+    @Test
+    public void testAddComment() {
+        ForumThread thread = new ForumThread();
+        thread.setId(1L);
+        when(forumThreadService.findById(1L)).thenReturn(thread);
+        User user = userService.getUserTest();
+        when(userService.getUser()).thenReturn(user);
+        Comment newComment = new Comment();
+        String view = forumThreadController.addComment(1L, newComment, model);
+
+        assertEquals("redirect:/forum/thread/1", view);
+        verify(forumThreadService).findById(1L);
+        verify(commentService).saveComment(newComment, thread, userService.getUser());
     }
 }
