@@ -36,4 +36,10 @@ public interface ProductService {
  void addToViewHistory(HttpSession session, Long productId);
  List<Product> getRecentlyViewedProducts(HttpSession session);
  List<Product> getRecentlyViewedProductsExcept(HttpSession session, Long excludeProductId);
+
+ void addFavoriteProduct(Long userId, Long productId);
+ void removeFavoriteProduct(Long userId, Long productId);
+ boolean isProductFavorite(Long userId, Long productId);
+ List<Product> getFavoriteProducts(Long userId);
+
 }
