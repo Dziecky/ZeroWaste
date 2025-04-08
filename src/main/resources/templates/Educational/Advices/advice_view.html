@@ -1,51 +1,110 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${adviceDTO.title}">Advice Details</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="${adviceDTO.title}">Szczegóły Porady</title>
 
-    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
-    <script src="/scripts/navbar.js" defer></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+          crossorigin="anonymous">
 
-</head>
-<body>
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/> <link th:href="@{/styles/navbar.css}" rel="stylesheet"/> </head>
+<body class="d-flex flex-column min-vh-100">
 <div th:replace="~{fragments/header :: header}"></div>
-<div class="container">
-    <h1 th:text="${adviceDTO.title}">Advice Title</h1>
-    <p><strong>Author:</strong> <span th:text="${adviceDTO.authorUsername}"></span></p>
-    <p><strong>Category:</strong> <span th:text="${adviceDTO.adviceCategory}"></span></p>
-    <div th:if="${adviceDTO.imageUrl}">
-        <img th:src="${adviceDTO.imageUrl}" alt="Advice Image" class="img-fluid">
-    </div>
 
-    <!-- Display Tags -->
-    <p>
-        <strong>Tags:</strong>
-        <span th:each="tagName, iterStat : ${adviceDTO.tags}">
-        <span th:text="'#' + ${tagName}">#TagName</span>
-        <span th:if="${!iterStat.last}">, </span>
-    </span>
-    </p>
-    <p>
-        <strong>Likes count:</strong>
-        <span th:text="${adviceDTO.likesCount}">Likes Count</span>
-    </p>
-    <p>
-        <strong>Reads count:</strong>
-        <span th:text="${adviceDTO.readsCount}">Read Count</span>
-    </p>
-    <form th:action="@{/advices/like/{id}(id=${adviceDTO.id})}" method="post" style="display:inline;">
-        <button type="submit" class="btn btn-outline-primary">
-            <span th:text="${adviceDTO.likedByCurrentUser} ? 'Odlub' : 'Polub'">Polub/Odlub</span>
-        </button>
-    </form>
+<main role="main" class="flex-shrink-0">
+    <div class="container mt-4 mb-5">
 
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0" th:text="${adviceDTO.title}">Tytuł Porady</h1>
+                <a th:href="@{/advices}" class="btn btn-outline-secondary btn-sm">
+                    Wróć do Listy
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="mb-3 text-muted">
+                    <small class="mr-3">
+                        <strong>Autor:</strong> <span th:text="${adviceDTO.authorUsername}">Nazwa autora</span>
+                    </small>
+                    <small class="mr-3">
+                        <strong>Kategoria:</strong> <span th:text="${adviceDTO.adviceCategory}">Kategoria</span>
+                    </small>
+                    <small th:if="${adviceDTO.tags != null and !adviceDTO.tags.isEmpty()}">
+                        <strong>Tagi:</strong>
+                        <span th:each="tagName : ${adviceDTO.tags}" class="badge badge-secondary mr-1" th:text="${tagName}">Tag</span>
+                    </small>
+                </div>
 
+                <div th:if="${adviceDTO.imageUrl}" class="text-center mb-4"> <img th:src="${adviceDTO.imageUrl}" alt="Obrazek porady" class="img-fluid rounded" style="max-height: 400px;">
+                </div>
 
+                <div class="advice-content mb-4">
+                    <h4>Treść porady:</h4>
+                    <p th:text="${adviceDTO.content}" style="white-space: pre-wrap;">Treść porady...</p>
+                </div>
 
+                <hr>
 
-    <a th:href="@{/advices}" class="btn btn-secondary">Back to Advices</a>
-</div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                        <form th:action="@{/advices/like/{id}(id=${adviceDTO.id})}" method="post" class="like-form d-inline" th:data-id="${adviceDTO.id}">
+                            <button type="submit" class="btn btn-outline-primary btn-sm like-btn">
+                                <span th:text="${adviceDTO.likedByCurrentUser} ? 'Odlub' : 'Polub'">Polub/Odlub</span>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="text-muted">
+                        <small class="mr-3">
+                            <span th:text="|Polubienia: ${adviceDTO.likesCount}|">Likes</span>
+                        </small>
+                        <small>
+                            <span th:text="|Odczyty: ${adviceDTO.readsCount}|">Reads</span>
+                        </small>
+                    </div>
+                </div>
+
+            </div> </div> </div> </main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+
+<script src="/scripts/navbar.js" defer></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".like-form").forEach(form => {
+            form.addEventListener("submit", function(event) {
+                event.preventDefault();
+                let button = form.querySelector(".like-btn");
+                let articleId = form.getAttribute("data-id");
+                let url = `/advices/like/${articleId}`;
+
+                fetch(url, {
+                    method: "POST",
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                    // Add CSRF headers if needed
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload(); // Simple reload
+                    } else {
+                        console.error("Like request failed:", response.statusText);
+                    }
+                }).catch(error => console.error("Error submitting like:", error));
+            });
+        });
+    });
+</script>
 
 </body>
 </html>
