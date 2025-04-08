@@ -2,7 +2,10 @@ package projekt.zespolowy.zero_waste.entity.forum;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import projekt.zespolowy.zero_waste.entity.User;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,5 +28,9 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "thread_id")
     private ForumThread thread;
+
+    @CreationTimestamp // Automatically set the timestamp when created
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
 }

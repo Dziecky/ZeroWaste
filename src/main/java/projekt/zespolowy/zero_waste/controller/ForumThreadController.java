@@ -6,7 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.forum.Comment;
 import projekt.zespolowy.zero_waste.entity.forum.ForumThread;
+import projekt.zespolowy.zero_waste.services.CommentService;
 import projekt.zespolowy.zero_waste.services.ForumThreadService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
@@ -17,11 +19,14 @@ import java.util.List;
 public class ForumThreadController {
     private ForumThreadService threadService;
     private UserService userService;
+    private final CommentService commentService;
+
 
     @Autowired
-    public ForumThreadController(ForumThreadService forumThreadService, UserService userService) {
+    public ForumThreadController(ForumThreadService forumThreadService, UserService userService, CommentService commentService) {
         this.threadService = forumThreadService;
         this.userService = userService;
+        this.commentService = commentService;
     }
     @GetMapping
     public String listThreads(Model model) {
@@ -46,6 +51,29 @@ public class ForumThreadController {
     public String viewThread(@PathVariable Long id, Model model) {
         ForumThread thread = threadService.findById(id);
         model.addAttribute("thread", thread);
+        model.addAttribute("newComment", new Comment());
+
         return "forum/thread";
+    }
+    @PostMapping("/thread/{id}/comment")
+    public String addComment(@PathVariable Long id,
+                             @ModelAttribute("newComment") Comment newComment,
+                             Model model) {
+
+        User currentUser = userService.getUser();
+        ForumThread thread = threadService.findById(id);
+        commentService.saveComment(newComment, thread, currentUser);
+
+
+        // Redirect back to the thread page
+        return "redirect:/forum/thread/" + id;
+    }
+    @PostMapping("/thread/{threadId}/editComment/{commentId}")
+    public String editComment(@PathVariable Long threadId,
+                              @PathVariable Long commentId,
+                              @RequestParam("content") String content) {
+        Comment comment = commentService.findById(commentId);
+        commentService.editComment(comment, content);
+        return "redirect:/forum/thread/" + threadId;
     }
 }

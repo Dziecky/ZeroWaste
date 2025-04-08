@@ -32,6 +32,8 @@
 
     <!-- Formularz dodawania komentarza -->
     <h3>Dodaj komentarz</h3>
+    <div th:if="${#lists.isEmpty(thread.comments)}">
+        <p>Brak komentarzy.</p></div>
     <form th:action="@{/forum/thread/{id}/comment(id=${thread.id})}" method="post">
         <div class="mb-3">
             <textarea class="form-control" name="message" rows="4" placeholder="Wpisz komentarz"></textarea>
