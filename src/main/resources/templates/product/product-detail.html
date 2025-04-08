@@ -2,34 +2,23 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details</title>
-    <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
-            integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
-            crossorigin="anonymous"
-    >
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-            integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMqSxGZl9rN0WcHRj/6ZPOb9Uet2+rljJr27Db"
-            crossorigin="anonymous"
-    >
-
+    <title>Favorite Products</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link th:href="@{/styles/main.css}" rel="stylesheet"/>
-
     <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
     <script src="/scripts/navbar.js" defer></script>
 
     <style>
         :root {
-            --primary-color: #3498db;
-            --secondary-color: #2ecc71;
-            --text-color: #2c3e50;
-            --background-color: #f4f6f7;
+            --primary-color: #4a6fdc;
+            --secondary-color: #38b2ac;
+            --accent-color: #f59e0b;
+            --text-color: #2d3748;
+            --light-gray: #e2e8f0;
+            --background-color: #f7fafc;
         }
 
         body {
@@ -40,126 +29,288 @@
         }
 
         .product-container {
-            max-width: 680px;
-            margin: 0.5rem auto;
+            max-width: 1140px;
+            margin: 2rem auto;
             padding: 0 15px;
+            transform: scale(0.9);
+            transform-origin: top center;
         }
 
         .product-card {
             border: none;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             overflow: hidden;
-            transition: transform 0.3s ease;
-            transform: scale(0.85);
+            background-color: white;
         }
 
-        .product-card:hover {
-            transform: translateY(-5px) scale(0.85);
+        .product-content {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .product-image-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+            background-color: #f8fafc;
         }
 
         .product-image {
             width: 100%;
-            height: 320px;
+            height: 100%;
             object-fit: cover;
-            background-color: #e9ecef;
-            transition: transform 0.3s ease;
+            transition: transform 0.5s ease;
         }
 
-        .product-card:hover .product-image {
+        .product-image:hover {
             transform: scale(1.05);
         }
 
-        .product-body {
-            padding: 1.5rem;
-            background-color: white;
+        .product-details {
+            flex: 1;
+            padding: 2.5rem;
         }
 
         .product-title {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 1.2rem;
-            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 0.8rem;
+            display: inline-block;
         }
 
-        .product-detail {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.8rem;
-            border-bottom: 1px solid #f1f3f5;
-            padding-bottom: 0.8rem;
+        .detail-group {
+            margin-bottom: 1.2rem;
         }
 
         .detail-label {
             font-weight: 600;
-            color: #6c757d;
-            margin-right: 8px;
+            color: #64748b;
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
             font-size: 1.1rem;
+            color: var(--text-color);
         }
 
-        .product-footer {
-            background-color: #f8f9fa;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .owner-section {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .owner-nick {
-            font-size: 1.25rem;
+        .price-tag {
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--primary-color);
+            margin: 1.5rem 0;
+            display: inline-block;
+            background-color: rgba(74, 111, 220, 0.1);
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
         }
 
-        .owner-image {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .btn-owner {
+        .availability-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
             font-size: 0.9rem;
-            padding: 0.6rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .btn-owner i {
-            font-size: 1.1rem;
+        .available {
+            background-color: rgba(56, 178, 172, 0.15);
+            color: var(--secondary-color);
+        }
+
+        .unavailable {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
         }
 
         .btn-custom {
             border-radius: 8px;
-            text-transform: uppercase;
             font-weight: 600;
-            letter-spacing: 0.5px;
+            padding: 0.7rem 1.5rem;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-custom i {
+            font-size: 1.1rem;
         }
 
         .btn-custom:hover {
             transform: translateY(-3px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .back-btn {
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: #3d5cba;
+            border-color: #3d5cba;
+        }
+
+        .btn-success-custom {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-success-custom:hover {
+            background-color: #2c9a94;
+            border-color: #2c9a94;
+        }
+
+        .btn-outline-custom {
+            border: 2px solid var(--light-gray);
+            color: var(--text-color);
+        }
+
+        .btn-outline-custom:hover {
+            background-color: var(--light-gray);
+        }
+
+        .btn-favorite {
+            color: #e53e3e;
+            border-color: #e53e3e;
+            background-color: white;
+        }
+
+        .btn-favorite:hover {
+            background-color: rgba(229, 62, 62, 0.1);
+        }
+
+        .btn-favorite i {
+            color: #e53e3e;
+        }
+
+        .owner-card {
+            margin-top: 2rem;
+            background-color: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .owner-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             margin-bottom: 1rem;
         }
 
-        @media (max-width: 768px) {
+        .owner-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .owner-info {
+            flex-grow: 1;
+        }
+
+        .owner-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 0.2rem;
+        }
+
+        .owner-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .phone-collapse {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 2rem;
+            color: #64748b;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: var(--primary-color);
+        }
+
+        .back-button i {
+            margin-right: 0.5rem;
+        }
+
+        .owner-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-edit {
+            background-color: #f59e0b;
+            border-color: #f59e0b;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #d97706;
+            border-color: #d97706;
+        }
+
+        .btn-delete {
+            background-color: #ef4444;
+            border-color: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+
+        @media (max-width: 992px) {
+            .product-content {
+                flex-direction: column;
+            }
+
+            .product-image-container {
+                min-height: 300px;
+            }
+
+            .product-details {
+                padding: 1.5rem;
+            }
+
             .product-title {
                 font-size: 1.8rem;
-            }
-            .product-body {
-                padding: 1rem;
             }
         }
     </style>
@@ -169,96 +320,109 @@
 <div th:replace="~{fragments/header :: header}"></div>
 
 <div class="container product-container">
-    <div class="row justify-content-center">
-        <div class="col-12">
-            <div class="card product-card">
-                <img th:src="${product.imageUrl}" class="card-img-top product-image" alt="Product Image" onerror="this.src='/default-image.jpg';">
+    <a th:href="@{/products/list}" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to product list
+    </a>
 
-                <div class="product-body">
-                    <h1 class="product-title" th:text="${product.name}">Product Name</h1>
+    <div class="card product-card mt-3">
+        <div class="product-content">
+            <div class="product-image-container">
+                <img th:src="${product.imageUrl}" class="product-image" alt="Product Image" onerror="this.src='/default-image.jpg';">
+            </div>
 
-                    <div class="product-detail">
-                        <span class="detail-label">Category:</span>
-                        <span th:text="${product.productCategory}">Category</span>
-                    </div>
+            <div class="product-details">
+                <h1 class="product-title" th:text="${product.name}">Product Name</h1>
 
-                    <div class="product-detail">
-                        <span class="detail-label">Description:</span>
-                        <span th:text="${product.description}">Product Description</span>
-                    </div>
-
-                    <div class="product-detail">
-                        <span class="detail-label">Quantity:</span>
-                        <span th:text="${product.quantity} + ' ' + ${product.unitOfMeasure}">0 Units</span>
-                    </div>
-
-                    <div class="product-detail">
-                        <span class="detail-label">Price:</span>
-                        <span th:text="${product.price} + ' zł'" class="text-success fw-bold">0.00 zł</span>
-                    </div>
-
-                    <div class="product-detail">
-                        <span class="detail-label">Availability:</span>
-                        <span th:text="${product.available} ? 'Available' : 'Unavailable'"
-                              th:classappend="${product.available} ? 'text-success' : 'text-danger'">
-                            Available
-                        </span>
-                    </div>
+                <div class="detail-group">
+                    <span class="detail-label">Category</span>
+                    <span class="detail-value" th:text="${product.productCategory}">Category</span>
                 </div>
 
-                <div class="container back-btn">
-                    <a th:href="@{/products/list}" class="btn btn-outline-secondary btn-custom w-100">Back to List</a>
+                <div class="detail-group">
+                    <span class="detail-label">Description</span>
+                    <p class="detail-value" th:text="${product.description}">Product Description</p>
                 </div>
 
-                <div class="product-footer">
-                    <div th:if="${product.owner.username != #authentication.name}" class="w-100">
-                        <div class="owner-section">
+                <div class="detail-group">
+                    <span class="detail-label">Quantity</span>
+                    <span class="detail-value" th:text="${product.quantity} + ' ' + ${product.unitOfMeasure}">0 Units</span>
+                </div>
+
+                <div class="price-tag" th:text="${product.price} + ' zł'">0.00 zł</div>
+
+                <div class="detail-group">
+                    <span class="availability-badge"
+                          th:classappend="${product.available} ? 'available' : 'unavailable'"
+                          th:text="${product.available} ? 'Available' : 'Unavailable'">
+                        Available
+                    </span>
+                </div>
+
+                <div th:if="${product.owner.username != #authentication.name}">
+                    <div class="action-buttons">
+                        <button id="checkout-button" class="btn btn-custom btn-success-custom"
+                                th:data-product-name="${product.name}"
+                                th:data-product-price="${product.price}"
+                                th:disabled="${!product.available}">
+                            <i class="fas fa-shopping-cart"></i> Buy now
+                        </button>
+
+                        <form th:action="@{${isFavorite} ? '/products/unfavorite/' + ${product.id} : '/products/favorite/' + ${product.id}}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-custom btn-favorite">
+                                <i th:class="${isFavorite} ? 'fa fa-heart-broken' : 'bi bi-heart-fill'"></i>
+                                <span th:text="${isFavorite} ? 'Remove from favorites' : 'Add to favorites'"></span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="owner-card">
+                        <div class="owner-header">
                             <img th:src="${product.owner.imageUrl}" class="owner-image" alt="Owner Profile Image">
-                            <div class="flex-grow-1">
-                                <span class="detail-label">Owner:</span>
-                                <a th:href="@{/user/{id}(id=${product.owner.id})}">
-                                    <span class="owner-nick" th:text="${product.owner.username}">Owner's Name</span>
-                                </a>
-                            </div>
-
-                            <div class="d-flex gap-2">
-                                <a th:href="@{/chat-room/{productOwnerUsername}(productOwnerUsername=${product.owner.username})}"
-                                   class="btn btn-info btn-custom btn-owner">
-                                <i class="bi bi-chat-fill"></i> Chat with Owner
-                            </a>
-                                <button class="btn btn-info btn-custom btn-owner" type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#phoneNumber"
-                                        aria-expanded="false"
-                                        aria-controls="phoneNumber" th:if="${phoneVisible == 'PUBLIC'}">
-                                    <i class="bi bi-telephone-fill"></i> Show Phone
-                                </button>
-                                <button id="checkout-button" class="btn btn-success btn-custom w-100"
-                                        th:data-product-name="${product.name}"
-                                        th:data-product-price="${product.price}"
-                                        th:disabled="${!product.available}">
-                                    Buy Now
-                                </button>
+                            <div class="owner-info">
+                                <div class="owner-label">Seller</div>
+                                <a th:href="@{/user/{id}(id=${product.owner.id})}" class="owner-name" th:text="${product.owner.username}">Owner's Name</a>
                             </div>
                         </div>
 
-                        <div class="collapse mt-2" id="phoneNumber">
-                            <div class="card card-body">
+                        <div class="action-buttons">
+                            <a th:href="@{/chat-room/{productOwnerUsername}(productOwnerUsername=${product.owner.username})}"
+                               class="btn btn-custom btn-primary-custom">
+                                <i class="fas fa-comment-dots"></i> Chat with seller
+                            </a>
+
+                            <button class="btn btn-custom btn-outline-custom" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#phoneNumber"
+                                    aria-expanded="false"
+                                    aria-controls="phoneNumber" th:if="${phoneVisible == 'PUBLIC'}">
+                                <i class="fas fa-phone"></i> Show phone number
+                            </button>
+                        </div>
+
+                        <div class="collapse" id="phoneNumber">
+                            <div class="phone-collapse">
+                                <i class="fas fa-phone mr-2"></i>
                                 <span th:text="${product.owner.phoneNumber}">Owner's Phone</span>
                             </div>
                         </div>
                     </div>
-                    <div th:if="${product.owner.username == #authentication.name}">
-                        <a th:href="@{'/products/edit/' + ${product.id}}" class="btn btn-warning">Edit</a>
-                        <form th:action="@{'/products/delete/' + ${product.id}}" method="post" th:method="delete" style="display:inline;">
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
-                    </div>
+                </div>
+
+                <div th:if="${product.owner.username == #authentication.name}" class="owner-actions">
+                    <a th:href="@{'/products/edit/' + ${product.id}}" class="btn btn-custom btn-edit">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <form th:action="@{'/products/delete/' + ${product.id}}" method="post" th:method="delete" style="display:inline;">
+                        <button type="submit" class="btn btn-custom btn-delete">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
@@ -300,7 +464,6 @@
                 console.error('Error:', error);
             });
     });
-
 </script>
 </body>
 </html>

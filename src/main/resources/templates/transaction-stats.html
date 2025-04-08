@@ -84,6 +84,49 @@
         </table>
       </div>
     </div>
+
+    <div th:if="${user != null and user.accountType?.name() == 'BUSINESS'}" class="row mt-5">
+      <div class="col-md-12">
+        <div class="card shadow">
+          <div class="card-header text-white" style="background-color: #28a745;">
+            <h4 class="mb-0">Business Statistics (Last Quarter)</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="thead-light">
+                <tr>
+                  <th>Category</th>
+                  <th>Orders</th>
+                  <th>Total Quantity</th>
+                  <th>Unit</th>
+                  <th>Total Amount</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="stat : ${categoryStats}">
+                  <td th:text="${stat.category}"></td>
+                  <td th:text="${stat.orderCount}"></td>
+                  <td th:text="${#numbers.formatDecimal(stat.totalQuantity, 1, 2)}"></td>
+                  <td th:text="${stat.unitOfMeasure}"></td>
+                  <td th:text="${#numbers.formatDecimal(stat.totalAmount, 1, 2)} + ' PLN'"></td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr style="background-color: #e9ecef;">
+                  <td><strong>Total</strong></td>
+                  <td th:text="${totalCategoryOrders}"></td>
+                  <td></td>
+                  <td></td>
+                  <td th:text="${#numbers.formatDecimal(totalCategoryAmount, 1, 2)} + ' PLN'"></td>
+                </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </main>
 

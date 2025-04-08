@@ -7,11 +7,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import projekt.zespolowy.zero_waste.dto.OrderStatsDTO;
 import projekt.zespolowy.zero_waste.dto.ProductDTO;
 import projekt.zespolowy.zero_waste.entity.EcoImpactHistory;
 import projekt.zespolowy.zero_waste.entity.Order;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.enums.AccountType;
 import projekt.zespolowy.zero_waste.services.UserService;
 import projekt.zespolowy.zero_waste.services.EcoImpactService;
 import projekt.zespolowy.zero_waste.repository.EcoImpactHistoryRep;
@@ -116,14 +118,32 @@ public class EcoImpactController {
     }
 
     @GetMapping("/transaction-stats")
-    public String getTransactionsStats(Model model) {
+    public String getTransactionsStats(
+            @RequestParam(required = false, defaultValue = "month") String period,
+            Model model) {
+
         Long userId = getCurrentUserId();
+        User user = userService.findById(userId);
+        model.addAttribute("user", user);
 
 
         List<Order> purchases = statisticsService.getPurchasesByUser(userId);
         List<Product> sales = statisticsService.getSalesByUser(userId);
 
+        if (user.getAccountType() == AccountType.BUSINESS) {
+            List<OrderStatsDTO> categoryStats = statisticsService.getQuarterlyOrderStats();
+            model.addAttribute("categoryStats", categoryStats);
 
+            long totalCategoryOrders = categoryStats.stream()
+                    .mapToLong(OrderStatsDTO::getOrderCount)
+                    .sum();
+            double totalCategoryAmount = categoryStats.stream()
+                    .mapToDouble(OrderStatsDTO::getTotalAmount)
+                    .sum();
+
+            model.addAttribute("totalCategoryOrders", totalCategoryOrders);
+            model.addAttribute("totalCategoryAmount", totalCategoryAmount);
+        }
         List<ProductDTO> purchaseDTOs = purchases.stream()
                 .map(order -> new ProductDTO(
                         order.getProduct().getId(),

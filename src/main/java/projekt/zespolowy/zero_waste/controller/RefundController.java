@@ -1,20 +1,30 @@
 package projekt.zespolowy.zero_waste.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import projekt.zespolowy.zero_waste.dto.OrderDTO;
 import projekt.zespolowy.zero_waste.entity.Order;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.Refund;
+import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.enums.RefundStatus;
-import projekt.zespolowy.zero_waste.services.OrderService;
-import projekt.zespolowy.zero_waste.services.ProductService;
-import projekt.zespolowy.zero_waste.services.RefundService;
+import projekt.zespolowy.zero_waste.services.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
+
+import static projekt.zespolowy.zero_waste.services.UserService.findByUsername;
 
 @Controller
 @RequestMapping("/orders")
@@ -29,6 +39,27 @@ public class RefundController {
     @Autowired
     private RefundService refundService;
 
+    @Autowired
+    private EmailReportService emailReportService;
+
+
+    @GetMapping("/refunds")
+    public String listRefunds(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model,
+            Principal principal
+    ) {
+        User user = findByUsername(principal.getName());
+        Page<Refund> refundsPage = refundService.getRefundsByUser(user, page, size);
+
+        model.addAttribute("refundsPage", refundsPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", refundsPage.getTotalPages());
+
+        return "/orders/refunds";
+    }
+
     @GetMapping("/{orderId}/refund")
     public String showRefundForm(@PathVariable("orderId") String orderId, Model model) {
         OrderDTO order = getOrderDTOByOrderId(orderId);
@@ -41,13 +72,28 @@ public class RefundController {
     }
 
     @PostMapping("/{orderId}/refund")
-    public String requestRefund(@PathVariable("orderId") Long orderId,
-                                @RequestParam("refundReason") String refundReason,
-                                @RequestParam("refundAmount") Double refundAmount) {
+    public String requestRefund(
+            @PathVariable("orderId") Long orderId,
+            @RequestParam("refundReason") String refundReason,
+            @RequestParam("refundAmount") Double refundAmount,
+            @RequestParam("proofImage") MultipartFile file
+    ) throws IOException {
         Order order = orderService.getOrderById(orderId);
         if (order == null) {
             return "redirect:/orders";
         }
+
+        String uploadDir = "uploads/";
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path uploadPath = Paths.get(uploadDir);
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+        Path filePath = uploadPath.resolve(fileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        String imageUrl = "/uploads/" + fileName;
 
         Refund refund = new Refund();
         refund.setOrder(order);
@@ -55,8 +101,10 @@ public class RefundController {
         refund.setRefundAmount(refundAmount);
         refund.setRequestDate(LocalDateTime.now());
         refund.setStatus(RefundStatus.PENDING);
+        refund.setProofImageUrl(imageUrl);
 
-        refundService.save(refund);
+        Refund dbRefund = refundService.save(refund);
+        emailReportService.sendRefundAffirmation(dbRefund, order);
         return "redirect:/orders";
     }
 
@@ -68,7 +116,7 @@ public class RefundController {
         }
         Optional<Product> maybeProduct = productService.getProductById(order.getProduct().getId());
         OrderDTO orderDTO = null;
-        if(maybeProduct.isPresent()) {
+        if (maybeProduct.isPresent()) {
             Product product = maybeProduct.get();
             orderDTO = new OrderDTO(
                     order.getId(),

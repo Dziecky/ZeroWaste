@@ -133,3 +133,56 @@ table tr:hover {
         font-size: 0.85rem;
     }
 }
+
+h1 {
+    margin-top: 40px;
+    font-size: 2rem;
+    color: #28a745;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.table-title {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.refund-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.refund-status.PENDING {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.refund-status.APPROVED {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.refund-status.REJECTED {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
