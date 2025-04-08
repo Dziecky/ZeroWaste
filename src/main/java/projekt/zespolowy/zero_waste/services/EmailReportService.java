@@ -21,4 +21,13 @@ public class EmailReportService {
         message.setText(reportContent);
         mailSender.send(message);
     }
+    public void sendNewArticleNotification(String to, String articleTitle, String categoryName, String articleUrl) {
+        String subject = "Nowy artykuł w Twojej ulubionej kategorii: " + categoryName;
+        String content = "Witaj!\n\n" +
+                "Nowy artykuł \"" + articleTitle + "\" został dodany do Twojej ulubionej kategorii \"" + categoryName + "\".\n\n" +
+                "Kliknij tutaj, aby przeczytać: " + articleUrl + "\n\n" +
+                "Pozdrawiamy,\nZespół Zero Waste.";
+
+        sendMonthlyReport(to, subject, content);
+    }
 }
