@@ -1,5 +1,6 @@
 package projekt.zespolowy.zero_waste.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,11 +28,17 @@ public class AdminController {
 
     // Wyświetlenie listy użytkowników
     @GetMapping("/users")
-    public String showUsers(Model model) {
-        List<User> users = userService.getAllUsers(); // Metoda, która pobiera wszystkich użytkowników
-        model.addAttribute("users", users);
-        return "User/admin/admin-users"; // Nazwa szablonu Thymeleaf
+    public String showUsers(@RequestParam(defaultValue = "1") int page,
+                            @RequestParam(defaultValue = "10") int size,
+                            Model model) {
+        Page<User> userPage = userService.getUsersPaginated(page - 1, size);
+        model.addAttribute("users", userPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", userPage.getTotalPages());
+        model.addAttribute("baseUrl", "/admin/users");
+        return "User/admin/admin-users";
     }
+
 
     // Endpoint do aktualizacji roli użytkownika
     @PostMapping("/updateUserRole")
