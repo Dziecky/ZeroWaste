@@ -7,10 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.entity.*;
-import projekt.zespolowy.zero_waste.repository.ProductRepository;
-import projekt.zespolowy.zero_waste.repository.TaskRepository;
-import projekt.zespolowy.zero_waste.repository.UserRepository;
-import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
+import projekt.zespolowy.zero_waste.repository.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,15 +24,18 @@ public class ProductServiceImpl implements ProductService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
 
+    private final FavoriteProductRepository favoriteProductRepository;
+
     static final String VIEWED_PRODUCTS_SESSION_KEY = "viewedProducts";
     private static final int MAX_HISTORY_SIZE = 6;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, UserTaskRepository userTaskRepository, UserRepository userRepository, TaskRepository taskRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, UserTaskRepository userTaskRepository, UserRepository userRepository, TaskRepository taskRepository, FavoriteProductRepository favoriteProductRepository) {
         this.productRepository = productRepository;
         this.userTaskRepository = userTaskRepository;
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
+        this.favoriteProductRepository = favoriteProductRepository;
     }
 
     @Override
@@ -218,5 +218,44 @@ public class ProductServiceImpl implements ProductService {
                 .filter(product -> !product.getId().equals(excludeProductId))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void addFavoriteProduct(Long userId, Long productId) {
+        boolean alreadyFavorite = favoriteProductRepository
+                .findByUserIdAndProductId(userId, productId).isPresent();
+        if (!alreadyFavorite) {
+            FavoriteProduct favorite = new FavoriteProduct();
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+            User user = new User();
+            user.setId(userId);
+            favorite.setUser(user);
+            favorite.setProduct(product);
+            favoriteProductRepository.save(favorite);
+        }
+    }
+
+    @Override
+    public void removeFavoriteProduct(Long userId, Long productId) {
+        Optional<FavoriteProduct> favorite = favoriteProductRepository.findByUserIdAndProductId(userId, productId);
+        favorite.ifPresent(favoriteProductRepository::delete);
+    }
+
+
+
+    @Override
+    public boolean isProductFavorite(Long userId, Long productId) {
+        return favoriteProductRepository.findByUserIdAndProductId(userId, productId).isPresent();
+    }
+
+
+    @Override
+    public List<Product> getFavoriteProducts(Long userId) {
+        List<FavoriteProduct> favorites = favoriteProductRepository.findByUserId(userId);
+        return favorites.stream()
+                .map(FavoriteProduct::getProduct)
+                .toList();
+    }
+
 
 }
