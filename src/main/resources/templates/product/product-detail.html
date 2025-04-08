@@ -364,10 +364,10 @@
                                 th:data-product-name="${product.name}"
                                 th:data-product-price="${product.price}"
                                 th:disabled="${!product.available}">
-                            <i class="fas fa-shopping-cart"></i> Buy now
+                            <i class="fas fa-shopping-cart"></i> Buy now <br/> <span sec:authorize="isAnonymous()">(login to buy now)</span>
                         </button>
 
-                        <form th:action="@{${isFavorite} ? '/products/unfavorite/' + ${product.id} : '/products/favorite/' + ${product.id}}" method="post" class="d-inline">
+                        <form sec:authorize="isAuthenticated()" th:action="@{${isFavorite} ? '/products/unfavorite/' + ${product.id} : '/products/favorite/' + ${product.id}}" method="post" class="d-inline">
                             <button type="submit" class="btn btn-custom btn-favorite">
                                 <i th:class="${isFavorite} ? 'fa fa-heart-broken' : 'bi bi-heart-fill'"></i>
                                 <span th:text="${isFavorite} ? 'Remove from favorites' : 'Add to favorites'"></span>
@@ -390,11 +390,12 @@
                                 <i class="fas fa-comment-dots"></i> Chat with seller
                             </a>
 
-                            <button class="btn btn-custom btn-outline-custom" type="button"
+                            <button th:if="${phoneVisible == 'PUBLIC'}"
+                                    class="btn btn-custom btn-outline-custom" type="button"
                                     data-bs-toggle="collapse"
                                     data-bs-target="#phoneNumber"
                                     aria-expanded="false"
-                                    aria-controls="phoneNumber" th:if="${phoneVisible == 'PUBLIC'}">
+                                    aria-controls="phoneNumber" >
                                 <i class="fas fa-phone"></i> Show phone number
                             </button>
                         </div>
