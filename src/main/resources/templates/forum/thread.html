@@ -25,7 +25,10 @@
         <ul class="list-group mb-4">
             <li class="list-group-item" th:each="comment : ${thread.comments}">
                 <p th:text="${comment.message}">Treść komentarza</p>
-                <p class="text-muted">Autor: <span th:text="${comment.author.username}">username</span></p>
+                <p class="text-muted">Autor:
+                    <a th:href="@{/user/{username}(username=${comment.author.id})}" th:text="${comment.author.username}">
+                        username </a>
+                </p>
             </li>
         </ul>
     </div>
