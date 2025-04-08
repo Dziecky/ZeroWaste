@@ -22,6 +22,7 @@
                 <th>Amount</th>
                 <th>Date</th>
                 <th>Status</th>
+                <th>Photo</th>
             </tr>
             <tr th:each="refund : ${refundsPage.content}">
                 <td th:text="${refund.order.product.name}"></td>
@@ -32,6 +33,10 @@
                     <span class="refund-status"
                           th:classappend="' ' + ${refund.status}"
                           th:text="${refund.status}"></span>
+                </td>
+                <td>
+                    <img th:if="${refund.proofImageUrl != null}" th:src="@{${refund.proofImageUrl}}" alt="Proof" width="100" height="100">
+                    <span th:if="${refund.proofImageUrl == null}">No photo</span>
                 </td>
             </tr>
         </table>
