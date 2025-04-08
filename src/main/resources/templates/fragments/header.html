@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zero Waste</title>
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/images/favicon.ico}" />
     <link th:href="@{/styles/main.css}" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -25,31 +26,31 @@
             <li class="nav-item">
                 <a th:href="@{/}" class="nav-links">Home</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" sec:authorize="isAuthenticated()">
                 <a th:href="@{/announcements}" class="nav-links">Announcements</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" sec:authorize="isAuthenticated()">
                 <a th:href="@{/auctions/list}" class="nav-links">Auction List</a>
             </li>
             <li class="nav-item">
                 <a th:href="@{/products/list}" class="nav-links">Product List</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" sec:authorize="isAuthenticated()">
                 <a th:href="@{/products/showFormForAddProduct}" class="nav-links">Add Product</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" sec:authorize="isAuthenticated()">
                 <a th:href="@{/articles}" class="nav-links">Articles</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" sec:authorize="isAuthenticated()">
                 <a th:href="@{/advices}" class="nav-links">Advices</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" sec:authorize="isAuthenticated()">
                 <a th:href="@{/tasks/showAllTasks}" class="nav-links">Tasks</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" sec:authorize="isAuthenticated()">
                 <a th:href="@{/ranking}" class="nav-links">Ranking</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" sec:authorize="isAuthenticated()">
                 <a th:href="@{/eco-impact}" class="nav-links">Eco Impact</a>
             </li>
             <li class="nav-item">
