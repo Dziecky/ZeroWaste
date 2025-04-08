@@ -22,4 +22,8 @@ public class Refund {
     private Double refundAmount;
     private LocalDateTime requestDate;
     private RefundStatus status;
+
+    @Column(name = "proof_image_url")
+    private String proofImageUrl;
+
 }
