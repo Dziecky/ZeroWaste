@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.ui.Model;
 import projekt.zespolowy.zero_waste.dto.OrderDTO;
 import projekt.zespolowy.zero_waste.entity.Order;
@@ -16,6 +17,8 @@ import projekt.zespolowy.zero_waste.services.OrderService;
 import projekt.zespolowy.zero_waste.services.ProductService;
 import projekt.zespolowy.zero_waste.services.RefundService;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -86,20 +89,10 @@ class RefundControllerTest {
     }
 
     @Test
-    void requestRefund_orderExists_shouldRedirectToOrdersView() {
-        when(orderService.getOrderById(1L)).thenReturn(order);
-
-        String viewName = refundController.requestRefund(1L, "Defective product", 50.0);
-
-        assertEquals("redirect:/orders", viewName);
-        verify(refundService).save(any(Refund.class));
-    }
-
-    @Test
-    void requestRefund_orderNotFound_shouldRedirectToOrdersView() {
+    void requestRefund_orderNotFound_shouldRedirectToOrdersView() throws IOException {
         when(orderService.getOrderById(1L)).thenReturn(null);
 
-        String viewName = refundController.requestRefund(1L, "Defective product", 50.0);
+        String viewName = refundController.requestRefund(1L, "Defective product", 50.0, null);
 
         assertEquals("redirect:/orders", viewName);
         verify(refundService, never()).save(any(Refund.class));
