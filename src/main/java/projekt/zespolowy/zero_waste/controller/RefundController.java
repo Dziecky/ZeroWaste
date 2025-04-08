@@ -1,6 +1,7 @@
 package projekt.zespolowy.zero_waste.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -8,14 +9,15 @@ import projekt.zespolowy.zero_waste.dto.OrderDTO;
 import projekt.zespolowy.zero_waste.entity.Order;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.Refund;
+import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.enums.RefundStatus;
-import projekt.zespolowy.zero_waste.services.EmailReportService;
-import projekt.zespolowy.zero_waste.services.OrderService;
-import projekt.zespolowy.zero_waste.services.ProductService;
-import projekt.zespolowy.zero_waste.services.RefundService;
+import projekt.zespolowy.zero_waste.services.*;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import static projekt.zespolowy.zero_waste.services.UserService.findByUsername;
 
 @Controller
 @RequestMapping("/orders")
@@ -32,6 +34,24 @@ public class RefundController {
 
     @Autowired
     private EmailReportService emailReportService;
+
+
+    @GetMapping("/refunds")
+    public String listRefunds(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model,
+            Principal principal
+    ) {
+        User user = findByUsername(principal.getName());
+        Page<Refund> refundsPage = refundService.getRefundsByUser(user, page, size);
+
+        model.addAttribute("refundsPage", refundsPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", refundsPage.getTotalPages());
+
+        return "/orders/refunds";
+    }
 
     @GetMapping("/{orderId}/refund")
     public String showRefundForm(@PathVariable("orderId") String orderId, Model model) {
@@ -73,7 +93,7 @@ public class RefundController {
         }
         Optional<Product> maybeProduct = productService.getProductById(order.getProduct().getId());
         OrderDTO orderDTO = null;
-        if(maybeProduct.isPresent()) {
+        if (maybeProduct.isPresent()) {
             Product product = maybeProduct.get();
             orderDTO = new OrderDTO(
                     order.getId(),
