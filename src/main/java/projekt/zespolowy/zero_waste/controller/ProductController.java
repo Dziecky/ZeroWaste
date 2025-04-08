@@ -143,18 +143,21 @@ public class ProductController {
     }
 
     @GetMapping("/view/{id}")
-    public String viewProductDetails(@PathVariable("id") Long id, Model model, HttpSession session) {
+    public String viewProductDetails(@PathVariable("id") Long id, Model model, HttpSession session, Authentication authentication) {
         Product product = productService.getProductById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Product ID: " + id));
         model.addAttribute("product", product);
-
-        PrivacyOptions phoneVisible = product.getOwner().getPrivacySettings().getPhoneVisible();
-        model.addAttribute("phoneVisible", phoneVisible.toString());
         productService.addToViewHistory(session, id);
         model.addAttribute("recentlyViewedProducts", productService.getRecentlyViewedProductsExcept(session, id));
+        if (authentication != null && authentication.isAuthenticated()) {
+            User user = userService.findByUsername(authentication.getName());
+            boolean isFavorite = productService.isProductFavorite(user.getId(), id);
+            model.addAttribute("isFavorite", isFavorite);
+        }
 
         return "/product/product-detail";
     }
+
 
     @GetMapping("/recently-viewed")
     public String showRecentlyViewedProducts(Model model, HttpSession session) {
@@ -162,5 +165,31 @@ public class ProductController {
         model.addAttribute("recentlyViewedProducts", recentlyViewedProducts);
         return "/product/recently-viewed";
     }
+
+
+    @PostMapping("/favorite/{id}")
+    public String addProductToFavorites(@PathVariable("id") Long id, Authentication authentication) {
+        User user = userService.findByUsername(authentication.getName());
+        productService.addFavoriteProduct(user.getId(), id);
+        return "redirect:/products/view/" + id;
+    }
+
+    @PostMapping("/unfavorite/{id}")
+    public String removeProductFromFavorites(@PathVariable("id") Long id, Authentication authentication,
+                                             @RequestHeader(value = "referer", required = false) String referer) {
+        User user = userService.findByUsername(authentication.getName());
+        productService.removeFavoriteProduct(user.getId(), id);
+        return "redirect:" + (referer != null ? referer : "/products/favorites");
+    }
+
+    @GetMapping("/favorites")
+    public String showFavoriteProducts(Model model, Authentication authentication) {
+        String currentUsername = authentication.getName();
+        User user = userService.findByUsername(currentUsername);
+        List<Product> favoriteProducts = productService.getFavoriteProducts(user.getId());
+        model.addAttribute("favoriteProducts", favoriteProducts);
+        return "/product/favorite-products";
+    }
+
 
 }
