@@ -9,6 +9,7 @@ import projekt.zespolowy.zero_waste.entity.Order;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.Refund;
 import projekt.zespolowy.zero_waste.entity.enums.RefundStatus;
+import projekt.zespolowy.zero_waste.services.EmailReportService;
 import projekt.zespolowy.zero_waste.services.OrderService;
 import projekt.zespolowy.zero_waste.services.ProductService;
 import projekt.zespolowy.zero_waste.services.RefundService;
@@ -28,6 +29,9 @@ public class RefundController {
 
     @Autowired
     private RefundService refundService;
+
+    @Autowired
+    private EmailReportService emailReportService;
 
     @GetMapping("/{orderId}/refund")
     public String showRefundForm(@PathVariable("orderId") String orderId, Model model) {
@@ -56,7 +60,8 @@ public class RefundController {
         refund.setRequestDate(LocalDateTime.now());
         refund.setStatus(RefundStatus.PENDING);
 
-        refundService.save(refund);
+        Refund dbRefund = refundService.save(refund);
+        emailReportService.sendRefundAffirmation(dbRefund, order);
         return "redirect:/orders";
     }
 
