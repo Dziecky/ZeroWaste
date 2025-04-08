@@ -22,7 +22,7 @@
     </div>
 
     <h3>Refund Details</h3>
-    <form th:action="@{'/orders/{orderId}/refund'(orderId=${order.orderId})}" method="post">
+    <form th:action="@{'/orders/{orderId}/refund'(orderId=${order.orderId})}" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="refundReason" class="form-label">Reason for Refund</label>
             <textarea class="form-control" id="refundReason" name="refundReason" required></textarea>
@@ -31,7 +31,10 @@
             <label for="refundAmount" class="form-label">Refund Amount</label>
             <input type="number" class="form-control" id="refundAmount" name="refundAmount" th:value="${order.price}" required readonly>
         </div>
-
+        <div class="mb-3">
+            <label for="proofImage" class="form-label">Upload Proof Image</label>
+            <input class="form-control" type="file" id="proofImage" name="proofImage" accept="image/*" required>
+        </div>
         <button type="submit" class="btn btn-danger">Request Refund</button>
     </form>
 

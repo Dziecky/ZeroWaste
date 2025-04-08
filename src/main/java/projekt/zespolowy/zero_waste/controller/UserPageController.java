@@ -60,6 +60,8 @@ public class UserPageController {
         model.addAttribute("averageRating", user.getAverageRating());
         model.addAttribute("newReview", new Review());
         model.addAttribute("reviewOwnership", reviewOwnership);
+        model.addAttribute("role", customUser.getUser().getRole().toString());
+//        System.out.println(customUser.getUser().getRole());
 
         PrivacyOptions phoneVisible = user.getPrivacySettings().getPhoneVisible();
         PrivacyOptions emailVisible = user.getPrivacySettings().getEmailVisible();
