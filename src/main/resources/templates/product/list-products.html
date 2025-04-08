@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-100">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-100" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Products List</title>
@@ -350,14 +350,14 @@
                 </div>
             </div>
             <div class="col-md-9">
-                <div class="form-check">
+                <div class="form-check" sec:authorize="isAuthenticated()">
                     <input type="checkbox" id="showMyProducts" class="form-check-input">
                     <label for="showMyProducts" class="form-check-label">
                         Show My Products Only
                     </label>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3" sec:authorize="isAuthenticated()">
                 <div class="d-flex gap-2 justify-content-end">
                     <a href="/products/recently-viewed" class="btn btn-info">Recently Viewed</a>
                 </div>
@@ -375,7 +375,7 @@
         </div>
     </form>
 
-    <a th:href="@{/products/showFormForAddProduct}" class="btn btn-add-product mb-3">
+    <a sec:authorize="isAuthenticated()" th:href="@{/products/showFormForAddProduct}" class="btn btn-add-product mb-3">
         Add New Product
     </a>
 
