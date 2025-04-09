@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import projekt.zespolowy.zero_waste.entity.User;
@@ -48,15 +50,23 @@ class AdminControllerTest {
         user2.setRole(UserRole.ROLE_ADMIN);
 
         List<User> users = Arrays.asList(user1, user2);
-        when(userService.getAllUsers()).thenReturn(users);
 
-        // Wywołanie metody
-        String viewName = adminController.showUsers(model);
+        Page<User> userPage = new PageImpl<>(users);
+
+        // Mockowanie paginacji
+        when(userService.getUsersPaginated(0, 10)).thenReturn(userPage);
+
+        // Wywołanie metody testowanej
+        String viewName = adminController.showUsers(1, 10, model);
 
         // Weryfikacja
         assertEquals("User/admin/admin-users", viewName);
         verify(model).addAttribute("users", users);
+        verify(model).addAttribute("currentPage", 1);
+        verify(model).addAttribute("totalPages", userPage.getTotalPages());
+        verify(model).addAttribute("baseUrl", "/admin/users");
     }
+
 
     @Test
     void updateUserRoleTest_UserNotFound() {

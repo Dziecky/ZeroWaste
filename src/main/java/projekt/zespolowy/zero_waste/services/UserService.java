@@ -3,6 +3,7 @@ package projekt.zespolowy.zero_waste.services;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -143,6 +144,11 @@ public class UserService implements UserDetailsService {
     public List<UserTask> getUserTasksForUser(User user) {
         return userTaskRepository.findByUser(user);
     }
+
+    public Page<User> getUsersPaginated(int page, int size) {
+        return userRepository.findAll(PageRequest.of(page, size));
+    }
+
 
     public Page<User> getRankedAndFilteredUsers(String search, String sortBy, Pageable pageable) {
         if (search != null && !search.isEmpty()) {

@@ -34,8 +34,28 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, UserService userService, CustomOidcUserService customOidcUserService) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/products/showFormForAddProduct", "/products/save").authenticated()
-                        .requestMatchers("/login", "/oauth2/**", "/submitRegister", "/css/**", "/js/**", "/forgot-password", "/reset-password").permitAll()
+                        .requestMatchers(
+                                "/products/showFormForAddProduct",
+                                "/products/save")
+                        .authenticated()
+                        .requestMatchers(
+                                "/",
+                                "/static/**",
+                                "/login",
+                                "/oauth2/**",
+                                "/submitRegister",
+                                "/css/**",
+                                "/styles/**",
+                                "/js/**",
+                                "/scripts/**",
+                                "/images/**",
+                                "/forgot-password",
+                                "/reset-password",
+                                "/products/list",
+                                "/products/view/{id}",
+                                "/faq",
+                                "/about")
+                        .permitAll()
 
                         .anyRequest().authenticated()
                 )
@@ -54,7 +74,7 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 )
