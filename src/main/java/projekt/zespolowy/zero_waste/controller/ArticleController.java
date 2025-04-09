@@ -124,7 +124,7 @@ public class ArticleController {
     @PreAuthorize("isAuthenticated()")
     public String likeArticle(@PathVariable("id") Long id, @RequestHeader("Referer") String referer) {
         articleService.toggleLikeArticle(id);
-        return "redirect:" + referer; // Powrót na stronę, z której przyszło żądanie
+        return "redirect:" + referer;
     }
 
 
