@@ -1,50 +1,72 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Thread</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link th:href="@{styles/main.css}" rel="stylesheet"/>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="${thread.title}">Wątek Forum</title>
 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+          crossorigin="anonymous">
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
     <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
-    <script src="/scripts/navbar.js" defer></script>
 
 </head>
-<body class="d-flex flex-column h-100">
-<div th:replace="~{fragments/header :: header}"></div>
-<div class="container mt-4">
-    <h1 class="mb-3" th:text="${thread.title}">Tytuł wątku</h1>
-    <p th:text="${thread.content}">Treść wątku</p>
+<body class="d-flex flex-column min-vh-100"> <div th:replace="~{fragments/header :: header}"></div>
 
-    <hr>
-
-    <h2>Komentarze</h2>
-    <div th:if="${thread.comments != null}">
-        <ul class="list-group mb-4">
-            <li class="list-group-item" th:each="comment : ${thread.comments}">
-                <p th:text="${comment.message}">Treść komentarza</p>
-                <p class="text-muted">Autor:
-                    <a th:href="@{/user/{username}(username=${comment.author.id})}" th:text="${comment.author.username}">
-                        username </a>
-                </p>
-            </li>
-        </ul>
+<main role="main" class="flex-shrink-0"> <div class="container mt-4 mb-5"> <div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <h1 class="h3 mb-0" th:text="${thread.title}">Tytuł wątku</h1>
     </div>
-
-    <!-- Formularz dodawania komentarza -->
-    <h3>Dodaj komentarz</h3>
-    <div th:if="${#lists.isEmpty(thread.comments)}">
-        <p>Brak komentarzy.</p></div>
-    <form th:action="@{/forum/thread/{id}/comment(id=${thread.id})}" method="post">
-        <div class="mb-3">
-            <textarea class="form-control" name="message" rows="4" placeholder="Wpisz komentarz"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Dodaj</button>
-    </form>
+    <div class="card-body">
+        <p th:text="${thread.content}" style="white-space: pre-wrap;">Treść wątku</p>
+    </div>
 </div>
-<!-- Ładowanie Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h2 class="h4 mb-0">Komentarze</h2>
+        </div>
+        <div class="card-body">
+            <div th:if="${thread.comments != null and !thread.comments.isEmpty()}">
+                <ul class="list-group list-group-flush mb-4"> <li class="list-group-item px-0" th:each="comment : ${thread.comments}"> <p th:text="${comment.message}" class="mb-1">Treść komentarza</p>
+                    <p class="text-muted mb-0">
+                        <small>Autor:
+                            <a th:href="@{/user/{username}(username=${comment.author.username})}"
+                               th:text="${comment.author.username}">
+                                username
+                            </a>
+                        </small>
+                    </p>
+                </li>
+                </ul>
+            </div>
+
+            <div th:if="${thread.comments == null or thread.comments.isEmpty()}">
+                <p class="text-muted">Brak komentarzy. Bądź pierwszy!</p>
+            </div>
+
+            <hr> <h3 class="h5 mt-4">Dodaj komentarz</h3>
+            <form th:action="@{/forum/thread/{id}/comment(id=${thread.id})}" method="post">
+                <div class="form-group mb-3"> <label for="comment-message" class="sr-only">Treść komentarza</label> <textarea class="form-control" id="comment-message" name="message" rows="4" placeholder="Wpisz treść komentarza" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Dodaj Komentarz</button>
+            </form>
+        </div> </div> </div> </main>
+
+<div th:replace="~{fragments/footer :: footer}"></div> <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+                                                               integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+                                                               crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+
+<script src="/scripts/navbar.js" defer></script>
+
 </body>
 </html>
