@@ -149,6 +149,7 @@ public class ProductController {
         model.addAttribute("product", product);
         productService.addToViewHistory(session, id);
         model.addAttribute("recentlyViewedProducts", productService.getRecentlyViewedProductsExcept(session, id));
+        model.addAttribute("phoneVisible", product.getOwner().getPrivacySettings().getPhoneVisible().toString());
         if (authentication != null && authentication.isAuthenticated()) {
             User user = userService.findByUsername(authentication.getName());
             boolean isFavorite = productService.isProductFavorite(user.getId(), id);
