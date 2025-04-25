@@ -12,28 +12,30 @@
 <div th:replace="~{fragments/header :: header}"></div>
 
 <div class="container mt-5">
-    <!-- Nagłówek wyników wyszukiwania z większym marginesem od góry -->
     <h1 class="text-center mb-4 mt-5">Product Search Results</h1>
 
-    <div th:if="${product != null}">
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <h2 class="card-title text-primary" th:text="${product.productName}">Product Name</h2>
-                <p><strong>Brand:</strong> <span th:text="${product.brand}">Brand</span></p>
-                <p><strong>NutriScore:</strong> <span th:text="${product.nutriScore}">-</span></p>
-                <p><strong>EcoScore:</strong> <span th:text="${product.ecoScore}">-</span></p>
-                <p><strong>Ingredients:</strong> <span th:text="${product.ingredients}">-</span></p>
-
-                <div class="d-flex justify-content-center mt-3">
-                    <img th:src="${product.imageUrl}" alt="Product Image" class="img-fluid rounded" style="max-width: 250px;">
+    <div th:if="${products != null and !products.isEmpty()}">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col" th:each="product : ${products}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary" th:text="${product.productName}">Product Name</h5>
+                        <p><strong>Brand:</strong> <span th:text="${product.brand}">Brand</span></p>
+                        <p><strong>NutriScore:</strong> <span th:text="${product.nutriScore}">-</span></p>
+                        <p><strong>EcoScore:</strong> <span th:text="${product.ecoScore}">-</span></p>
+                        <p><strong>Ingredients:</strong> <span th:text="${product.ingredients}">-</span></p>
+                    </div>
+                    <div class="text-center p-3">
+                        <img th:src="${product.imageUrl}" alt="Product Image" class="img-fluid rounded" style="max-height: 200px;">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div th:if="${product == null}">
+    <div th:if="${products == null or products.isEmpty()}">
         <div class="alert alert-warning text-center">
-            No product found.
+            No products found.
         </div>
     </div>
 

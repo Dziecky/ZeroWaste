@@ -17,17 +17,26 @@ import java.util.List;
 public class FoodController {
 
     @Autowired
-    private FoodService productService;
+    FoodService productService;
 
     @GetMapping
     public String showForm() {
         return "Food/searchForm";
     }
 
+// pojedyncze wyszukanie
+//
+//    @PostMapping("/search")
+//    public String search(@RequestParam("query") String query, Model model) {
+//        FoodDTO product = productService.searchProduct(query);
+//        model.addAttribute("product", product);
+//        return "Food/productResult";
+//    }
+
     @PostMapping("/search")
     public String search(@RequestParam("query") String query, Model model) {
-        FoodDTO product = productService.searchProduct(query);
-        model.addAttribute("product", product);
+        List<FoodDTO> products = productService.searchProducts(query);
+        model.addAttribute("products", products);
         return "Food/productResult";
     }
 }
