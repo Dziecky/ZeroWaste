@@ -53,6 +53,8 @@ public class SecurityConfig {
                                 "/reset-password",
                                 "/products/list",
                                 "/products/view/{id}",
+                                "/food",
+                                "/food/search",
                                 "/faq",
                                 "/about")
                         .permitAll()
