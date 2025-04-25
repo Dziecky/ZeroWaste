@@ -17,7 +17,7 @@ import java.util.List;
 public class FoodController {
 
     @Autowired
-    private FoodService productService;
+    FoodService productService;
 
     @GetMapping
     public String showForm() {
