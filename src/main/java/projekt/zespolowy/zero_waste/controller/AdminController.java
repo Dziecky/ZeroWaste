@@ -4,13 +4,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import projekt.zespolowy.zero_waste.entity.Refund;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.enums.RefundStatus;
 import projekt.zespolowy.zero_waste.entity.enums.UserRole;
 import projekt.zespolowy.zero_waste.services.RefundService;
 import projekt.zespolowy.zero_waste.services.UserService;
@@ -69,6 +67,19 @@ public class AdminController {
         model.addAttribute("totalPages", refundPage.getTotalPages());
         model.addAttribute("baseUrl", "/admin/refunds");
         return "User/admin/admin-refunds";
+    }
+
+    @GetMapping("/refundDetails/{id}")
+    public String getRefundDetails(@PathVariable Long id, Model model) {
+        Refund refund = refundService.findRefundById(id);
+        model.addAttribute("refund", refund);
+        return "User/admin/admin-refund-details";
+    }
+
+    @PostMapping("/updateRefundStatus")
+    public String updateRefundStatus(@RequestParam Long refundId, @RequestParam RefundStatus newStatus) {
+        refundService.updateRefundStatus(refundId, newStatus);
+        return "redirect:/admin/refundDetails/" + refundId;
     }
 }
 
