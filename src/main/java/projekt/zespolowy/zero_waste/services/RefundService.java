@@ -30,4 +30,9 @@ public class RefundService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "requestDate"));
         return refundRepository.findAllByOrder_User(user, pageable);
     }
+
+    public Page<Refund> getAllRefunds(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "requestDate"));
+        return refundRepository.findAllWithOrderAndUser(pageable);
+    }
 }

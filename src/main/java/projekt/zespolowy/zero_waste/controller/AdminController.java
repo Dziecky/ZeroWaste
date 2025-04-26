@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import projekt.zespolowy.zero_waste.entity.Refund;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.enums.UserRole;
+import projekt.zespolowy.zero_waste.services.RefundService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.List;
@@ -21,9 +23,11 @@ import java.util.List;
 public class AdminController {
 
     private final UserService userService;
+    private final RefundService refundService;
 
-    public AdminController(UserService userService) {
+    public AdminController(UserService userService, RefundService refundService) {
         this.userService = userService;
+        this.refundService = refundService;
     }
 
     // Wyświetlenie listy użytkowników
@@ -53,6 +57,18 @@ public class AdminController {
         userService.save(user);
         redirectAttributes.addFlashAttribute("success", "Rola użytkownika została zaktualizowana");
         return "redirect:/admin/users";
+    }
+
+    @GetMapping("/refunds")
+    public String showRefunds(@RequestParam(defaultValue = "1") int page,
+                              @RequestParam(defaultValue = "10") int size,
+                              Model model) {
+        Page<Refund> refundPage = refundService.getAllRefunds(page - 1, size);
+        model.addAttribute("refunds", refundPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", refundPage.getTotalPages());
+        model.addAttribute("baseUrl", "/admin/refunds");
+        return "User/admin/admin-refunds";
     }
 }
 
