@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Sort;
 import projekt.zespolowy.zero_waste.entity.Order;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.Refund;
@@ -57,7 +58,7 @@ class RefundServiceTest {
 
     @Test
     void getRefundsByUser_shouldReturnPagedRefundsForUser() {
-        PageRequest pageable = PageRequest.of(0, 10);
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "requestDate"));
         Page<Refund> page = new PageImpl<>(List.of(refund));
 
         when(refundRepository.findAllByOrder_User(eq(user), eq(pageable))).thenReturn(page);
@@ -72,7 +73,7 @@ class RefundServiceTest {
 
     @Test
     void getRefundsByUser_shouldReturnEmptyPageWhenUserHasNoRefunds() {
-        PageRequest pageable = PageRequest.of(0, 10);
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "requestDate"));
         Page<Refund> emptyPage = Page.empty(pageable);
 
         when(refundRepository.findAllByOrder_User(eq(user), eq(pageable))).thenReturn(emptyPage);
@@ -85,4 +86,36 @@ class RefundServiceTest {
 
         verify(refundRepository, times(1)).findAllByOrder_User(eq(user), eq(pageable));
     }
+
+    @Test
+    void getAllRefunds_shouldReturnPagedRefundsSortedByRequestDate() {
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "requestDate"));
+        Page<Refund> page = new PageImpl<>(List.of(refund));
+
+        when(refundRepository.findAllWithOrderAndUser(eq(pageable))).thenReturn(page);
+
+        Page<Refund> result = refundService.getAllRefunds(0, 10);
+
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0)).isEqualTo(refund);
+
+        verify(refundRepository, times(1)).findAllWithOrderAndUser(eq(pageable));
+    }
+
+    @Test
+    void getAllRefunds_shouldReturnEmptyPageWhenNoRefundsExist() {
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "requestDate"));
+        Page<Refund> emptyPage = Page.empty(pageable);
+
+        when(refundRepository.findAllWithOrderAndUser(eq(pageable))).thenReturn(emptyPage);
+
+        Page<Refund> result = refundService.getAllRefunds(0, 10);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).isEmpty();
+        assertThat(result.getTotalElements()).isZero();
+
+        verify(refundRepository, times(1)).findAllWithOrderAndUser(eq(pageable));
+    }
+
 }
