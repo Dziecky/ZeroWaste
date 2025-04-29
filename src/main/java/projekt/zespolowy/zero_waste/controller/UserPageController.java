@@ -42,6 +42,8 @@ public class UserPageController {
 
         List<ReviewDto> reviewsAboutUser = reviewService.getReviewsByTargetUserId(userId);
 
+        System.out.println(userService.userAverageRatingComparisonToAll(user));
+
         // Get the current user's ID
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
@@ -58,6 +60,7 @@ public class UserPageController {
         model.addAttribute("currentUserId", currentUserId);
         model.addAttribute("reviewsAboutUser", reviewsAboutUser);
         model.addAttribute("averageRating", user.getAverageRating());
+        model.addAttribute("averageRatingComparisonToAll", userService.userAverageRatingComparisonToAll(user));
         model.addAttribute("newReview", new Review());
         model.addAttribute("reviewOwnership", reviewOwnership);
         model.addAttribute("role", customUser.getUser().getRole().toString());

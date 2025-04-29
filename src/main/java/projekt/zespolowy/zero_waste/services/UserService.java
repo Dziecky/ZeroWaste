@@ -32,6 +32,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -325,6 +326,45 @@ public class UserService implements UserDetailsService {
         user.getChallenges().add(challenge);
     }
 
+    public String userAverageRatingComparisonToAll(User user) {
+        List<User> allUsers = userRepository.findAll();
+        double userRating = user.getAverageRating();
 
+        if (allUsers.isEmpty() || allUsers.size() == 1) {
+            return "Not enough data for comparison";
+        }
+
+        // Calculate average rating of all other users (excluding current one)
+        double othersSum = 0;
+        int count = 0;
+
+        for (User other : allUsers) {
+            if (!other.getId().equals(user.getId()) && other.getAverageRating() > 0) {
+                othersSum += other.getAverageRating();
+                count++;
+            }
+        }
+
+        if (count == 0) {
+            return "No ratings from other users available";
+        }
+
+        double othersAverage = othersSum / count;
+
+        // Calculate percentage difference
+        double percentageDifference = ((userRating - othersAverage) / othersAverage) * 100;
+
+        // Format the result
+        DecimalFormat df = new DecimalFormat("0.##");
+        String formattedPercentage = df.format(Math.abs(percentageDifference));
+
+        if (percentageDifference > 0) {
+            return "This user's rating is " + formattedPercentage + "% higher than average";
+        } else if (percentageDifference < 0) {
+            return "This user's rating is " + formattedPercentage + "% lower than average";
+        } else {
+            return "This user's rating is equal to the average";
+        }
+    }
 
 }

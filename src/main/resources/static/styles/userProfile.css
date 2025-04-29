@@ -182,6 +182,28 @@
     font-size: 1.1em;
 }
 
+.comparison-info {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.comparison-text {
+    font-size: 14px;
+    color: #666;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border-radius: 18px;
+    display: inline-block;
+}
+
+/* Dla lepszego efektu wizualnego */
+.rating-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
 @media (max-width: 768px) {
     .rating-section {
         flex-direction: column;

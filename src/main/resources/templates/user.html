@@ -3,7 +3,7 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
-    <title>User Profile</title>
+    <title th:text="${user.firstName} + ' ' + ${user.lastName} + '`s     profile'">User Profile</title>
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link th:href="@{/styles/main.css}" rel="stylesheet" />
@@ -76,6 +76,11 @@
                     <div class="stars-outer">
                         <div class="stars-inner" th:style="'width: ' + ${user.averageRating * 20} + '%'"></div>
                     </div>
+                </div>
+
+                <!-- Dodana sekcja porównania -->
+                <div class="comparison-info" th:if="${averageRatingComparisonToAll != null}">
+                    <p class="comparison-text" th:text="${averageRatingComparisonToAll}"></p>
                 </div>
             </div>
             <div class="no-rating" th:if="${user.averageRating == 0}">
