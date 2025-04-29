@@ -42,4 +42,6 @@ public interface ProductService {
  boolean isProductFavorite(Long userId, Long productId);
  List<Product> getFavoriteProducts(Long userId);
 
+ void incrementViewCount(Long productId);
+
 }

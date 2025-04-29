@@ -64,6 +64,9 @@ public class Product {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
+    @Column(name = "view_count", columnDefinition = "int default 0")
+    private int viewCount = 0;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Bid> bids = new HashSet<>();
 

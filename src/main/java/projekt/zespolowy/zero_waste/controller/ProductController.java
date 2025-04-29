@@ -143,13 +143,19 @@ public class ProductController {
     }
 
     @GetMapping("/view/{id}")
-    public String viewProductDetails(@PathVariable("id") Long id, Model model, HttpSession session, Authentication authentication) {
+    public String viewProductDetails(@PathVariable("id") Long id, Model model,
+                                     HttpSession session, Authentication authentication) {
         Product product = productService.getProductById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Product ID: " + id));
+        productService.incrementViewCount(id);
+
         model.addAttribute("product", product);
         productService.addToViewHistory(session, id);
-        model.addAttribute("recentlyViewedProducts", productService.getRecentlyViewedProductsExcept(session, id));
-        model.addAttribute("phoneVisible", product.getOwner().getPrivacySettings().getPhoneVisible().toString());
+        model.addAttribute("recentlyViewedProducts",
+                productService.getRecentlyViewedProductsExcept(session, id));
+        model.addAttribute("phoneVisible",
+                product.getOwner().getPrivacySettings().getPhoneVisible().toString());
+
         if (authentication != null && authentication.isAuthenticated()) {
             User user = userService.findByUsername(authentication.getName());
             boolean isFavorite = productService.isProductFavorite(user.getId(), id);

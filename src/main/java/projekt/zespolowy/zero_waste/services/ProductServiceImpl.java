@@ -257,5 +257,17 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
     }
 
+    public void incrementViewCount(Long productId) {
+        if (productId == null) {
+            throw new IllegalArgumentException("Product ID cannot be null");
+        }
+
+        Product product = getProductById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Product ID: " + productId));
+        product.setViewCount(product.getViewCount() + 1);
+        productRepository.save(product);
+    }
+
+
 
 }
