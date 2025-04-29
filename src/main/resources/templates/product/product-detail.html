@@ -409,6 +409,12 @@
                     </div>
                 </div>
 
+                <div class="detail-group">
+                    <span class="detail-label">Views</span>
+                    <span class="detail-value view-count">
+                    <i class="fas fa-eye"></i> <span th:text="${product.viewCount}">0</span> </span>
+                </div>
+
                 <div th:if="${product.owner.username == #authentication.name}" class="owner-actions">
                     <a th:href="@{'/products/edit/' + ${product.id}}" class="btn btn-custom btn-edit">
                         <i class="fas fa-edit"></i> Edit
