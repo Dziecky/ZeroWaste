@@ -10,8 +10,10 @@ import org.springframework.mock.web.MockHttpSession;
 import jakarta.servlet.http.HttpSession;
 import projekt.zespolowy.zero_waste.entity.FavoriteProduct;
 import projekt.zespolowy.zero_waste.entity.Product;
+import projekt.zespolowy.zero_waste.entity.ProductPriceHistory;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.repository.FavoriteProductRepository;
+import projekt.zespolowy.zero_waste.repository.ProductPriceHistoryRepository;
 import projekt.zespolowy.zero_waste.repository.ProductRepository;
 import projekt.zespolowy.zero_waste.services.ProductServiceImpl;
 

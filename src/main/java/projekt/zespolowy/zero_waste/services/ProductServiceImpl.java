@@ -10,6 +10,7 @@ import projekt.zespolowy.zero_waste.entity.*;
 import projekt.zespolowy.zero_waste.repository.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,16 +27,19 @@ public class ProductServiceImpl implements ProductService {
 
     private final FavoriteProductRepository favoriteProductRepository;
 
+    private ProductPriceHistoryRepository productPriceHistoryRepository;
+
     static final String VIEWED_PRODUCTS_SESSION_KEY = "viewedProducts";
     private static final int MAX_HISTORY_SIZE = 6;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, UserTaskRepository userTaskRepository, UserRepository userRepository, TaskRepository taskRepository, FavoriteProductRepository favoriteProductRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, UserTaskRepository userTaskRepository, UserRepository userRepository, TaskRepository taskRepository, FavoriteProductRepository favoriteProductRepository, ProductPriceHistoryRepository productPriceHistoryRepository) {
         this.productRepository = productRepository;
         this.userTaskRepository = userTaskRepository;
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
         this.favoriteProductRepository = favoriteProductRepository;
+        this.productPriceHistoryRepository = productPriceHistoryRepository;
     }
 
     @Override
@@ -52,7 +56,8 @@ public class ProductServiceImpl implements ProductService {
     public Product saveProduct(Product product) {
         // Zapisz produkt
         Product savedProduct = productRepository.save(product);
-
+        ProductPriceHistory priceHistory = new ProductPriceHistory(savedProduct, product.getPrice(), LocalDateTime.now());
+        productPriceHistoryRepository.save(priceHistory);
         // Sprawdź, czy użytkownik ma zadanie "Dodaj produkt"
         Task addProductTask = taskRepository.findByTaskName("Dodaj pierwszy przedmiot");
 
@@ -267,6 +272,21 @@ public class ProductServiceImpl implements ProductService {
         product.setViewCount(product.getViewCount() + 1);
         productRepository.save(product);
     }
+    @Override
+    public Double getLowestPriceInLast30Days(Long productId) {
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        ProductPriceHistory lowestPriceHistory = productPriceHistoryRepository
+                .findTopByProductIdAndCreatedAtAfterOrderByPriceAsc(productId, thirtyDaysAgo);
+
+        if (lowestPriceHistory == null) {
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new IllegalArgumentException("Product ID cannot be null"));
+            return product.getPrice();
+        }
+
+        return lowestPriceHistory.getPrice();
+    }
+
 
 
 

@@ -44,4 +44,6 @@ public interface ProductService {
 
  void incrementViewCount(Long productId);
 
+ Double getLowestPriceInLast30Days(Long productId);
+
 }
