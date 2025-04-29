@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title th:text="'Quiz Results: ' + ${results.quizTitle}">Quiz Results</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/styles/announcements.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/buttons.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+    <style>
+        .result-summary {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        .question-result {
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .correct-answer {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect-answer {
+            color: red;
+            text-decoration: line-through;
+        }
+        .user-answer {
+            margin-left: 10px;
+        }
+        .correct-answer-indicator::before {
+            content: '\2714'; /* Check mark */
+            color: green;
+            margin-right: 5px;
+        }
+        .incorrect-answer-indicator::before {
+            content: '\2718'; /* Cross mark */
+            color: red;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div layout:fragment="content" class="container mt-4">
+
+    <h2 th:text="'Results for: ' + ${results.quizTitle}">Quiz Results</h2>
+
+    <div class="result-summary">
+        <p><strong>User:</strong> <span th:text="${results.username}">Username</span></p>
+        <p><strong>Score:</strong> <span th:text="${results.score} + ' / ' + ${results.totalQuestions}">Score</span></p>
+        <p><strong>Completed:</strong> <span th:text="${#temporals.format(results.completedAt, 'yyyy-MM-dd HH:mm')}">Completion Time</span></p>
+    </div>
+
+    <h4>Detailed Results:</h4>
+
+    <div th:each="res, stat : ${results.results}" class="question-result">
+        <h5><span th:text="${stat.index + 1} + '. '"></span> <span th:text="${res.questionText}">Question Text</span></h5>
+        
+        <p>
+            <strong>Your Answer:</strong> 
+            <span th:if="${res.selectedAnswerText == null}">No answer</span>
+            <span th:unless="${res.selectedAnswerText == null}" 
+                  th:text="${res.selectedAnswerText}" 
+                  th:classappend="${res.correct} ? 'correct-answer-indicator' : 'incorrect-answer-indicator'"
+                  class="user-answer">Selected Answer</span>
+        </p>
+        <p th:unless="${res.correct}">
+            <strong>Correct Answer:</strong> <span th:text="${res.correctAnswerText}" class="correct-answer">Correct Answer</span>
+        </p>
+
+    </div>
+
+    <div class="mt-4">
+        <a th:href="@{/quizzes/{id}/attempts(id=${results.quizId})}" class="btn btn-secondary">View My Attempts for this Quiz</a>
+        <a th:href="@{/quizzes}" class="btn btn-link">Back to Quiz List</a>
+    </div>
+
+</div>
+
+</body>
+</html> 

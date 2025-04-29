@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Create Quiz</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/styles/announcements.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/buttons.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+    <style>
+        .question-section {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .answer-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .answer-row input[type='text'] {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+         .answer-row .form-check-input {
+            margin-left: 5px;
+            margin-right: 5px;
+         }
+        .remove-btn {
+            margin-left: 10px;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div layout:fragment="content" class="container mt-4">
+    <h2>Create New Quiz</h2>
+
+    <!-- Display general error messages from redirect -->
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert"
+         th:text="${errorMessage}"></div>
+
+    <form th:action="@{/quizzes}" th:object="${quizDto}" method="post">
+
+        <!-- Quiz Title and Description -->
+        <div class="form-group">
+            <label for="quizTitle">Quiz Title</label>
+            <input type="text" id="quizTitle" class="form-control" th:field="*{title}" required>
+            <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-message"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="quizDescription">Description</label>
+            <textarea id="quizDescription" class="form-control" th:field="*{description}" rows="3"></textarea>
+             <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error-message"></div>
+        </div>
+
+        <hr>
+
+        <h4>Questions</h4>
+        <div id="questions-container">
+            <!-- Thymeleaf loop to render existing questions (if any, e.g., on validation error) -->
+            <div th:each="question, qStat : *{questions}" class="question-section">
+                <input type="hidden" th:field="*{questions[__${qStat.index}__].id}" /> <!-- Keep track of existing IDs if editing -->
+                <h5>Question <span th:text="${qStat.index + 1}"></span></h5>
+                 <button type="button" class="btn btn-sm btn-danger float-right remove-question-btn">Remove Question</button>
+                 <div class="form-group">
+                    <label th:for="'questionText' + ${qStat.index}">Question Text</label>
+                    <input type="text" th:id="'questionText' + ${qStat.index}" class="form-control" th:field="*{questions[__${qStat.index}__].text}" required>
+                    <div th:if="${#fields.hasErrors('questions[' + qStat.index + '].text')}" th:errors="*{questions[__${qStat.index}__].text}" class="error-message"></div>
+                </div>
+                
+                <h6>Answers</h6>
+                <div class="answers-container">
+                     <!-- Display validation error for minimum answers -->
+                     <div th:if="${#fields.hasErrors('questions[' + qStat.index + '].answers')}" 
+                          th:errors="*{questions[__${qStat.index}__].answers}" 
+                          class="error-message mb-2"></div>
+
+                    <div th:each="answer, aStat : *{questions[__${qStat.index}__].answers}" class="answer-row">
+                         <input type="hidden" th:field="*{questions[__${qStat.index}__].answers[__${aStat.index}__].id}" />
+                        <input type="text" class="form-control form-control-sm" placeholder="Answer Text" th:field="*{questions[__${qStat.index}__].answers[__${aStat.index}__].text}" required>
+                        <div class="form-check">
+                             <input class="form-check-input" type="radio" 
+                                   th:name="'questions[' + ${qStat.index} + '].correctAnswerIndex'" 
+                                   th:value="${aStat.index}" 
+                                   th:checked="*{questions[__${qStat.index}__].answers[__${aStat.index}__].correct}"
+                                   required> <!-- Ensure one is selected -->
+                             <label class="form-check-label">Correct</label>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger remove-answer-btn">Remove</button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-success add-answer-btn mt-2">Add Answer</button>
+            </div>
+        </div>
+        
+         <!-- Display validation error for minimum questions -->
+        <div th:if="${#fields.hasErrors('questions')}" th:errors="*{questions}" class="error-message mt-2"></div>
+
+        <button type="button" id="add-question-btn" class="btn btn-secondary mt-3">Add Question</button>
+
+        <hr>
+
+        <button type="submit" class="btn btn-primary">Create Quiz</button>
+        <a th:href="@{/quizzes}" class="btn btn-link">Cancel</a>
+    </form>
+</div>
+
+<th:block layout:fragment="scripts">
+<script th:fragment="script">
+    document.addEventListener('DOMContentLoaded', function () {
+        const questionsContainer = document.getElementById('questions-container');
+        const addQuestionBtn = document.getElementById('add-question-btn');
+        let questionIndex = questionsContainer.querySelectorAll('.question-section').length; // Start index based on rendered elements
+
+        // Add Question
+        addQuestionBtn.addEventListener('click', function () {
+            const newQuestionHtml = `
+                <div class="question-section">
+                    <input type="hidden" name="questions[${questionIndex}].id" value="" />
+                    <h5>Question ${questionIndex + 1}</h5>
+                    <button type="button" class="btn btn-sm btn-danger float-right remove-question-btn">Remove Question</button>
+                    <div class="form-group">
+                        <label for="questionText${questionIndex}">Question Text</label>
+                        <input type="text" id="questionText${questionIndex}" class="form-control" name="questions[${questionIndex}].text" required>
+                    </div>
+                    <h6>Answers</h6>
+                    <div class="answers-container">
+                        <!-- Add 2 default answers -->
+                        ${createAnswerHtml(questionIndex, 0)}
+                        ${createAnswerHtml(questionIndex, 1)}
+                    </div>
+                    <button type="button" class="btn btn-sm btn-success add-answer-btn mt-2">Add Answer</button>
+                </div>
+            `;
+            questionsContainer.insertAdjacentHTML('beforeend', newQuestionHtml);
+            questionIndex++;
+        });
+
+        // Remove Question (using event delegation)
+        questionsContainer.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('remove-question-btn')) {
+                e.target.closest('.question-section').remove();
+                // Note: Re-indexing question names after removal is complex and often handled server-side.
+                // If needed, query all sections and update names/labels.
+                 updateQuestionIndices();
+            }
+        });
+
+        // Add Answer (using event delegation)
+        questionsContainer.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('add-answer-btn')) {
+                const currentQuestionSection = e.target.closest('.question-section');
+                const answersContainer = currentQuestionSection.querySelector('.answers-container');
+                const currentQuestionIndex = parseInt(currentQuestionSection.querySelector('input[type="hidden"]').name.match(/\d+/)[0]);
+                const answerIndex = answersContainer.querySelectorAll('.answer-row').length;
+                answersContainer.insertAdjacentHTML('beforeend', createAnswerHtml(currentQuestionIndex, answerIndex));
+            }
+        });
+
+        // Remove Answer (using event delegation)
+        questionsContainer.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('remove-answer-btn')) {
+                const answerRow = e.target.closest('.answer-row');
+                const answersContainer = answerRow.closest('.answers-container');
+                answerRow.remove();
+                 // Re-index radio buttons within the same question if needed, or rely on server processing
+                 updateAnswerIndices(answersContainer);
+            }
+        });
+        
+        // --- Helper functions ---
+        function createAnswerHtml(qIndex, aIndex) {
+            return `
+                <div class="answer-row">
+                     <input type="hidden" name="questions[${qIndex}].answers[${aIndex}].id" value="" />
+                    <input type="text" class="form-control form-control-sm" placeholder="Answer Text" name="questions[${qIndex}].answers[${aIndex}].text" required>
+                    <div class="form-check">
+                         <input class="form-check-input" type="radio" name="questions[${qIndex}].correctAnswerIndex" value="${aIndex}" required>
+                         <label class="form-check-label">Correct</label>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger remove-answer-btn">Remove</button>
+                </div>
+            `;
+        }
+        
+        function updateQuestionIndices() {
+            const questionSections = questionsContainer.querySelectorAll('.question-section');
+            questionIndex = questionSections.length; // Reset global index
+            questionSections.forEach((section, qIdx) => {
+                section.querySelector('h5').innerHTML = `Question ${qIdx + 1}`;
+                section.querySelectorAll('[name^="questions["]').forEach(input => {
+                    const oldName = input.getAttribute('name');
+                    const newName = oldName.replace(/questions\[\d+\]/, `questions[${qIdx}]`);
+                    input.setAttribute('name', newName);
+                    if (input.id) {
+                         const oldId = input.getAttribute('id');
+                         const newId = oldId.replace(/\d+$/, qIdx);
+                         input.setAttribute('id', newId);
+                         const label = section.querySelector(`label[for='${oldId}']`);
+                         if(label) label.setAttribute('for', newId);
+                    }
+                });
+                 // Update answer indices within this question
+                 updateAnswerIndices(section.querySelector('.answers-container'), qIdx);
+            });
+        }
+
+        function updateAnswerIndices(answersContainer, fixedQIndex = null) {
+             const questionSection = answersContainer.closest('.question-section');
+             const qIndex = fixedQIndex !== null ? fixedQIndex : parseInt(questionSection.querySelector('input[type="hidden"]').name.match(/\d+/)[0]);
+
+            answersContainer.querySelectorAll('.answer-row').forEach((row, aIdx) => {
+                row.querySelectorAll('[name^="questions["]').forEach(input => {
+                    const oldName = input.getAttribute('name');
+                    let newName = oldName.replace(/questions\[\d+\]\.answers\[\d+\]/, `questions[${qIndex}].answers[${aIdx}]`);
+                     // Handle radio button name separately
+                     if (input.type === 'radio') {
+                         newName = `questions[${qIndex}].correctAnswerIndex`;
+                         input.value = aIdx; // Update the value to the new index
+                     }
+                    input.setAttribute('name', newName);
+                });
+            });
+        }
+        
+        // Initial update in case of validation errors repopulating the form
+        updateQuestionIndices();
+    });
+</script>
+</th:block>
+
+</body>
+</html> 
