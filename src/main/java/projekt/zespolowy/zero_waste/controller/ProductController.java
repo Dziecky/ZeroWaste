@@ -148,6 +148,7 @@ public class ProductController {
         Product product = productService.getProductById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Product ID: " + id));
         productService.incrementViewCount(id);
+        Double lowestPrice = productService.getLowestPriceInLast30Days(id);
 
         model.addAttribute("product", product);
         productService.addToViewHistory(session, id);
@@ -155,6 +156,7 @@ public class ProductController {
                 productService.getRecentlyViewedProductsExcept(session, id));
         model.addAttribute("phoneVisible",
                 product.getOwner().getPrivacySettings().getPhoneVisible().toString());
+        model.addAttribute("lowestPrice", lowestPrice);
 
         if (authentication != null && authentication.isAuthenticated()) {
             User user = userService.findByUsername(authentication.getName());
