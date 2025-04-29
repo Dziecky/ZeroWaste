@@ -10,11 +10,14 @@ import org.springframework.mock.web.MockHttpSession;
 import jakarta.servlet.http.HttpSession;
 import projekt.zespolowy.zero_waste.entity.FavoriteProduct;
 import projekt.zespolowy.zero_waste.entity.Product;
+import projekt.zespolowy.zero_waste.entity.ProductPriceHistory;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.repository.FavoriteProductRepository;
+import projekt.zespolowy.zero_waste.repository.ProductPriceHistoryRepository;
 import projekt.zespolowy.zero_waste.repository.ProductRepository;
 import projekt.zespolowy.zero_waste.services.ProductServiceImpl;
 
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +36,8 @@ class ProductServiceTest {
 
     @Mock
     private FavoriteProductRepository favoriteProductRepository;
-
+    @Mock
+    private ProductPriceHistoryRepository productPriceHistoryRepository;
     private HttpSession session;
 
     @BeforeEach
@@ -279,6 +283,113 @@ class ProductServiceTest {
 
         verify(productRepository, never()).findById(any());
         verify(productRepository, never()).save(any());
+    }
+
+    @Test
+    void testGetLowestPriceInLast30Days_whenPriceHistoryExists_thenReturnLowestPrice() {
+        Long productId = 1L;
+        ProductPriceHistory priceHistory1 = new ProductPriceHistory();
+        priceHistory1.setPrice(10.0);
+        priceHistory1.setCreatedAt(LocalDateTime.now().minusDays(10));
+
+        ProductPriceHistory priceHistory2 = new ProductPriceHistory();
+        priceHistory2.setPrice(5.0);
+        priceHistory2.setCreatedAt(LocalDateTime.now().minusDays(5));
+
+        ProductPriceHistory priceHistory3 = new ProductPriceHistory();
+        priceHistory3.setPrice(8.0);
+        priceHistory3.setCreatedAt(LocalDateTime.now().minusDays(2));
+
+        List<ProductPriceHistory> priceHistories = List.of(priceHistory1, priceHistory2, priceHistory3);
+
+        when(productPriceHistoryRepository.findTopByProductIdAndCreatedAtAfterOrderByPriceAsc(eq(productId), any()))
+                .thenReturn(priceHistory2);
+
+        double result = productService.getLowestPriceInLast30Days(productId);
+
+        assertEquals(5.0, result);
+    }
+
+    @Test
+    void testGetLowestPriceInLast30Days_whenAllPricesAreTheSame_thenReturnThatPrice() {
+        Long productId = 1L;
+        ProductPriceHistory priceHistory1 = new ProductPriceHistory();
+        priceHistory1.setPrice(7.0);
+        priceHistory1.setCreatedAt(LocalDateTime.now().minusDays(10));
+
+        ProductPriceHistory priceHistory2 = new ProductPriceHistory();
+        priceHistory2.setPrice(7.0);
+        priceHistory2.setCreatedAt(LocalDateTime.now().minusDays(5));
+
+        ProductPriceHistory priceHistory3 = new ProductPriceHistory();
+        priceHistory3.setPrice(7.0);
+        priceHistory3.setCreatedAt(LocalDateTime.now().minusDays(2));
+
+        when(productPriceHistoryRepository.findTopByProductIdAndCreatedAtAfterOrderByPriceAsc(eq(productId), any()))
+                .thenReturn(priceHistory1);
+
+        double result = productService.getLowestPriceInLast30Days(productId);
+
+        assertEquals(7.0, result, 0.001);
+    }
+
+    @Test
+    void testGetLowestPriceInLast30Days_whenDifferentPrices_thenReturnLowestPrice() {
+        Long productId = 1L;
+        ProductPriceHistory priceHistory1 = new ProductPriceHistory();
+        priceHistory1.setPrice(12.0);
+        priceHistory1.setCreatedAt(LocalDateTime.now().minusDays(10));
+
+        ProductPriceHistory priceHistory2 = new ProductPriceHistory();
+        priceHistory2.setPrice(3.0);
+        priceHistory2.setCreatedAt(LocalDateTime.now().minusDays(5));
+
+        ProductPriceHistory priceHistory3 = new ProductPriceHistory();
+        priceHistory3.setPrice(9.0);
+        priceHistory3.setCreatedAt(LocalDateTime.now().minusDays(2));
+
+
+        when(productPriceHistoryRepository.findTopByProductIdAndCreatedAtAfterOrderByPriceAsc(eq(productId), any()))
+                .thenReturn(priceHistory2);
+
+        double result = productService.getLowestPriceInLast30Days(productId);
+
+        assertEquals(3.0, result);
+    }
+
+    @Test
+    void testGetLowestPriceInLast30Days_whenOlderPriceIsLower_thenItIsExcluded() {
+        Long productId = 1L;
+
+        ProductPriceHistory olderPriceHistory = new ProductPriceHistory();
+        olderPriceHistory.setPrice(2.0);
+        olderPriceHistory.setCreatedAt(LocalDateTime.now().minusDays(31));
+
+        ProductPriceHistory priceHistory1 = new ProductPriceHistory();
+        priceHistory1.setPrice(10.0);
+        priceHistory1.setCreatedAt(LocalDateTime.now().minusDays(20));
+
+        ProductPriceHistory priceHistory2 = new ProductPriceHistory();
+        priceHistory2.setPrice(8.0);
+        priceHistory2.setCreatedAt(LocalDateTime.now().minusDays(15));
+
+        ProductPriceHistory priceHistory3 = new ProductPriceHistory();
+        priceHistory3.setPrice(12.0);
+        priceHistory3.setCreatedAt(LocalDateTime.now().minusDays(5));
+
+        when(productPriceHistoryRepository.findTopByProductIdAndCreatedAtAfterOrderByPriceAsc(eq(productId), any(LocalDateTime.class)))
+                .thenReturn(priceHistory2);
+
+        double result = productService.getLowestPriceInLast30Days(productId);
+
+        assertEquals(8.0, result);
+
+        verify(productPriceHistoryRepository).findTopByProductIdAndCreatedAtAfterOrderByPriceAsc(
+                eq(productId), any(LocalDateTime.class));
+    }
+    @Test
+    void testGetLowestPriceInLast30Days_whenProductIdIsNull_thenThrowException() {
+        assertThrows(IllegalArgumentException.class, () -> productService.getLowestPriceInLast30Days(null));
     }
 
 
