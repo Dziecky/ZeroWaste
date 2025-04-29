@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title th:text="'Take Quiz: ' + ${quiz.title}">Take Quiz</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/styles/announcements.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/buttons.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+    <style>
+        .question-block {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .answer-option {
+            margin-bottom: 5px;
+        }
+        .question-required {
+            color: red;
+            font-size: 0.8em;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div layout:fragment="content" class="container mt-4">
+
+    <h2 th:text="${quiz.title}">Quiz Title</h2>
+    <p th:text="${quiz.description}">Quiz description goes here.</p>
+    <hr>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert"
+         th:text="${errorMessage}"></div>
+
+    <form id="quizForm" th:action="@{/quizzes/{id}/submit(id=${quiz.id})}" th:object="${submissionDto}" method="post">
+
+        <div th:each="question, qStat : ${quiz.questions}" class="question-block">
+            <h5 th:text="${qStat.index + 1} + '. ' + ${question.text}">Question text?</h5>
+
+            <div th:each="answer : ${question.answers}" class="answer-option ml-3">
+                <div class="form-check">
+                    <input class="form-check-input quiz-answer" type="radio"
+                           th:name="'answers[' + ${question.id} + ']'" 
+                           th:id="'answer-' + ${answer.id}"
+                           th:value="${answer.id}"
+                           th:data-question-id="${question.id}">
+                    <label class="form-check-label" th:for="'answer-' + ${answer.id}" th:text="${answer.text}">
+                        Answer text
+                    </label>
+                </div>
+            </div>
+            <div class="question-required" th:id="'required-' + ${question.id}">Please select an answer for this question.</div>
+        </div>
+
+        <button type="button" id="submitQuizBtn" class="btn btn-primary mt-3">Submit Answers</button>
+        <a th:href="@{/quizzes}" class="btn btn-link">Cancel</a>
+
+    </form>
+
+</div>
+
+<th:block layout:fragment="scripts">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const quizForm = document.getElementById('quizForm');
+            const submitQuizBtn = document.getElementById('submitQuizBtn');
+
+            // Highlight any unanswered questions when changing answers
+            const radioButtons = document.querySelectorAll('.quiz-answer');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const questionId = this.dataset.questionId;
+                    document.getElementById('required-' + questionId).style.display = 'none';
+                });
+            });
+
+            // Validate and submit the form
+            submitQuizBtn.addEventListener('click', function(e) {
+                // Get all question IDs from the quiz
+                const questionBlocks = document.querySelectorAll('.question-block');
+                let allAnswered = true;
+
+                // Check each question has an answer
+                questionBlocks.forEach(block => {
+                    const questionRadios = block.querySelectorAll('.quiz-answer');
+                    if (questionRadios.length === 0) return;
+
+                    const questionId = questionRadios[0].dataset.questionId;
+                    let answered = false;
+
+                    questionRadios.forEach(radio => {
+                        if (radio.checked) {
+                            answered = true;
+                        }
+                    });
+
+                    // Show required message if not answered
+                    if (!answered) {
+                        document.getElementById('required-' + questionId).style.display = 'block';
+                        allAnswered = false;
+                    } else {
+                        document.getElementById('required-' + questionId).style.display = 'none';
+                    }
+                });
+
+                // If all questions are answered, submit the form
+                if (allAnswered) {
+                    console.log("All questions answered, submitting form");
+                    quizForm.submit();
+                } else {
+                    // Scroll to the first unanswered question
+                    const firstRequired = document.querySelector('.question-required[style="display: block;"]');
+                    if (firstRequired) {
+                        firstRequired.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    }
+                }
+            });
+        });
+    </script>
+</th:block>
+
+</body>
+</html> 

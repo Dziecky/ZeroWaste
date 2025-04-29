@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Quizzes</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+ 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/styles/announcements.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/buttons.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+    <style>
+        .quiz-list-container {
+            margin-top: 20px;
+        }
+        .action-buttons a, .action-buttons button {
+            margin-right: 5px;
+            margin-bottom: 5px; /* Spacing for smaller screens */
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div layout:fragment="content" class="container quiz-list-container">
+
+    <h2>Available Quizzes</h2>
+
+    <!-- Display success/error messages -->
+    <div th:if="${successMessage}" class="alert alert-success" role="alert"
+         th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert"
+         th:text="${errorMessage}"></div>
+
+    <div class="mb-3">
+        <a th:href="@{/quizzes/new}" class="btn btn-primary">Create New Quiz</a>
+    </div>
+
+    <div th:if="${quizzes == null or quizzes.isEmpty()}">
+        <p>No quizzes available yet.</p>
+    </div>
+
+    <table class="table table-striped table-hover" th:if="${quizzes != null and not quizzes.isEmpty()}">
+        <thead class="thead-dark">
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Creator</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="quiz : ${quizzes}">
+                <td th:text="${quiz.title}">Quiz Title</td>
+                <td th:text="${quiz.description}">Quiz Description</td>
+                <td th:text="${quiz.creatorUsername}">Creator Name</td>
+                <td class="action-buttons">
+                    <a th:href="@{/quizzes/{id}(id=${quiz.id})}" class="btn btn-info btn-sm">Take Quiz</a>
+                    <a th:href="@{/quizzes/{id}/attempts(id=${quiz.id})}" class="btn btn-secondary btn-sm">View My Attempts</a>
+                    <!-- Only show edit/delete if user is the creator (Requires Spring Security Principal) -->
+                    <th:block th:if="${#authentication?.name == quiz.creatorUsername}"> 
+                         <a th:href="@{/quizzes/{id}/edit(id=${quiz.id})}" class="btn btn-warning btn-sm">Edit</a>
+                         <form th:action="@{/quizzes/{id}/delete(id=${quiz.id})}" method="post" style="display: inline;" 
+                               onsubmit="return confirm('Are you sure you want to delete this quiz?');">
+                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                         </form>
+                    </th:block>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<!-- Optional: Add scripts if needed -->
+<th:block layout:fragment="scripts">
+    <!-- <script src="..."></script> -->
+</th:block>
+
+</body>
+</html> 
