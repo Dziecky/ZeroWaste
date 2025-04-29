@@ -222,5 +222,64 @@ class ProductServiceTest {
         assertThrows(IllegalArgumentException.class, () -> productService.addFavoriteProduct(userId, productId));
     }
 
+    @Test
+    void testIncrementViewCount_Success() {
+        Long productId = 1L;
+        Product product = new Product();
+        product.setId(productId);
+        product.setViewCount(10);
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+
+        productService.incrementViewCount(productId);
+
+        assertEquals(11, product.getViewCount());
+        verify(productRepository, times(1)).save(product);
+    }
+
+
+    @Test
+    void testIncrementViewCount_ProductNotFound() {
+        Long productId = 999L;
+        when(productRepository.findById(productId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            productService.incrementViewCount(productId);
+        });
+
+        verify(productRepository, never()).save(any(Product.class));
+    }
+
+    @Test
+    void testIncrementViewCount_MultipleIncrements() {
+        Long productId = 1L;
+        Product product = new Product();
+        product.setId(productId);
+        product.setViewCount(0);
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+
+        for (int i = 0; i < 5; i++) {
+            productService.incrementViewCount(productId);
+        }
+
+        assertEquals(5, product.getViewCount());
+        verify(productRepository, times(5)).save(product);
+    }
+
+    @Test
+    void testIncrementViewCount_NullProductId() {
+        Long productId = null;
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            productService.incrementViewCount(productId);
+        });
+
+        verify(productRepository, never()).findById(any());
+        verify(productRepository, never()).save(any());
+    }
+
 
 }
