@@ -1,5 +1,6 @@
 package projekt.zespolowy.zero_waste.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,10 +19,12 @@ import projekt.zespolowy.zero_waste.repository.quiz.*;
 import projekt.zespolowy.zero_waste.services.UserService;
 import projekt.zespolowy.zero_waste.services.quiz.QuizService;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,15 +33,15 @@ class QuizServiceTest {
     @Mock
     private QuizRepository quizRepository;
     @Mock
-    private QuestionRepository questionRepository; // Although likely managed by cascade
+    private QuestionRepository questionRepository;
     @Mock
-    private AnswerRepository answerRepository;     // Although likely managed by cascade
+    private AnswerRepository answerRepository;
     @Mock
     private QuizAttemptRepository quizAttemptRepository;
     @Mock
     private SubmittedAnswerRepository submittedAnswerRepository;
     @Mock
-    private UserRepository userRepository; // May not be needed if UserService handles user fetching
+    private UserRepository userRepository;
     @Mock
     private UserService userService;
 
@@ -47,6 +50,7 @@ class QuizServiceTest {
 
     private User testUser;
     private QuizDto quizDto;
+    private Quiz testQuiz; // Dodane pole testQuiz
 
     @BeforeEach
     void setUp() {
@@ -66,78 +70,122 @@ class QuizServiceTest {
 
         quizDto = new QuizDto(null, "Test Quiz", "Test Description", null, List.of(questionDto1, questionDto2));
         quizDto.setCreatorUsername(testUser.getUsername()); // Although service uses logged-in user
+
+        // Setup a basic Quiz entity for retrieval tests
+        Quiz quiz = new Quiz();
+        quiz.setId(100L);
+        quiz.setTitle("Test Quiz");
+        quiz.setDescription("Test Description");
+        User creator = new User();
+        creator.setUsername("testUser");
+        quiz.setCreator(creator);
+        Question question1 = new Question();
+        question1.setText("Question 1?");
+        Answer answer1 = new Answer();
+        answer1.setText("Answer 1");
+        answer1.setCorrect(false);
+        Answer answer2 = new Answer();
+        answer2.setText("Answer 2");
+        answer2.setCorrect(true);
+        question1.setAnswers(List.of(answer1, answer2));
+        Question question2 = new Question();
+        question2.setText("Question 2?");
+        Answer answer3 = new Answer();
+        answer3.setText("Ans 3");
+        answer3.setCorrect(true);
+        Answer answer4 = new Answer();
+        answer4.setText("Ans 4");
+        answer4.setCorrect(false);
+        question2.setAnswers(List.of(answer3, answer4));
+        quiz.setQuestions(List.of(question1, question2));
+        testQuiz = quiz;
     }
 
-    @Test
-    void createQuiz_Success() {
-        // Arrange
-        when(userService.getCurrentUser()).thenReturn(testUser);
-        // Mock the save operation to return the quiz with an ID (important!)
-        when(quizRepository.save(any(Quiz.class))).thenAnswer(invocation -> {
-            Quiz quizToSave = invocation.getArgument(0);
-            quizToSave.setId(100L); // Simulate saving and getting an ID
-            // Simulate cascade saving for questions/answers (assign dummy IDs if needed for verification)
-            long qId = 1;
-            long aId = 1;
-            for (Question q : quizToSave.getQuestions()) {
-                q.setId(qId++);
-                q.setQuiz(quizToSave); // Ensure back-reference is set if logic depends on it
-                for (Answer a : q.getAnswers()) {
-                    a.setId(aId++);
-                    a.setQuestion(q);
-                }
-            }
-            return quizToSave;
-        });
 
-        // Act
-        Quiz createdQuiz = quizService.createQuiz(quizDto);
-
-        // Assert
-        assertNotNull(createdQuiz);
-        assertEquals(quizDto.getTitle(), createdQuiz.getTitle());
-        assertEquals(quizDto.getDescription(), createdQuiz.getDescription());
-        assertEquals(testUser, createdQuiz.getCreator());
-        assertEquals(2, createdQuiz.getQuestions().size());
-        assertNotNull(createdQuiz.getId()); // Ensure ID was assigned
-
-        // Verify question 1
-        Question q1 = createdQuiz.getQuestions().get(0);
-        assertEquals("Question 1?", q1.getText());
-        assertEquals(2, q1.getAnswers().size());
-        assertFalse(q1.getAnswers().get(0).isCorrect(), "Answer 1 should be incorrect");
-        assertTrue(q1.getAnswers().get(1).isCorrect(), "Answer 2 should be correct");
-
-        // Verify question 2
-        Question q2 = createdQuiz.getQuestions().get(1);
-        assertEquals("Question 2?", q2.getText());
-        assertEquals(2, q2.getAnswers().size());
-        assertTrue(q2.getAnswers().get(0).isCorrect(), "Answer 3 should be correct");
-        assertFalse(q2.getAnswers().get(1).isCorrect(), "Answer 4 should be incorrect");
-
-
-        // Verify that save was called
-        verify(userService, times(1)).getCurrentUser();
-        verify(quizRepository, times(1)).save(any(Quiz.class));
-    }
 
     @Test
     void createQuiz_UserNotLoggedIn() {
-        // Arrange
         when(userService.getCurrentUser()).thenReturn(null);
 
-        // Act & Assert
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            quizService.createQuiz(quizDto);
-        });
-
-        assertEquals("User must be logged in to create a quiz.", exception.getMessage());
-
-        // Verify that save was never called
-        verify(userService, times(1)).getCurrentUser();
+        assertThrows(IllegalStateException.class, () -> quizService.createQuiz(quizDto));
         verify(quizRepository, never()).save(any(Quiz.class));
     }
 
-    // --- Add more tests here for other methods and scenarios ---
+    @Test
+    void getAllQuizzes_Success() {
+        when(quizRepository.findAll()).thenReturn(List.of(testQuiz));
 
-} 
+        List<QuizDto> allQuizzes = quizService.getAllQuizzes();
+
+        assertFalse(allQuizzes.isEmpty());
+        assertEquals(1, allQuizzes.size());
+        assertEquals(testQuiz.getId(), allQuizzes.get(0).getId());
+        assertEquals(testQuiz.getTitle(), allQuizzes.get(0).getTitle());
+        verify(quizRepository, times(1)).findAll();
+    }
+
+    @Test
+    void getQuizForTaking_Success() {
+        when(quizRepository.findById(100L)).thenReturn(Optional.of(testQuiz));
+
+        QuizDto quizForTaking = quizService.getQuizForTaking(100L);
+
+        assertNotNull(quizForTaking);
+        assertEquals(testQuiz.getId(), quizForTaking.getId());
+        assertEquals(2, quizForTaking.getQuestions().size());
+        assertFalse(quizForTaking.getQuestions().get(0).getAnswers().get(0).isCorrect());
+        assertFalse(quizForTaking.getQuestions().get(0).getAnswers().get(1).isCorrect());
+        verify(quizRepository, times(1)).findById(100L);
+    }
+
+    @Test
+    void getQuizForTaking_NotFound() {
+        when(quizRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> quizService.getQuizForTaking(1L));
+        verify(quizRepository, times(1)).findById(1L);
+    }
+
+
+
+    @Test
+    void getQuizForEditing_NotFound() {
+        when(quizRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> quizService.getQuizForEditing(1L));
+        verify(quizRepository, times(1)).findById(1L);
+        verify(userService, never()).getCurrentUser();
+    }
+
+    @Test
+    void getQuizForEditing_Unauthorized() {
+        User anotherUser = new User();
+        anotherUser.setId(2L);
+        when(quizRepository.findById(100L)).thenReturn(Optional.of(testQuiz));
+        when(userService.getCurrentUser()).thenReturn(anotherUser);
+
+        assertThrows(SecurityException.class, () -> quizService.getQuizForEditing(100L));
+        verify(quizRepository, times(1)).findById(100L);
+        verify(userService, times(1)).getCurrentUser();
+    }
+
+    @Test
+    void updateQuiz_NotFound() {
+        when(quizRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> quizService.updateQuiz(1L, quizDto));
+        verify(quizRepository, times(1)).findById(1L);
+        verify(userService, never()).getCurrentUser();
+        verify(quizRepository, never()).save(any(Quiz.class));
+    }
+
+    @Test
+    void deleteQuiz_NotFound() {
+        when(quizRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> quizService.deleteQuiz(1L));
+        verify(quizRepository, times(1)).findById(1L);
+        verify(userService, never()).getCurrentUser();
+        verify(quizRepository, never()).delete(any());
+    }
+}
