@@ -10,6 +10,7 @@ import projekt.zespolowy.zero_waste.entity.Refund;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.enums.RefundStatus;
 import projekt.zespolowy.zero_waste.entity.enums.UserRole;
+import projekt.zespolowy.zero_waste.services.AdminService;
 import projekt.zespolowy.zero_waste.services.RefundService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
@@ -22,10 +23,12 @@ public class AdminController {
 
     private final UserService userService;
     private final RefundService refundService;
+    private final AdminService adminService;
 
-    public AdminController(UserService userService, RefundService refundService) {
+    public AdminController(UserService userService, RefundService refundService, AdminService adminService) {
         this.userService = userService;
         this.refundService = refundService;
+        this.adminService = adminService;
     }
 
     // Wyświetlenie listy użytkowników
@@ -54,6 +57,19 @@ public class AdminController {
         user.setRole(UserRole.valueOf(newRole));
         userService.save(user);
         redirectAttributes.addFlashAttribute("success", "Rola użytkownika została zaktualizowana");
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/deleteUser")
+    public String deleteUser(@RequestParam Long userId,
+                             @RequestParam String adminPassword,
+                             RedirectAttributes ra) {
+        try {
+            adminService.deleteUserByAdmin(userId, adminPassword);
+            ra.addFlashAttribute("success", "Użytkownik został usunięty");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("error", ex.getMessage());
+        }
         return "redirect:/admin/users";
     }
 
