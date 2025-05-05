@@ -59,13 +59,13 @@ public class UserService implements UserDetailsService {
     private final ProductService productService;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
-    private final OrderRepository priceHistoryRepository;
+    private final ProductPriceHistoryRepository priceHistoryRepository;
 
     // Konstruktorowe wstrzykiwanie zależności
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        ArticleMapper articleMapper,
-                       AdviceMapper adviceMapper, ProductService productService, ProductRepository productRepository, OrderRepository orderRepository, OrderRepository priceHistoryRepository) {
+                       AdviceMapper adviceMapper, ProductService productService, ProductRepository productRepository, OrderRepository orderRepository, ProductPriceHistoryRepository priceHistoryRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.articleMapper = articleMapper;
