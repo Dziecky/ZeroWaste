@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import projekt.zespolowy.zero_waste.entity.User;
 
 import java.time.LocalDateTime;
@@ -20,14 +22,17 @@ public class ChatMessage {
 
     @ManyToOne
     @JoinColumn(name = "chat_room_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private ChatRoom chatRoom; // The chat room where this message belongs
 
     @ManyToOne
     @JoinColumn(name = "sender_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User sender; // Sender of the message
 
     @ManyToOne
     @JoinColumn(name = "receiver_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User receiver; // Receiver of the message
 
     @Column(nullable = false)

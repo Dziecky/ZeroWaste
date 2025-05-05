@@ -142,6 +142,21 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    @Transactional
+    public void deleteAccount(String username, String rawPassword) {
+        User user = findByUsername(username);
+        if (user == null) {
+            throw new IllegalArgumentException("Nie znaleziono użytkownika: " + username);
+        }
+        // sprawdzenie hasła
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Nieprawidłowe hasło");
+        }
+        // usuwamy użytkownika (kaskadowo wszystkie powiązane encje dzięki konfiguracji @OneToMany, orphanRemoval itp.)
+        userRepository.delete(user);
+
+    }
+
     public List<UserTask> getUserTasksForUser(User user) {
         return userTaskRepository.findByUser(user);
     }

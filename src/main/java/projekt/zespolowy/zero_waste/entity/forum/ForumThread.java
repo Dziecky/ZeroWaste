@@ -2,6 +2,8 @@ package projekt.zespolowy.zero_waste.entity.forum;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import projekt.zespolowy.zero_waste.entity.User;
 
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ public class ForumThread {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User author;
 
     @OneToMany(mappedBy = "thread", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

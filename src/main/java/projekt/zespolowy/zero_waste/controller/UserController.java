@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import projekt.zespolowy.zero_waste.dto.AdviceDTO;
 import projekt.zespolowy.zero_waste.dto.ArticleDTO;
@@ -55,13 +57,15 @@ public class UserController {
     private final ReviewService reviewService;
     private final UserPreferenceService userPreferenceService;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // Konstruktorowe wstrzykiwanie zależności
-    public UserController(UserService userService, ReviewService reviewService, UserPreferenceService userPreferenceService, UserRepository userRepository) {
+    public UserController(UserService userService, ReviewService reviewService, UserPreferenceService userPreferenceService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.reviewService = reviewService;
         this.userPreferenceService = userPreferenceService;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/accountDetails")
@@ -202,6 +206,32 @@ public class UserController {
         model.addAttribute("success", "Ustawienia prywatności zaktualizowane pomyślnie");
         redirectAttributes.addFlashAttribute("success", "Ustawienia prywatności zaktualizowane pomyślnie");
         return "redirect:/accountDetails";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/deleteAccount")
+    public String showDeleteAccountForm(Model model) {
+        // model bez dodatkowych atrybutów, tylko formularz z polem "password"
+        return "User/delete-account";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/deleteAccount")
+    public String handleDeleteAccount(@RequestParam("password") String password,
+                                      RedirectAttributes redirectAttrs) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        try {
+            userService.deleteAccount(username, password);
+            // wylogowanie po usunięciu
+            SecurityContextHolder.clearContext();
+            redirectAttrs.addFlashAttribute("info", "Twoje konto zostało usunięte.");
+            return "redirect:/";
+        } catch (IllegalArgumentException ex) {
+            // błąd weryfikacji hasła lub brak usera
+            redirectAttrs.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/deleteAccount";
+        }
     }
 
     private void refreshAuthentication(User updatedUser, Authentication aut) {

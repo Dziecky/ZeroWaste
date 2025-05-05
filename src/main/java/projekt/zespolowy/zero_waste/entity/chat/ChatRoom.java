@@ -2,6 +2,8 @@ package projekt.zespolowy.zero_waste.entity.chat;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import projekt.zespolowy.zero_waste.entity.User;
 
 import java.util.List;
@@ -18,9 +20,11 @@ public class ChatRoom {
 
     @ManyToOne
     @JoinColumn(name = "user1_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user1;
 
     @ManyToOne
     @JoinColumn(name = "user2_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user2;
 }
