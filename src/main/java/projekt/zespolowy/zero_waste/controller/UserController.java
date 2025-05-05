@@ -1,5 +1,7 @@
 package projekt.zespolowy.zero_waste.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -218,21 +221,28 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/deleteAccount")
     public String handleDeleteAccount(@RequestParam("password") String password,
+                                      HttpServletRequest request,
+                                      HttpServletResponse response,
                                       RedirectAttributes redirectAttrs) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         try {
             userService.deleteAccount(username, password);
-            // wylogowanie po usunięciu
-            SecurityContextHolder.clearContext();
+
+            // 1) wylogowanie Spring Security
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+
+            // 2) ewentualnie dodatkowe unieważnienie sesji, choć logout to robi za Ciebie:
+            request.getSession().invalidate();
+
             redirectAttrs.addFlashAttribute("info", "Twoje konto zostało usunięte.");
             return "redirect:/";
         } catch (IllegalArgumentException ex) {
-            // błąd weryfikacji hasła lub brak usera
             redirectAttrs.addFlashAttribute("error", ex.getMessage());
             return "redirect:/deleteAccount";
         }
     }
+
 
     private void refreshAuthentication(User updatedUser, Authentication aut) {
         CustomUser updatedCustomUser;
