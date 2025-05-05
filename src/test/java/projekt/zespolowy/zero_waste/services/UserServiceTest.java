@@ -4,12 +4,8 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.util.ReflectionTestUtils;
 import projekt.zespolowy.zero_waste.dto.user.UserRegistrationDto;
@@ -24,6 +20,7 @@ import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
 import projekt.zespolowy.zero_waste.entity.enums.UserRole;
 import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
+import projekt.zespolowy.zero_waste.repository.ChatRoomRepository;
 import projekt.zespolowy.zero_waste.repository.TaskRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
 import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
@@ -34,6 +31,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -41,7 +39,7 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
 
     @Mock
-    private static UserRepository userRepository; // Zwróć uwagę na statyczność – w testach można to obsłużyć przez Mockito
+    private UserRepository userRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -58,40 +56,53 @@ class UserServiceTest {
     @Mock
     private UserTaskRepository userTaskRepository;
 
+
     @InjectMocks
     private UserService userService;
 
+    // dodajemy to pole, bo w testach odwołujemy się do 'user'
+    private User user;
+
     @BeforeEach
     void setUp() {
-        // Resetujemy statyczny mock (jeśli potrzeba)
-        reset(userRepository);
+        // przygotowanie instancji user
+        user = new User();
+        user.setUsername("testuser");
+        user.setPassword("encodedPwd");
+
+        // wstrzyknięcie pozostałych repozytoriów (bo UserService nie używa konstruktorowo tych dwóch)
         ReflectionTestUtils.setField(userService, "taskRepository", taskRepository);
         ReflectionTestUtils.setField(userService, "userTaskRepository", userTaskRepository);
     }
 
-    // Test metody loadUserByUsername, gdy użytkownik istnieje
+    // --- TESTY loadUserByUsername() ---
+
     @Test
     void testLoadUserByUsername_UserExists() {
         String username = "testUser";
-        User user = new User();
-        user.setUsername(username);
-        user.setRole(UserRole.ROLE_USER);
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        User found = new User();
+        found.setUsername(username);
+        found.setRole(UserRole.ROLE_USER);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(found));
 
         CustomUser customUser = (CustomUser) userService.loadUserByUsername(username);
+
         assertNotNull(customUser);
         assertEquals(username, customUser.getUsername());
     }
 
-    // Test metody loadUserByUsername, gdy użytkownik nie istnieje
     @Test
     void testLoadUserByUsername_UserNotFound() {
         String username = "nonexistentUser";
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
-        assertThrows(UsernameNotFoundException.class, () -> userService.loadUserByUsername(username));
+
+        assertThrows(UsernameNotFoundException.class,
+                () -> userService.loadUserByUsername(username));
     }
 
-    // Test metody registerUser
+    // --- TESTY registerUser() ---
+
     @Test
     void testRegisterUser() {
         UserRegistrationDto dto = new UserRegistrationDto();
@@ -103,26 +114,25 @@ class UserServiceTest {
         dto.setBusinessAccount(false);
 
         when(passwordEncoder.encode("plainPassword")).thenReturn("encodedPassword");
-//        when(taskRepository.findAll()).thenReturn(Collections.emptyList());
-//        when(taskRepository.findByTaskName("Pierwsze logowanie")).thenReturn(null);
-        // Metoda save ma zwracać przekazanego użytkownika (dla uproszczenia)
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(taskRepository.findAll()).thenReturn(Collections.emptyList());
+        when(taskRepository.findByTaskName("Pierwsze logowanie")).thenReturn(null);
 
         userService.registerUser(dto);
 
-        // Używamy ArgumentCaptor do przechwycenia argumentu przekazanego do userRepository.save
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository, times(1)).save(userCaptor.capture());
-        User savedUser = userCaptor.getValue();
 
-        assertEquals("newUser", savedUser.getUsername());
-        assertEquals("new@user.com", savedUser.getEmail());
-        assertEquals("encodedPassword", savedUser.getPassword());
-        assertEquals(UserRole.ROLE_USER, savedUser.getRole());
-        assertNotNull(savedUser.getPrivacySettings());
+        User saved = userCaptor.getValue();
+        assertEquals("newUser", saved.getUsername());
+        assertEquals("new@user.com", saved.getEmail());
+        assertEquals("encodedPassword", saved.getPassword());
+        assertEquals(UserRole.ROLE_USER, saved.getRole());
+        assertNotNull(saved.getPrivacySettings());
     }
 
-    // Test metody updateUser - poprawna aktualizacja, w tym zmiana hasła
+    // --- TESTY updateUser() ---
+
     @Test
     void testUpdateUser_Success() {
         String currentUsername = "existingUser";
@@ -133,30 +143,31 @@ class UserServiceTest {
         existingUser.setPhoneNumber("111111");
         existingUser.setPassword("encodedCurrentPassword");
 
-        UserUpdateDto updateDto = new UserUpdateDto();
-        updateDto.setUsername(currentUsername);
-        updateDto.setFirstName("NewFirst");
-        updateDto.setLastName("NewLast");
-        updateDto.setPhoneNumber("222222");
-        updateDto.setCurrentPassword("currentPassword");
-        updateDto.setNewPassword("newPassword");
-        updateDto.setConfirmNewPassword("newPassword");
+        UserUpdateDto dto = new UserUpdateDto();
+        dto.setUsername(currentUsername);
+        dto.setFirstName("NewFirst");
+        dto.setLastName("NewLast");
+        dto.setPhoneNumber("222222");
+        dto.setCurrentPassword("currentPassword");
+        dto.setNewPassword("newPassword");
+        dto.setConfirmNewPassword("newPassword");
 
-        when(userRepository.findByUsername(currentUsername)).thenReturn(Optional.of(existingUser));
-        when(passwordEncoder.matches("currentPassword", "encodedCurrentPassword")).thenReturn(true);
+        when(userRepository.findByUsername(currentUsername))
+                .thenReturn(Optional.of(existingUser));
+        when(passwordEncoder.matches("currentPassword", "encodedCurrentPassword"))
+                .thenReturn(true);
         when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
         when(userRepository.save(existingUser)).thenReturn(existingUser);
 
-        User updatedUser = userService.updateUser(updateDto, currentUsername);
+        User updated = userService.updateUser(dto, currentUsername);
 
-        assertEquals("NewFirst", updatedUser.getFirstName());
-        assertEquals("NewLast", updatedUser.getLastName());
-        assertEquals("222222", updatedUser.getPhoneNumber());
-        assertEquals("encodedNewPassword", updatedUser.getPassword());
+        assertEquals("NewFirst", updated.getFirstName());
+        assertEquals("NewLast", updated.getLastName());
+        assertEquals("222222", updated.getPhoneNumber());
+        assertEquals("encodedNewPassword", updated.getPassword());
         verify(userRepository, times(1)).save(existingUser);
     }
 
-    // Test metody updateUser - zmiana nazwy użytkownika na istniejącą (błąd)
     @Test
     void testUpdateUser_UsernameAlreadyExists() {
         String currentUsername = "existingUser";
@@ -164,51 +175,102 @@ class UserServiceTest {
         existingUser.setUsername(currentUsername);
         existingUser.setPassword("encodedPass");
 
-        UserUpdateDto updateDto = new UserUpdateDto();
-        updateDto.setUsername("newUsername"); // chcemy zmienić nazwę
-        updateDto.setFirstName("NewFirst");
-        updateDto.setLastName("NewLast");
-        updateDto.setPhoneNumber("222222");
-        updateDto.setCurrentPassword("anyPass");
+        UserUpdateDto dto = new UserUpdateDto();
+        dto.setUsername("newUsername");
+        dto.setFirstName("NewFirst");
+        dto.setLastName("NewLast");
+        dto.setPhoneNumber("222222");
+        dto.setCurrentPassword("anyPass");
 
-        // Symulujemy, że inny użytkownik już posiada nazwę "newUsername"
-        when(userRepository.findByUsername(currentUsername)).thenReturn(Optional.of(existingUser));
-        when(userRepository.findByUsername("newUsername")).thenReturn(Optional.of(new User()));
+        when(userRepository.findByUsername(currentUsername))
+                .thenReturn(Optional.of(existingUser));
+        when(userRepository.findByUsername("newUsername"))
+                .thenReturn(Optional.of(new User()));
 
-        Exception exception = assertThrows(IllegalArgumentException.class,
-                () -> userService.updateUser(updateDto, currentUsername));
-        assertTrue(exception.getMessage().contains("Nazwa użytkownika już istnieje"));
+        assertThrows(IllegalArgumentException.class,
+                () -> userService.updateUser(dto, currentUsername),
+                "Nazwa użytkownika już istnieje");
     }
 
-    // Test metody upadateUserPhoto - poprawna aktualizacja zdjęcia
+    // --- TESTY upadateUserPhoto() ---
+
     @Test
     void testUpadateUserPhoto_Success() {
         String currentUsername = "userPhoto";
-        User user = new User();
-        user.setUsername(currentUsername);
-        user.setImageUrl("oldUrl");
+        User u = new User();
+        u.setUsername(currentUsername);
+        u.setImageUrl("oldUrl");
 
-        UserUpdateDto updateDto = new UserUpdateDto();
-        updateDto.setImageUrl("newUrl");
+        UserUpdateDto dto = new UserUpdateDto();
+        dto.setImageUrl("newUrl");
 
-        when(userRepository.findByUsername(currentUsername)).thenReturn(Optional.of(user));
-        when(userRepository.save(user)).thenReturn(user);
+        when(userRepository.findByUsername(currentUsername))
+                .thenReturn(Optional.of(u));
+        when(userRepository.save(u)).thenReturn(u);
 
-        User updatedUser = userService.upadateUserPhoto(updateDto, currentUsername);
+        User updated = userService.upadateUserPhoto(dto, currentUsername);
 
-        assertEquals("newUrl", updatedUser.getImageUrl());
-        verify(userRepository, times(1)).save(user);
+        assertEquals("newUrl", updated.getImageUrl());
+        verify(userRepository, times(1)).save(u);
     }
 
-    // Test metody upadateUserPhoto - użytkownik nie znaleziony
     @Test
     void testUpadateUserPhoto_UserNotFound() {
         String currentUsername = "nonexistent";
-        UserUpdateDto updateDto = new UserUpdateDto();
-        updateDto.setImageUrl("newUrl");
+        UserUpdateDto dto = new UserUpdateDto();
+        dto.setImageUrl("newUrl");
 
-        when(userRepository.findByUsername(currentUsername)).thenReturn(Optional.empty());
+        when(userRepository.findByUsername(currentUsername))
+                .thenReturn(Optional.empty());
 
-        assertThrows(UsernameNotFoundException.class, () -> userService.upadateUserPhoto(updateDto, currentUsername));
+        assertThrows(UsernameNotFoundException.class,
+                () -> userService.upadateUserPhoto(dto, currentUsername));
+    }
+
+    // --- TESTY deleteAccount() ---
+
+    @Test
+    void deleteAccount_success() {
+        // Given
+        when(userRepository.findByUsername("john"))
+                .thenReturn(java.util.Optional.of(user));
+        when(passwordEncoder.matches("secret", "encodedPwd"))
+                .thenReturn(true);
+
+        // When
+        userService.deleteAccount("john", "secret");
+
+        // Then
+        verify(userRepository, times(1)).delete(user);
+    }
+
+    @Test
+    void deleteAccount_userNotFound_throws() {
+        // Given
+        when(userRepository.findByUsername("nobody"))
+                .thenReturn(java.util.Optional.empty());
+
+        // When / Then
+        assertThatThrownBy(() -> userService.deleteAccount("nobody", "any"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Nie znaleziono użytkownika: nobody");
+
+        verify(userRepository, never()).delete(any());
+    }
+
+    @Test
+    void deleteAccount_wrongPassword_throws() {
+        // Given
+        when(userRepository.findByUsername("john"))
+                .thenReturn(java.util.Optional.of(user));
+        when(passwordEncoder.matches("wrong", "encodedPwd"))
+                .thenReturn(false);
+
+        // When / Then
+        assertThatThrownBy(() -> userService.deleteAccount("john", "wrong"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Nieprawidłowe hasło");
+
+        verify(userRepository, never()).delete(any());
     }
 }
