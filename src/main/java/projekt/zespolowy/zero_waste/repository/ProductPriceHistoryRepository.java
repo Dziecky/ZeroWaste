@@ -14,4 +14,6 @@ public interface ProductPriceHistoryRepository  extends JpaRepository<ProductPri
     List<ProductPriceHistory> findByProductIdAndCreatedAtAfter(Long productId, LocalDateTime date);
 
     ProductPriceHistory findTopByProductIdAndCreatedAtAfterOrderByPriceAsc(Long productId, LocalDateTime date);
+
+    void deleteByProduct(Product product);
 }

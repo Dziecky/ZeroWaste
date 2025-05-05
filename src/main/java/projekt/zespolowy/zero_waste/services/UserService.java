@@ -23,14 +23,12 @@ import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
 import projekt.zespolowy.zero_waste.entity.enums.UserRole;
 import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
-import projekt.zespolowy.zero_waste.repository.TaskRepository;
-import projekt.zespolowy.zero_waste.repository.UserRepository;
+import projekt.zespolowy.zero_waste.repository.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -58,16 +56,24 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private UserTaskRepository userTaskRepository;
+    private final ProductService productService;
+    private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
+    private final OrderRepository priceHistoryRepository;
 
     // Konstruktorowe wstrzykiwanie zależności
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        ArticleMapper articleMapper,
-                       AdviceMapper adviceMapper) {
+                       AdviceMapper adviceMapper, ProductService productService, ProductRepository productRepository, OrderRepository orderRepository, OrderRepository priceHistoryRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.articleMapper = articleMapper;
         this.adviceMapper = adviceMapper;
+        this.productService = productService;
+        this.productRepository = productRepository;
+        this.orderRepository = orderRepository;
+        this.priceHistoryRepository = priceHistoryRepository;
     }
 
     // Implementacja metody z UserDetailsService
@@ -153,6 +159,19 @@ public class UserService implements UserDetailsService {
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new IllegalArgumentException("Nieprawidłowe hasło");
         }
+        orderRepository.deleteByUser(user);
+
+        // 1) pobierz wszystkie produkty tego użytkownika
+        List<Product> products = productRepository.findByOwner(user);
+
+        // 2) dla każdego produktu najpierw usuń zamówienia
+        for (Product p : products) {
+            orderRepository.deleteByProduct(p);
+            priceHistoryRepository.deleteByProduct(p);
+        }
+
+        // 3) usuń produkty
+        productRepository.deleteByOwner(user);
         // usuwamy użytkownika (kaskadowo wszystkie powiązane encje dzięki konfiguracji @OneToMany, orphanRemoval itp.)
         userRepository.deleteById(user.getId());
 

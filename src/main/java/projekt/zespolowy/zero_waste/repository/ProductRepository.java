@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.ProductCategory;
+import projekt.zespolowy.zero_waste.entity.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,4 +41,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     int countByOwnerId(Long userId);
 
     int countByOwnerIdAndAuction(Long userId, boolean auction);
+
+    void deleteByOwner(User owner);
+
+    List<Product> findByOwner(User owner);
 }

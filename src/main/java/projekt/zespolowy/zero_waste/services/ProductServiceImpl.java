@@ -287,7 +287,10 @@ public class ProductServiceImpl implements ProductService {
         return lowestPriceHistory.getPrice();
     }
 
-
+    @Override
+    public void deleteAllByUser(User user) {
+        productRepository.deleteByOwner(user);
+    }
 
 
 }
