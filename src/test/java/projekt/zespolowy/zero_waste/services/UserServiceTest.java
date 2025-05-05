@@ -20,10 +20,7 @@ import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
 import projekt.zespolowy.zero_waste.entity.enums.UserRole;
 import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
-import projekt.zespolowy.zero_waste.repository.ChatRoomRepository;
-import projekt.zespolowy.zero_waste.repository.TaskRepository;
-import projekt.zespolowy.zero_waste.repository.UserRepository;
-import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
+import projekt.zespolowy.zero_waste.repository.*;
 import projekt.zespolowy.zero_waste.security.CustomUser;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -55,6 +52,10 @@ class UserServiceTest {
 
     @Mock
     private UserTaskRepository userTaskRepository;
+
+    @Mock private OrderRepository orderRepository;
+    @Mock private ProductRepository productRepository;
+    @Mock private ProductPriceHistoryRepository priceHistoryRepository;
 
 
     @InjectMocks
