@@ -228,6 +228,10 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username).orElse(null);
     }
 
+    public User findByUsernameAdmin(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
     // Znajdź użytkownika po emailu
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
