@@ -40,7 +40,7 @@ public class AdminService {
     @Transactional
     public void deleteUserByAdmin(Long userId, String adminPassword) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User admin = UserService.findByUsername(username);
+        User admin = userService.findByUsernameAdmin(username);
         if (admin == null) {
             throw new IllegalArgumentException("Brak zalogowanego administratora");
         }
