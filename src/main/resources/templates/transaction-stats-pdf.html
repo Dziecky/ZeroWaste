@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction Stats PDF</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #28a745; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tfoot { font-weight: bold; }
+    </style>
+</head>
+<body>
+<h1>Business Statistics (Last Quarter)</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Category</th>
+        <th>Orders</th>
+        <th>Total Quantity</th>
+        <th>Unit</th>
+        <th>Total Amount</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="stat : ${categoryStats}">
+        <td th:text="${stat.category}"></td>
+        <td th:text="${stat.orderCount}"></td>
+        <td th:text="${#numbers.formatDecimal(stat.totalQuantity, 1, 2)}"></td>
+        <td th:text="${stat.unitOfMeasure}"></td>
+        <td th:text="${#numbers.formatDecimal(stat.totalAmount, 1, 2)} + ' PLN'"></td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td>Total</td>
+        <td th:text="${totalCategoryOrders}"></td>
+        <td></td>
+        <td></td>
+        <td th:text="${#numbers.formatDecimal(totalCategoryAmount, 1, 2)} + ' PLN'"></td>
+    </tr>
+    </tfoot>
+</table>
+</body>
+</html>
