@@ -294,6 +294,36 @@ public class UserService implements UserDetailsService {
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         return findByUsername(customUser.getUsername());
     }
+
+    /**
+     * Gets the currently authenticated User entity from the Security Context.
+     * Relies on the static findByUsername method.
+     * 
+     * @return The authenticated User entity, or null if not authenticated or not found.
+     */
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return null; // No user authenticated
+        }
+
+        String username;
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails) principal).getUsername();
+        } else if (principal instanceof String) {
+            username = (String) principal; // Handle cases where principal might just be the username string
+        } else {
+            // Log or handle unexpected principal type
+            System.err.println("Unexpected principal type in getCurrentUser: " + principal.getClass().getName());
+            return null;
+        }
+
+        // Use the existing static findByUsername method
+        return UserService.findByUsername(username);
+    }
+
     public User getUserTest() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
