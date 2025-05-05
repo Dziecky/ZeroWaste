@@ -14,6 +14,20 @@
 <div class="container py-4">
     <h1 class="mb-4">Zarządzanie użytkownikami</h1>
 
+    <!-- formularz wyszukiwania -->
+    <form class="row g-2 mb-3" th:action="@{/admin/users}" method="get">
+        <div class="col-auto">
+            <input type="text" name="search" class="form-control"
+                   placeholder="Szukaj po username/imieniu/nazwisku"
+                   th:value="${search}"/>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="bi bi-search"></i> Szukaj
+            </button>
+        </div>
+    </form>
+
     <!-- górna paginacja -->
     <nav aria-label="Page navigation" class="mb-3">
         <ul class="pagination justify-content-center">
