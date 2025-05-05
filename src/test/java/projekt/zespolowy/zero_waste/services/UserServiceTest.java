@@ -241,7 +241,7 @@ class UserServiceTest {
         userService.deleteAccount("john", "secret");
 
         // Then
-        verify(userRepository, times(1)).delete(user);
+        verify(userRepository, times(1)).deleteById(user.getId());
     }
 
     @Test
@@ -255,7 +255,7 @@ class UserServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Nie znaleziono użytkownika: nobody");
 
-        verify(userRepository, never()).delete(any());
+        verify(userRepository, never()).deleteById(anyLong());
     }
 
     @Test
@@ -271,6 +271,6 @@ class UserServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Nieprawidłowe hasło");
 
-        verify(userRepository, never()).delete(any());
+        verify(userRepository, never()).deleteById(anyLong());
     }
 }

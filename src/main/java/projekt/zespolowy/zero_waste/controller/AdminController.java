@@ -33,13 +33,17 @@ public class AdminController {
 
     // Wyświetlenie listy użytkowników
     @GetMapping("/users")
-    public String showUsers(@RequestParam(defaultValue = "1") int page,
-                            @RequestParam(defaultValue = "10") int size,
-                            Model model) {
-        Page<User> userPage = userService.getUsersPaginated(page - 1, size);
+    public String showUsers(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            Model model
+    ) {
+        Page<User> userPage = userService.getUsersPaginated(page - 1, size, search);
         model.addAttribute("users", userPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", userPage.getTotalPages());
+        model.addAttribute("search", search);
         model.addAttribute("baseUrl", "/admin/users");
         return "User/admin/admin-users";
     }

@@ -57,7 +57,7 @@ class AdminControllerTest {
         when(userService.getUsersPaginated(0, 10)).thenReturn(userPage);
 
         // Wywołanie metody testowanej
-        String viewName = adminController.showUsers(1, 10, model);
+        String viewName = adminController.showUsers(1, 10, null, model);
 
         // Weryfikacja
         assertEquals("User/admin/admin-users", viewName);

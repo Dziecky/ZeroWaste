@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import projekt.zespolowy.zero_waste.security.CustomUser;
+import projekt.zespolowy.zero_waste.specification.UserSpecification;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -153,7 +154,7 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("Nieprawidłowe hasło");
         }
         // usuwamy użytkownika (kaskadowo wszystkie powiązane encje dzięki konfiguracji @OneToMany, orphanRemoval itp.)
-        userRepository.delete(user);
+        userRepository.deleteById(user.getId());
 
     }
 
@@ -163,6 +164,13 @@ public class UserService implements UserDetailsService {
 
     public Page<User> getUsersPaginated(int page, int size) {
         return userRepository.findAll(PageRequest.of(page, size));
+    }
+
+    public Page<User> getUsersPaginated(int page, int size, String search) {
+        return userRepository.findAll(
+                UserSpecification.withSearch(search),
+                PageRequest.of(page, size)
+        );
     }
 
 
