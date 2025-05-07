@@ -11,7 +11,13 @@ import projekt.zespolowy.zero_waste.repository.ProductPriceHistoryRepository;
 import projekt.zespolowy.zero_waste.repository.ProductRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Service
 public class AdminService {
@@ -67,5 +73,26 @@ public class AdminService {
         productRepository.deleteByOwner(toDelete);
 
         userRepository.deleteById(userId);
+    }
+
+    public Map<String, Long> getProductCountByDayOfWeek(LocalDate weekStart) {
+        Map<String, Long> stats = new LinkedHashMap<>();
+
+        for (int i = 0; i < 7; i++) {
+            LocalDate day = weekStart.plusDays(i);
+            long count = productRepository.countByCreatedAtBetween(
+                    day.atStartOfDay(),
+                    day.plusDays(1).atStartOfDay()
+            );
+            String label = capitalize(day.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("pl"))) +
+                    " (" + day.format(DateTimeFormatter.ofPattern("dd.MM")) + ")";
+            stats.put(label, count);
+        }
+
+        return stats;
+    }
+
+    private String capitalize(String input) {
+        return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
     }
 }
