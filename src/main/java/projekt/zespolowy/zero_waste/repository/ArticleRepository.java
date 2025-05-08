@@ -8,10 +8,14 @@ import org.springframework.stereotype.Repository;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
 
+import java.time.LocalDateTime;
+
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long>, JpaSpecificationExecutor<Article> {
     Page<Article> findByArticleCategory(ArticleCategory category, Pageable pageable);
     Page<Article> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
     Page<Article> findByTags_NameIgnoreCase(String tagName, Pageable pageable);
+
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 }
