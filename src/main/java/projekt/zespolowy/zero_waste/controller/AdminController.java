@@ -115,9 +115,11 @@ public class AdminController {
             weekStart = LocalDate.now().with(DayOfWeek.MONDAY);
         }
 
-        Map<String, Long> stats = adminService.getProductCountByDayOfWeek(weekStart);
+        Map<String, Long> productsStats = adminService.getProductCountByDayOfWeek(weekStart);
+        Map<String, Long> articlesStats = adminService.getArticleCountByDayOfWeek(weekStart);
 
-        model.addAttribute("stats", stats);
+        model.addAttribute("productsStats", productsStats);
+        model.addAttribute("articlesStats", articlesStats);
         model.addAttribute("weekStart", weekStart);
         model.addAttribute("previousWeek", weekStart.minusWeeks(1));
         model.addAttribute("nextWeek", weekStart.plusWeeks(1));

@@ -6,10 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.User;
-import projekt.zespolowy.zero_waste.repository.OrderRepository;
-import projekt.zespolowy.zero_waste.repository.ProductPriceHistoryRepository;
-import projekt.zespolowy.zero_waste.repository.ProductRepository;
-import projekt.zespolowy.zero_waste.repository.UserRepository;
+import projekt.zespolowy.zero_waste.repository.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,19 +25,22 @@ public class AdminService {
     private final ProductRepository productRepository; // do usunięcia produktów
     private final OrderRepository orderRepository;
     private final ProductPriceHistoryRepository priceHistoryRepository;
+    private final ArticleRepository articleRepository;
 
     public AdminService(UserService userService,
                         UserRepository userRepository,
                         PasswordEncoder passwordEncoder,
                         ProductRepository productRepository,
                         OrderRepository orderRepository,
-                        ProductPriceHistoryRepository priceHistoryRepository) {
+                        ProductPriceHistoryRepository priceHistoryRepository,
+                        ArticleRepository articleRepository) {
         this.userService = userService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
         this.priceHistoryRepository = priceHistoryRepository;
+        this.articleRepository = articleRepository;
     }
 
     @Transactional
@@ -81,6 +81,23 @@ public class AdminService {
         for (int i = 0; i < 7; i++) {
             LocalDate day = weekStart.plusDays(i);
             long count = productRepository.countByCreatedAtBetween(
+                    day.atStartOfDay(),
+                    day.plusDays(1).atStartOfDay()
+            );
+            String label = capitalize(day.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("pl"))) +
+                    " (" + day.format(DateTimeFormatter.ofPattern("dd.MM")) + ")";
+            stats.put(label, count);
+        }
+
+        return stats;
+    }
+
+    public Map<String, Long> getArticleCountByDayOfWeek(LocalDate weekStart) {
+        Map<String, Long> stats = new LinkedHashMap<>();
+
+        for (int i = 0; i < 7; i++) {
+            LocalDate day = weekStart.plusDays(i);
+            long count = articleRepository.countByCreatedAtBetween(
                     day.atStartOfDay(),
                     day.plusDays(1).atStartOfDay()
             );
