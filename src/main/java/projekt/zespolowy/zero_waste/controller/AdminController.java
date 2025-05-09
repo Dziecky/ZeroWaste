@@ -1,6 +1,7 @@
 package projekt.zespolowy.zero_waste.controller;
 
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +15,10 @@ import projekt.zespolowy.zero_waste.services.AdminService;
 import projekt.zespolowy.zero_waste.services.RefundService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -100,6 +104,27 @@ public class AdminController {
     public String updateRefundStatus(@RequestParam Long refundId, @RequestParam RefundStatus newStatus) {
         refundService.updateRefundStatus(refundId, newStatus);
         return "redirect:/admin/refundDetails/" + refundId;
+    }
+
+    @GetMapping("/admin-stats")
+    public String showProductStats(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate weekStart,
+            Model model
+    ) {
+        if (weekStart == null) {
+            weekStart = LocalDate.now().with(DayOfWeek.MONDAY);
+        }
+
+        Map<String, Long> productsStats = adminService.getProductCountByDayOfWeek(weekStart);
+        Map<String, Long> articlesStats = adminService.getArticleCountByDayOfWeek(weekStart);
+
+        model.addAttribute("productsStats", productsStats);
+        model.addAttribute("articlesStats", articlesStats);
+        model.addAttribute("weekStart", weekStart);
+        model.addAttribute("previousWeek", weekStart.minusWeeks(1));
+        model.addAttribute("nextWeek", weekStart.plusWeeks(1));
+
+        return "User/admin/admin-stats";
     }
 }
 
