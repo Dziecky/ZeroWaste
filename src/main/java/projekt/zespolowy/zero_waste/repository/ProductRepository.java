@@ -7,6 +7,7 @@ import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.ProductCategory;
 import projekt.zespolowy.zero_waste.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,4 +46,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     void deleteByOwner(User owner);
 
     List<Product> findByOwner(User owner);
+
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 }
