@@ -233,6 +233,35 @@
     border-color: #28a745;
     box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
 }
+.vote-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin: 0 5px;
+}
+
+.upvote {
+    color: green;
+}
+
+.downvote {
+    color: red;
+}
+.vote-button.active {
+    font-weight: bold;
+    border: 2px solid;
+}
+
+.upvote.active {
+    border-color: green;
+    color: darkgreen;
+}
+
+.downvote.active {
+    border-color: red;
+    color: darkred;
+}
 @media (max-width: 768px) {
     .review-header {
         flex-direction: column;

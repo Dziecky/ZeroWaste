@@ -64,6 +64,8 @@ public class UserPageController {
         model.addAttribute("newReview", new Review());
         model.addAttribute("reviewOwnership", reviewOwnership);
         model.addAttribute("role", customUser.getUser().getRole().toString());
+//        model.addAttribute("votes", reviewService.getVotes())
+//        //
 //        System.out.println(customUser.getUser().getRole());
 
         PrivacyOptions phoneVisible = user.getPrivacySettings().getPhoneVisible();
@@ -208,7 +210,23 @@ public class UserPageController {
         return "redirect:/user/" + id;
     }
 
+    @PostMapping("/{id}/reviews/{reviewId}/vote")
+    public String handleVote(
+            @PathVariable Long id,
+            @PathVariable Long reviewId,
+            @RequestParam(required = false) String upvote,
+            @RequestParam(required = false) String downvote,
+            Authentication authentication) {
 
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        Long userId = customUser.getUser().getId();
+
+        boolean isUpvote = upvote != null;
+
+        reviewService.vote(reviewId, userId, isUpvote);
+
+        return "redirect:/user/" + id;
+    }
 
 }
 
