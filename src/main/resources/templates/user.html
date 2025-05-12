@@ -193,6 +193,24 @@
                     </div>
 
                     <div class="review-actions">
+<!--                        VOTES                                    -->
+                        <div class="vote-section">
+                            Current votes:
+                            <span th:text="${review.votes}"></span>
+                            <span th:text="${review.userVote}"></span>
+                            <form th:action="@{/user/{id}/reviews/{reviewId}/vote(id=${user.id}, reviewId=${review.id})}"
+                                  method="post">
+                                <input type="hidden" name="_method" value="POST"/>
+                                <button type="submit" name="upvote"
+                                        th:class="${review.userVote == 'UP'} ? 'vote-button upvote active' : 'vote-button upvote'">
+                                    Upvote
+                                </button>
+                                <button type="submit" name="downvote"
+                                        th:class="${review.userVote == 'DOWN'} ? 'vote-button downvote active' : 'vote-button downvote'">
+                                    Downvote
+                                </button>
+                            </form>
+                        </div>
                         <div class="action-buttons">
                             <form th:if="${(reviewOwnership != null and reviewOwnership.get(review.id)) and (reviewToEdit == null or reviewToEdit.id != review.id)}"
                                   th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${review.id})}"
@@ -261,7 +279,7 @@
                     </div>
 
                         <!-- Add response form -->
-                        <div th:with="isAboutCurrentUser=${review.target_id == currentUserId}" class="add-response-section">
+                        <div th:with="isAboutCurrentUser=${review.targetUserId == currentUserId}" class="add-response-section">
                             <form th:if="${isAboutCurrentUser}"
                                   th:action="@{/user/{id}/reviews/{reviewId}/response(id=${user.id}, reviewId=${review.id})}"
                                   method="post"
