@@ -18,6 +18,7 @@ import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.repository.AnnouncementRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
+import projekt.zespolowy.zero_waste.services.ActivityLogService;
 import projekt.zespolowy.zero_waste.services.ProductService;
 import projekt.zespolowy.zero_waste.services.UserService;
 import projekt.zespolowy.zero_waste.security.CustomUser;
@@ -51,6 +52,9 @@ class AnnouncementControllerTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private ActivityLogService logService;
 
     @Mock
     private ProductService productService;
@@ -120,7 +124,7 @@ class AnnouncementControllerTest {
         userRepositoryField.set(null, userRepository);
 
         // Initialize controller with required dependencies
-        announcementController = new AnnouncementController(announcementRepository, productService);
+        announcementController = new AnnouncementController(announcementRepository, productService, logService);
     }
 
     @AfterEach
