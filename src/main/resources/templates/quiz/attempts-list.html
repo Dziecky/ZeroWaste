@@ -26,7 +26,7 @@
 
     <div th:if="${attempts == null or attempts.isEmpty()}">
         <p>You haven't attempted this quiz yet.</p>
-         <a th:href="@{/quizzes/{id}(id=${quizId})}" class="btn btn-info">Take Quiz Now</a>
+         <a th:href="@{/quizzes/{id}(id=${quizId})}" class="action-button">Take Quiz Now</a>
     </div>
 
     <table class="table table-striped table-hover mt-3" th:if="${attempts != null and not attempts.isEmpty()}">
@@ -46,15 +46,15 @@
                 <td th:text="${#temporals.format(attempt.completedAt, 'yyyy-MM-dd HH:mm')}">Timestamp</td>
                 <td>
                     <a th:href="@{/quizzes/{quizId}/results/{attemptId}(quizId=${attempt.quizId}, attemptId=${attempt.attemptId})}" 
-                       class="btn btn-primary btn-sm">View Details</a>
+                       class="action-button">View Details</a>
                 </td>
             </tr>
         </tbody>
     </table>
     
     <div class="mt-4">
-        <a th:href="@{/quizzes}" class="btn btn-secondary">Back to Quiz List</a>
-        <a th:href="@{/quizzes/{id}(id=${quizId})}" class="btn btn-info" th:if="${attempts != null and not attempts.isEmpty()}">Take Quiz Again</a>
+        <a th:href="@{/quizzes}" class="action-button">Back to Quiz List</a>
+        <a th:href="@{/quizzes/{id}(id=${quizId})}" class="action-button" th:if="${attempts != null and not attempts.isEmpty()}">Take Quiz Again</a>
     </div>
 
 </div>
