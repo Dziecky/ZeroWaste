@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dodaj Nowy Projekt DIY</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* ... (pozostałe style jak poprzednio dla form-container, form-group, form-buttons) ... */
+        .form-container {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+        /* Usunięto style dla input[type="file"] */
+
+
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .form-buttons button,
+        .form-buttons a {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .form-buttons button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+        }
+        .form-buttons button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .form-buttons .cancel-link {
+            background-color: #6c757d;
+            color: white;
+        }
+        .form-buttons .cancel-link:hover {
+            background-color: #5a6268;
+        }
+
+    </style>
+    <title>New DIY</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link th:href="@{styles/main.css}" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="form-container">
+    <h2>Dodaj Nowy Projekt DIY</h2>
+
+    <form th:action="@{/diy/new}" method="post">
+
+        <div class="form-group">
+            <label for="description">Krótki opis (karuzela):</label>
+            <input type="text" id="description" name="description" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fullDescription">Pełna historia/opis:</label>
+            <textarea id="fullDescription" name="fullDescription" rows="5" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="beforeImageUrl">URL obrazka PRZED:</label>
+            <input type="text" id="beforeImageUrl" name="beforeImageUrl" required>
+        </div>
+
+        <div class="form-group">
+            <label for="afterImageUrl">URL obrazka PO:</label>
+            <input type="text" id="afterImageUrl" name="afterImageUrl" required>
+        </div>
+
+        <div class="form-buttons">
+            <button type="submit">Dodaj Projekt</button>
+            <a th:href="@{/diy/manage}" class="cancel-link">Anuluj</a>
+        </div>
+    </form>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

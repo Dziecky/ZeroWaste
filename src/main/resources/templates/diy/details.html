@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>DIY details</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link th:href="@{styles/main.css}" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Szczegóły Projektu DIY: ' + ${diyProject.description}">Szczegóły Projektu DIY</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"> <style>
+    /* Style dla widoku szczegółów (diy/details.html) */
+    .details-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 50px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        max-width: 800px; /* Ogranicz szerokość kontenera */
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .details-images {
+        display: flex; /* Ułóż obrazki obok siebie */
+        gap: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .details-images img {
+        width: 49%; /* Prawie połowa */
+        height: 300px; /* Możesz zrobić wyższe na stronie szczegółów */
+        object-fit: cover;
+        display: block;
+    }
+    .details-images img:first-child {
+        border-right: 1px solid #ddd;
+    }
+
+    .full-description {
+        font-size: 1em;
+        line-height: 1.6;
+        color: #555;
+        margin-bottom: 30px;
+        text-align: justify; /* Wyjustuj tekst dla lepszej czytelności */
+    }
+
+    .back-button {
+        padding: 10px 20px;
+        font-size: 1em;
+        cursor: pointer;
+        border: 1px solid #6c757d;
+        border-radius: 5px;
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none; /* Usuń podkreślenie z linku */
+        transition: background-color 0.3s ease;
+    }
+    .back-button:hover {
+        background-color: #5a6268;
+    }
+
+</style>
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="details-container">
+    <h2 th:text="${diyProject.description}">Szczegóły Projektu DIY</h2>
+
+    <div class="details-images">
+        <img th:src="@{${diyProject.beforeImageUrl}}" alt="Przed - ${diyProject.description}">
+        <img th:src="@{${diyProject.afterImageUrl}}" alt="Po - ${diyProject.description}">
+    </div>
+
+    <div class="full-description">
+        <p th:text="${diyProject.fullDescription}"></p>
+    </div>
+
+    <a th:href="@{/diy}" class="back-button">Cofnij do karuzeli</a>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>
