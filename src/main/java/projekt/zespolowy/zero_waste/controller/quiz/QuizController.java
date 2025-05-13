@@ -148,6 +148,20 @@ public class QuizController {
         }
     }
 
+    // Display leaderboard for a specific quiz
+    @GetMapping("/{id}/leaderboard")
+    public String showLeaderboard(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            QuizDto quiz = quizService.getQuizForTaking(id); // Get quiz details
+            model.addAttribute("quiz", quiz);
+            model.addAttribute("topScores", quizService.getQuizLeaderboard(id));
+            return "quiz/leaderboard";
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Quiz not found.");
+            return "redirect:/quizzes";
+        }
+    }
+
     // Show form to edit an existing quiz
     @GetMapping("/{id}/edit")
     public String showEditQuizForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {

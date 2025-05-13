@@ -325,6 +325,30 @@ public class QuizService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<QuizAttemptDto> getQuizLeaderboard(Long quizId) {
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new EntityNotFoundException("Quiz not found with id: " + quizId));
+
+        // Get all attempts for this quiz, sorted by score (descending) and completion time
+        List<QuizAttempt> attempts = quizAttemptRepository.findByQuizOrderByScoreDescCompletedAtAsc(quiz);
+
+        // Group attempts by user and keep only the highest score for each user
+        return attempts.stream()
+                .collect(Collectors.groupingBy(
+                    attempt -> attempt.getUser().getUsername(),
+                    Collectors.maxBy(java.util.Comparator.comparing(QuizAttempt::getScore)
+                            .thenComparing(QuizAttempt::getCompletedAt))))
+                .values()
+                .stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .sorted(java.util.Comparator.comparing(QuizAttempt::getScore).reversed()
+                        .thenComparing(QuizAttempt::getCompletedAt))
+                .map(this::mapAttemptToDto)
+                .collect(Collectors.toList());
+    }
+
     // --- Helper Mappers --- 
 
     private QuizDto mapQuizToDto(Quiz quiz, boolean includeCorrectness) {

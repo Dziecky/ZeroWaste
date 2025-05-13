@@ -27,6 +27,9 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
     @EntityGraph(value = "QuizAttempt.withDetails")
     Optional<QuizAttempt> findById(Long id);
 
+    // Find all attempts for a quiz, ordered by score (highest first) and completion time
+    List<QuizAttempt> findByQuizOrderByScoreDescCompletedAtAsc(Quiz quiz);
+
     // Alternatively, define a new method if you don't want to override:
     // @EntityGraph(value = "QuizAttempt.withDetails")
     // Optional<QuizAttempt> findByIdWithDetails(Long id);
