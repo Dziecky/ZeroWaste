@@ -35,7 +35,7 @@
          th:text="${errorMessage}"></div>
 
     <div class="mb-3">
-        <a th:href="@{/quizzes/new}" class="btn btn-primary">Create New Quiz</a>
+        <a th:href="@{/quizzes/new}" class="submit-button">Create New Quiz</a>
     </div>
 
     <div th:if="${quizzes == null or quizzes.isEmpty()}">
@@ -57,14 +57,14 @@
                 <td th:text="${quiz.description}">Quiz Description</td>
                 <td th:text="${quiz.creatorUsername}">Creator Name</td>
                 <td class="action-buttons">
-                    <a th:href="@{/quizzes/{id}(id=${quiz.id})}" class="btn btn-info btn-sm">Take Quiz</a>
-                    <a th:href="@{/quizzes/{id}/attempts(id=${quiz.id})}" class="btn btn-secondary btn-sm">View My Attempts</a>
+                    <a th:href="@{/quizzes/{id}(id=${quiz.id})}" class="action-button">Take Quiz</a>
+                    <a th:href="@{/quizzes/{id}/attempts(id=${quiz.id})}" class="action-button">View My Attempts</a>
                     <!-- Only show edit/delete if user is the creator (Requires Spring Security Principal) -->
                     <th:block th:if="${#authentication?.name == quiz.creatorUsername}"> 
-                         <a th:href="@{/quizzes/{id}/edit(id=${quiz.id})}" class="btn btn-warning btn-sm">Edit</a>
+                         <a th:href="@{/quizzes/{id}/edit(id=${quiz.id})}" class="action-button edit">Edit</a>
                          <form th:action="@{/quizzes/{id}/delete(id=${quiz.id})}" method="post" style="display: inline;" 
                                onsubmit="return confirm('Are you sure you want to delete this quiz?');">
-                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                             <button type="submit" class="action-button delete">Delete</button>
                          </form>
                     </th:block>
                 </td>
