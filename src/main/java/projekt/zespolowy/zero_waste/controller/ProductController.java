@@ -15,15 +15,21 @@ import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.ProductCategory;
 import projekt.zespolowy.zero_waste.entity.UnitOfMeasure;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.enums.ActivityType;
 import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
+import projekt.zespolowy.zero_waste.services.ActivityLogService;
 import projekt.zespolowy.zero_waste.services.ProductService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/products")
 public class ProductController {
+
+    @Autowired
+    private ActivityLogService logService;
 
     private final ProductService productService;
     private final UserService userService;
@@ -97,6 +103,9 @@ public class ProductController {
         User currentUser = userService.findByUsername(currentUsername);
         product.setOwner(currentUser);
         productService.saveProduct(product);
+
+        logService.log(UserService.getUser().getId(), ActivityType.ITEM_ADDED, product.getId(), Map.of("name", product.getName(), "price", product.getPrice(), "category", product.getProductCategory().toString()));
+
         return "redirect:/products/list";
     }
 

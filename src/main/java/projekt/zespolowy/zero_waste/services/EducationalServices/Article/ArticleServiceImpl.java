@@ -12,19 +12,26 @@ import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleC
 import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
+import projekt.zespolowy.zero_waste.entity.enums.ActivityType;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.repository.ArticleRepository;
 import projekt.zespolowy.zero_waste.repository.TaskRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
 import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
+import projekt.zespolowy.zero_waste.services.ActivityLogService;
 import projekt.zespolowy.zero_waste.services.TagService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
+
+    @Autowired
+    private ActivityLogService logService;
+
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
     private final TagService tagService;
@@ -51,6 +58,8 @@ public class ArticleServiceImpl implements ArticleService {
         Article article = articleMapper.toEntity(articleDTO, tagService);
         article.setAuthor(UserService.getUser());
 
+        logService.log(UserService.getUser().getId(), ActivityType.ARTICLE_CREATED, article.getId(), Map.of("title", article.getTitle(), "category", article.getArticleCategory().toString()));
+
         Task createReviewTask = taskRepository.findByTaskName("Dodaj artykuł");
 
         if (createReviewTask != null) {
@@ -63,6 +72,8 @@ public class ArticleServiceImpl implements ArticleService {
             if (userTask.getProgress() >= createReviewTask.getRequiredActions()) {
                 userTask.setCompleted(true);
                 userTask.setCompletionDate(LocalDate.now());
+
+                logService.log(UserService.getUser().getId(), ActivityType.TASK_COMPLETED, userTask.getTask().getId(), Map.of("task name", createReviewTask.getTask_name(), "point awarded", createReviewTask.getPointsAwarded()));
 
                 UserService.getUser().setTotalPoints(UserService.getUser().getTotalPoints() + createReviewTask.getPointsAwarded());
                 userRepository.save(UserService.getUser()); // Zapisz zmiany w użytkowniku

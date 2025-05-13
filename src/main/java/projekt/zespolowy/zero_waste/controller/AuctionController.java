@@ -7,6 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import projekt.zespolowy.zero_waste.entity.*;
+import projekt.zespolowy.zero_waste.entity.enums.ActivityType;
+import projekt.zespolowy.zero_waste.services.ActivityLogService;
 import projekt.zespolowy.zero_waste.services.ProductService;
 import projekt.zespolowy.zero_waste.services.BidService;
 
@@ -14,12 +16,15 @@ import projekt.zespolowy.zero_waste.services.BidService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import static projekt.zespolowy.zero_waste.controller.UserController.userService;
 
 @Controller
 @RequestMapping("/auctions")
 public class AuctionController {
+
+    @Autowired private ActivityLogService logService;
 
     private final ProductService productService;
     private final BidService bidService;
@@ -60,6 +65,10 @@ public class AuctionController {
         product.setCreatedAt(LocalDateTime.now());
 
         productService.saveProduct(product);
+
+        // Log the auction creation
+        logService.log(user.getId(), ActivityType.AUCTION_CREATED, product.getId(), Map.of("name", product.getName(), "category", product.getProductCategory().toString(), "starting price", product.getPrice()));
+
         return "redirect:/auctions/list";
     }
 

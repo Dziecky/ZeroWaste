@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
+import projekt.zespolowy.zero_waste.entity.enums.ActivityType;
 import projekt.zespolowy.zero_waste.repository.TaskRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
 import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TaskService {
@@ -24,10 +26,15 @@ public class TaskService {
     @Autowired
     private UserTaskRepository userTaskRepository;
 
+    @Autowired
+    private ActivityLogService logService;
+
     @Transactional
     public void createAndAssignNewTask(Task task) { // przypadek z nowymi zadaniami
         // Zapisz nowe zadanie w bazie danych
         taskRepository.save(task);
+
+        logService.log(UserService.getUser().getId(), ActivityType.TASK_CREATED, task.getId(), Map.of("name", task.getTask_name(), "description", task.getTaskDescription()));
 
         // Pobierz wszystkich użytkowników
         List<User> allUsers = userRepository.findAll();

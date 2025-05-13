@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import projekt.zespolowy.zero_waste.entity.Announcement;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.enums.ActivityType;
 import projekt.zespolowy.zero_waste.repository.AnnouncementRepository;
+import projekt.zespolowy.zero_waste.services.ActivityLogService;
 import projekt.zespolowy.zero_waste.services.ProductService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
@@ -27,6 +29,9 @@ public class AnnouncementController {
     private final AnnouncementRepository announcementRepository;
     @Autowired
     private final ProductService productService; // Inject ProductService
+
+    @Autowired
+    private ActivityLogService logService;
 
     @GetMapping
     public String showAnnouncements(
@@ -121,6 +126,8 @@ public class AnnouncementController {
 
         // Save announcement
         announcementRepository.save(announcement);
+
+        logService.log(UserService.getUser().getId(), ActivityType.ANNOUNCEMENT_CREATED, announcement.getId(), Map.of("title", announcement.getTitle(), "description", announcement.getDescription()));
 
         return "redirect:/announcements";
     }

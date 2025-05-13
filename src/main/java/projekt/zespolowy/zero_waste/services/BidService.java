@@ -5,15 +5,19 @@ import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.entity.Bid;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.enums.ActivityType;
 import projekt.zespolowy.zero_waste.repository.BidRepository;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class BidService {
+
+    @Autowired ActivityLogService logService;
 
     private final BidRepository bidRepository;
     private final ProductService productService;
@@ -34,6 +38,8 @@ public class BidService {
 
         product.setPrice(amount);
         productService.saveProduct(product);
+
+        logService.log(UserService.getUser().getId(), ActivityType.AUCTION_BID, product.getId(), Map.of("name", product.getName(), "bid", product.getPrice(), "category", product.getProductCategory().toString()));
 
         return bidRepository.save(bid);
     }
