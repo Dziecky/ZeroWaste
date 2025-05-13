@@ -30,6 +30,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import projekt.zespolowy.zero_waste.services.StatisticsService;
 import projekt.zespolowy.zero_waste.services.ProductService;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -50,6 +51,8 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
+import projekt.zespolowy.zero_waste.services.PdfReportService;
+
 
 class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {
@@ -67,6 +70,7 @@ public class EcoImpactController {
     private final MonthlyReportService monthlyReportService;
     private final StatisticsService statisticsService;
     private final ProductService productService;
+    private final PdfReportService pdfReportService;
     private static final Logger logger = LoggerFactory.getLogger(EcoImpactController.class);
 
 
@@ -235,106 +239,19 @@ public class EcoImpactController {
 
     @GetMapping("/download-stats-pdf")
     public void downloadStatsPdf(HttpServletResponse response) {
-        try (PDDocument document = new PDDocument()) {
-            PDPage page = new PDPage();
-            document.addPage(page);
-
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-
-                PDType1Font font = PDType1Font.HELVETICA_BOLD;
-                float margin = 50;
-                float yStart = page.getMediaBox().getHeight() - margin;
-                float tableWidth = page.getMediaBox().getWidth() - 2 * margin;
-                float rowHeight = 20;
-                float currentY = yStart;
-
-
-                contentStream.setFont(font, 18);
-                contentStream.beginText();
-                contentStream.newLineAtOffset(margin, currentY);
-                contentStream.showText("Business Statistics Report");
-                contentStream.endText();
-                currentY -= 30;
-
-
-                String[] headers = {"Category", "Orders", "Quantity", "Unit", "Amount"};
-                double[] columnWidths = {150.0, 80.0, 80.0, 80.0, 100.0};
-
-
-                contentStream.setFont(font, 12);
-                drawRow(contentStream, margin, currentY, columnWidths, headers);
-                currentY -= rowHeight;
-
-
-                List<OrderStatsDTO> stats = statisticsService.getQuarterlyOrderStats();
-                for (OrderStatsDTO stat : stats) {
-                    String[] row = {
-                            stat.getCategory().toString(),
-                            String.valueOf(stat.getOrderCount()),
-                            String.format("%.2f", stat.getTotalQuantity()),
-                            stat.getUnitOfMeasure(),
-                            String.format("%.2f PLN", stat.getTotalAmount())
-                    };
-                    drawRow(contentStream, margin, currentY, columnWidths, row);
-                    currentY -= rowHeight;
-                }
-
-
-                String[] totalRow = {
-                        "Total",
-                        String.valueOf(stats.stream().mapToLong(OrderStatsDTO::getOrderCount).sum()),
-                        "",
-                        "",
-                        String.format("%.2f PLN", stats.stream().mapToDouble(OrderStatsDTO::getTotalAmount).sum())
-                };
-                drawRow(contentStream, margin, currentY, columnWidths, totalRow);
-            }
+        try {
+            byte[] pdfBytes = pdfReportService.generateBusinessReport();
 
             response.setContentType("application/pdf");
-            response.setHeader("Content-Disposition", "attachment; filename=report.pdf");
-            document.save(response.getOutputStream());
-
-        } catch (Exception e) {
+            response.setHeader("Content-Disposition", "attachment; filename=business_report.pdf");
+            response.getOutputStream().write(pdfBytes);
+        } catch (IOException e) {
             logger.error("PDF generation failed", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void drawRow(PDPageContentStream contentStream, float x, float y, double[] widths, String[] texts)
-            throws IOException {
 
-        float cellPadding = 5;
-        float fontSize = 12;
-        PDType1Font font = PDType1Font.HELVETICA;
-
-        contentStream.setFont(font, fontSize);
-
-        float currentX = x;
-        contentStream.moveTo(currentX, y);
-        contentStream.lineTo(currentX, y - 20);
-
-        for (double width : widths) {
-            currentX += width;
-            contentStream.moveTo(currentX, y);
-            contentStream.lineTo(currentX, y - 20);
-        }
-        contentStream.stroke();
-
-
-        currentX = x;
-        for (int i = 0; i < texts.length; i++) {
-            String text = texts[i] != null ? texts[i] : "";
-            float textWidth = font.getStringWidth(text) * fontSize / 1000;
-            float textX = currentX + (float) widths[i]/2 - textWidth/2; // Центрирование текста
-
-            contentStream.beginText();
-            contentStream.newLineAtOffset(textX, y - 15);
-            contentStream.showText(text);
-            contentStream.endText();
-
-            currentX += widths[i];
-        }
-    }
     @PostMapping("/generate-report")
     public String generateMonthlyReports(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
