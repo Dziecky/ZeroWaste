@@ -32,6 +32,9 @@ public class Review {
     @Column(name = "target_user_id")
     private Long targetUserId;
 
+    @Column(name = "votes")
+    private Integer votes = 0;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
