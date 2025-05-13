@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Quiz Leaderboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link th:href="@{/styles/announcements.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/buttons.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/rank.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+    <style>
+        .leaderboard-container {
+            margin-top: 8vh;
+            padding: 20px;
+        }
+        .quiz-info {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .quiz-title {
+            color: #343a40;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .quiz-description {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        .quiz-creator {
+            color: #28a745;
+            font-size: 1rem;
+        }
+        .leaderboard-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+            padding: 20px;
+        }
+        .leaderboard-title {
+            color: #343a40;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .rank-row {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        .rank-row:last-child {
+            border-bottom: none;
+        }
+        .rank-row:hover {
+            background-color: #e8f5e9;
+            transform: translateX(5px);
+        }
+        .rank-position {
+            font-size: 1.2rem;
+            font-weight: bold;
+            width: 50px;
+            text-align: center;
+        }
+        .rank-1 { color: gold; }
+        .rank-2 { color: silver; }
+        .rank-3 { color: #cd7f32; }
+        .rank-user {
+            flex-grow: 1;
+            font-size: 1.1rem;
+            color: #343a40;
+        }
+        .rank-score {
+            font-weight: bold;
+            color: #28a745;
+            font-size: 1.1rem;
+            margin-left: 20px;
+        }
+        .rank-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-left: 20px;
+        }
+        .your-rank {
+            background-color: #e8f5e9;
+            font-weight: bold;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+        }
+        .empty-state p {
+            color: #6c757d;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) {
+            .rank-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .rank-position {
+                width: 100%;
+                text-align: left;
+            }
+            .rank-score, .rank-date {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div layout:fragment="content" class="container leaderboard-container">
+    
+    <!-- Quiz Information -->
+    <div class="quiz-info">
+        <div class="quiz-title" th:text="${quiz.title}">Quiz Title</div>
+        <div class="quiz-description" th:text="${quiz.description}">Quiz Description</div>
+        <div class="quiz-creator">Created by: <span th:text="${quiz.creatorUsername}">Creator Name</span></div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="leaderboard-card">
+        <h2 class="leaderboard-title">Top Scorers</h2>
+        
+        <div th:if="${topScores == null or topScores.isEmpty()}" class="empty-state">
+            <p>No attempts have been made on this quiz yet.</p>
+            <p>Be the first one to take it!</p>
+            <div class="action-buttons">
+                <a th:href="@{/quizzes/{id}(id=${quiz.id})}" class="submit-button">Take Quiz</a>
+                <a th:href="@{/quizzes}" class="action-button">Back to Quiz List</a>
+            </div>
+        </div>
+
+        <div th:if="${topScores != null and not topScores.isEmpty()}">
+            <div th:each="score, stat : ${topScores}" 
+                 th:class="'rank-row' + (${score.username == #authentication.name} ? ' your-rank' : '')">
+                <div th:class="'rank-position rank-' + ${stat.index + 1}" th:text="${stat.index + 1}">1</div>
+                <div class="rank-user" th:text="${score.username}">Username</div>
+                <div class="rank-score" th:text="${score.score} + ' / ' + ${score.totalQuestions}">Score</div>
+                <div class="rank-date" th:text="${#temporals.format(score.completedAt, 'yyyy-MM-dd HH:mm')}">Date</div>
+            </div>
+            
+            <div class="action-buttons">
+                <a th:href="@{/quizzes/{id}(id=${quiz.id})}" class="submit-button">Take Quiz</a>
+                <a th:href="@{/quizzes}" class="action-button">Back to Quiz List</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html> 
