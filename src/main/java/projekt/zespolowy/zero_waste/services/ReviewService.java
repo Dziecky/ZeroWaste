@@ -2,11 +2,13 @@ package projekt.zespolowy.zero_waste.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
 import projekt.zespolowy.zero_waste.entity.*;
+import projekt.zespolowy.zero_waste.entity.enums.ActivityType;
 import projekt.zespolowy.zero_waste.entity.enums.VoteType;
 import projekt.zespolowy.zero_waste.mapper.ReviewMapper;
 import projekt.zespolowy.zero_waste.repository.*;
@@ -15,12 +17,16 @@ import projekt.zespolowy.zero_waste.security.CustomUser;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class ReviewService implements IReviewService{
+
+    @Autowired
+    private ActivityLogService logService;
 
     private final ReviewRepository reviewRepository;
     private final UserTaskRepository userTaskRepository;
@@ -51,6 +57,8 @@ public class ReviewService implements IReviewService{
             if (userTask.getProgress() >= createReviewTask.getRequiredActions()) {
                 userTask.setCompleted(true);
                 userTask.setCompletionDate(LocalDate.now());
+
+                logService.log(UserService.getUser().getId(), ActivityType.TASK_COMPLETED, userTask.getTask().getId(), Map.of("task name", createReviewTask.getTask_name(), "point awarded", createReviewTask.getPointsAwarded()));
 
                 review.getUser().setTotalPoints(review.getUser().getTotalPoints() + createReviewTask.getPointsAwarded());
                 userRepository.save(review.getUser()); // Zapisz zmiany w użytkowniku

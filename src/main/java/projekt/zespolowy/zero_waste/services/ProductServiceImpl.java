@@ -7,19 +7,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.entity.*;
+import projekt.zespolowy.zero_waste.entity.enums.ActivityType;
 import projekt.zespolowy.zero_waste.repository.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
+    @Autowired private ActivityLogService logService;
+
     private final ProductRepository productRepository;
     private final UserTaskRepository userTaskRepository;
     private final UserRepository userRepository;
@@ -56,6 +57,7 @@ public class ProductServiceImpl implements ProductService {
     public Product saveProduct(Product product) {
         // Zapisz produkt
         Product savedProduct = productRepository.save(product);
+
         ProductPriceHistory priceHistory = new ProductPriceHistory(savedProduct, product.getPrice(), LocalDateTime.now());
         productPriceHistoryRepository.save(priceHistory);
         // Sprawdź, czy użytkownik ma zadanie "Dodaj produkt"
@@ -73,6 +75,8 @@ public class ProductServiceImpl implements ProductService {
                 if (userTask.getProgress() >= addProductTask.getRequiredActions()) {
                     userTask.setCompleted(true);
                     userTask.setCompletionDate(LocalDate.now());
+
+                    logService.log(UserService.getUser().getId(), ActivityType.TASK_COMPLETED, userTask.getTask().getId(), Map.of("task name", addProductTask.getTask_name(), "point awarded", addProductTask.getPointsAwarded()));
 
                     // Dodaj punkty za zadanie do użytkownika
                     User user = product.getOwner();
@@ -107,8 +111,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(Long id) {
-        productRepository.deleteById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
+        logService.log(UserService.getUser().getId(), ActivityType.ITEM_REMOVED, id, Map.of("name", product.getName(), "category", product.getProductCategory().toString()));
 
+        productRepository.deleteById(id);
     }
 
     @Override

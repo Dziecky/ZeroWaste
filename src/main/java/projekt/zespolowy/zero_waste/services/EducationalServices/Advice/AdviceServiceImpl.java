@@ -12,19 +12,26 @@ import projekt.zespolowy.zero_waste.entity.EducationalEntities.Advice.AdviceCate
 import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
+import projekt.zespolowy.zero_waste.entity.enums.ActivityType;
 import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
 import projekt.zespolowy.zero_waste.repository.AdviceRepository;
 import projekt.zespolowy.zero_waste.repository.TaskRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
 import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
+import projekt.zespolowy.zero_waste.services.ActivityLogService;
 import projekt.zespolowy.zero_waste.services.TagService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class AdviceServiceImpl implements AdviceService {
+
+    @Autowired
+    private ActivityLogService logService;
+
     private final AdviceRepository adviceRepository;
     private final TagService tagService;
     private final AdviceMapper adviceMapper;
@@ -53,6 +60,8 @@ public class AdviceServiceImpl implements AdviceService {
         Advice advice = adviceMapper.toEntity(adviceDTO, tagService);
         advice.setAuthor(userService.getUser());
 
+        logService.log(UserService.getUser().getId(), ActivityType.ADVICE_CREATED, advice.getId(), Map.of("title", advice.getTitle(), "category", advice.getAdviceCategory().toString()));
+
         Task createAdviceTask = taskRepository.findByTaskName("Dodaj pierwszą poradę");
 
         if (createAdviceTask != null) {
@@ -64,6 +73,9 @@ public class AdviceServiceImpl implements AdviceService {
             // Sprawdź, czy zadanie zostało ukończone
             if (userTask.getProgress() >= createAdviceTask.getRequiredActions()) {
                 userTask.setCompleted(true);
+
+                logService.log(UserService.getUser().getId(), ActivityType.TASK_COMPLETED, userTask.getTask().getId(), Map.of("task name", createAdviceTask.getTask_name(), "point awarded", createAdviceTask.getPointsAwarded()));
+
                 userTask.setCompletionDate(LocalDate.now());
 
                 userService.getUser().setTotalPoints(userService.getUser().getTotalPoints() + createAdviceTask.getPointsAwarded());

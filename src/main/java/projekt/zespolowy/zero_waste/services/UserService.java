@@ -17,10 +17,7 @@ import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Challenge;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Tip;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.UserPreference;
-import projekt.zespolowy.zero_waste.entity.enums.AccountType;
-import projekt.zespolowy.zero_waste.entity.enums.AuthProvider;
-import projekt.zespolowy.zero_waste.entity.enums.PrivacyOptions;
-import projekt.zespolowy.zero_waste.entity.enums.UserRole;
+import projekt.zespolowy.zero_waste.entity.enums.*;
 import projekt.zespolowy.zero_waste.mapper.AdviceMapper;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.repository.*;
@@ -32,10 +29,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -44,6 +38,9 @@ import projekt.zespolowy.zero_waste.specification.UserSpecification;
 
 @Service
 public class UserService implements UserDetailsService {
+
+    @Autowired
+    private ActivityLogService logService;
 
     private static UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -139,6 +136,8 @@ public class UserService implements UserDetailsService {
             if (userTask.getProgress() >= createUserTask.getRequiredActions()) {
                 userTask.setCompleted(true);
                 userTask.setCompletionDate(LocalDate.now());
+
+                logService.log(UserService.getUser().getId(), ActivityType.TASK_COMPLETED, userTask.getTask().getId(), Map.of("task name", createUserTask.getTask_name(), "point awarded", createUserTask.getPointsAwarded()));
 
                 user.setTotalPoints(user.getTotalPoints() + createUserTask.getPointsAwarded());
                 userRepository.save(user); // Zapisz zmiany w użytkowniku
