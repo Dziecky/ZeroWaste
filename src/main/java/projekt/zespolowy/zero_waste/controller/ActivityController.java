@@ -28,7 +28,7 @@ public class ActivityController {
     @GetMapping
     public String myActivity(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) ActivityType filter,
             Model model
     ) {
