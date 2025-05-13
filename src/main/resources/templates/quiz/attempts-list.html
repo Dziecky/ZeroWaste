@@ -11,50 +11,128 @@
     <link th:href="@{/styles/buttons.css}" rel="stylesheet"/>
     <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
     <script src="/scripts/navbar.js" defer></script>
+    <style>
+        .attempts-container {
+            margin-top: 8vh;
+            padding: 20px;
+        }
+        .attempts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .attempt-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+        .attempt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+        .attempt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .attempt-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .attempt-score {
+            font-size: 1.1rem;
+            color: #343a40;
+        }
+        .attempt-time {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .attempt-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .score-badge {
+            background-color: #e8f5e9;
+            color: #28a745;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        .empty-state p {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        .page-title {
+            color: #343a40;
+            margin-bottom: 30px;
+        }
+        @media (max-width: 768px) {
+            .attempt-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<div layout:fragment="content" class="container mt-4">
+<div layout:fragment="content" class="container attempts-container">
 
-    <h2 th:text="'My Attempts for Quiz ' + (${attempts != null and not attempts.isEmpty()} ? attempts[0].quizTitle : '')">My Quiz Attempts</h2>
+    <h2 class="page-title" th:text="'My Attempts for Quiz ' + (${attempts != null and not attempts.isEmpty()} ? attempts[0].quizTitle : '')">My Quiz Attempts</h2>
 
-     <!-- Display success/error messages -->
+    <!-- Display success/error messages -->
     <div th:if="${successMessage}" class="alert alert-success" role="alert"
          th:text="${successMessage}"></div>
     <div th:if="${errorMessage}" class="alert alert-danger" role="alert"
          th:text="${errorMessage}"></div>
 
-    <div th:if="${attempts == null or attempts.isEmpty()}">
+    <div th:if="${attempts == null or attempts.isEmpty()}" class="empty-state">
         <p>You haven't attempted this quiz yet.</p>
-         <a th:href="@{/quizzes/{id}(id=${quizId})}" class="action-button">Take Quiz Now</a>
+        <a th:href="@{/quizzes/{id}(id=${quizId})}" class="submit-button">Take Quiz Now</a>
     </div>
 
-    <table class="table table-striped table-hover mt-3" th:if="${attempts != null and not attempts.isEmpty()}">
-        <thead class="thead-dark">
-            <tr>
-                <th>Attempt #</th>
-                <th>Score</th>
-                <th>Completion Time</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Iterate in reverse to show latest first -->
-            <tr th:each="attempt, iterStat : ${attempts}">
-                <td th:text="${iterStat.size - iterStat.index}">Attempt Number</td> 
-                <td th:text="${attempt.score} + ' / ' + ${attempt.totalQuestions}">Score</td>
-                <td th:text="${#temporals.format(attempt.completedAt, 'yyyy-MM-dd HH:mm')}">Timestamp</td>
-                <td>
-                    <a th:href="@{/quizzes/{quizId}/results/{attemptId}(quizId=${attempt.quizId}, attemptId=${attempt.attemptId})}" 
-                       class="action-button">View Details</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="attempts-list" th:if="${attempts != null and not attempts.isEmpty()}">
+        <!-- Iterate in reverse to show latest first -->
+        <div th:each="attempt, iterStat : ${attempts}" class="attempt-card">
+            <div class="attempt-header">
+                <div class="attempt-number">
+                    Attempt #<span th:text="${iterStat.size - iterStat.index}">Attempt Number</span>
+                </div>
+                <div class="attempt-score">
+                    <span class="score-badge" th:text="${attempt.score} + ' / ' + ${attempt.totalQuestions}">Score</span>
+                </div>
+                <div class="attempt-time">
+                    Completed on <span th:text="${#temporals.format(attempt.completedAt, 'yyyy-MM-dd HH:mm')}">Timestamp</span>
+                </div>
+            </div>
+            <div class="attempt-actions">
+                <a th:href="@{/quizzes/{quizId}/results/{attemptId}(quizId=${attempt.quizId}, attemptId=${attempt.attemptId})}" 
+                   class="action-button">View Details</a>
+            </div>
+        </div>
+    </div>
     
     <div class="mt-4">
         <a th:href="@{/quizzes}" class="action-button">Back to Quiz List</a>
-        <a th:href="@{/quizzes/{id}(id=${quizId})}" class="action-button" th:if="${attempts != null and not attempts.isEmpty()}">Take Quiz Again</a>
+        <a th:href="@{/quizzes/{id}(id=${quizId})}" class="submit-button" th:if="${attempts != null and not attempts.isEmpty()}">Take Quiz Again</a>
     </div>
 
 </div>
