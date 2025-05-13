@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-100">
 <head>
     <meta charset="UTF-8">
-    <title>Active Auctions</title>
+    <title>Ended Auctions</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -19,6 +19,7 @@
             --background-color: #f8f9fa;
             --card-hover-color: #ffffff;
             --timer-color: #dc3545;
+            --ended-badge-color: #6c757d;
         }
 
         body {
@@ -60,6 +61,7 @@
             height: 100%;
             object-fit: cover;
             transition: transform 0.3s ease;
+            filter: grayscale(30%);
         }
 
         .auction-card:hover .auction-image img {
@@ -69,7 +71,6 @@
         .auction-content {
             padding: 1.5rem;
         }
-
 
         .auction-title {
             font-size: 1.25rem;
@@ -86,26 +87,25 @@
             margin: 1rem 0;
         }
 
-
         .current-price {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary-color);
         }
 
-        .bid-button {
+        .view-button {
             width: 100%;
             padding: 0.75rem;
             border: none;
             border-radius: 10px;
-            background-color: var(--primary-color);
+            background-color: var(--secondary-color);
             color: white;
             font-weight: 600;
             transition: all 0.3s ease;
         }
 
-        .bid-button:hover {
-            background-color: var(--secondary-color);
+        .view-button:hover {
+            background-color: #196b2b;
             transform: translateY(-2px);
         }
 
@@ -121,13 +121,12 @@
             position: absolute;
             top: 15px;
             left: 15px;
-            background: rgba(40, 167, 69, 0.9);
+            background: rgba(108, 117, 125, 0.9);
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 20px;
             backdrop-filter: blur(5px);
         }
-
 
         .category-tag {
             display: flex;
@@ -144,6 +143,15 @@
             margin-bottom: 0.5rem;
         }
 
+        .winner-badge {
+            background-color: #ffc107;
+            color: #212529;
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
 
         @media (max-width: 768px) {
             .auction-grid {
@@ -153,72 +161,52 @@
             }
         }
 
-        .btn-add-auction {
-            margin-top: 10px;
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+        .page-heading {
+            color: #2c3e50;
+            text-align: center;
+            margin: 2rem 0;
             font-weight: 600;
-            color: white;
+        }
+
+        .btn-navigation {
+            margin-top: 10px;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             transition: all 0.3s ease;
         }
-        .btn-add-auction:hover {
+
+        .btn-active-auctions {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-active-auctions:hover {
             background-color: var(--secondary-color);
             transform: translateY(-3px);
             color: white;
         }
-        .edit-auction-button {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: #17a2b8;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        .edit-auction-button:hover {
-            background-color: #138496;
-            transform: scale(1.1);
-        }
-
-
     </style>
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container">
+    <h1 class="page-heading">Ended Auctions</h1>
+
     <div class="mb-4">
-        <div class="mb-2">
-            <a th:href="@{/auctions/new}" class="btn btn-add-auction">
-                <i class="fas fa-plus-circle me-2"></i>Add New Auction
-            </a>
-        </div>
-        <div>
-            <a href="/auctions/ended-auctions" class="btn btn-secondary">
-                <i class="fas fa-hourglass-end me-2"></i>Ended Auctions
-            </a>
-        </div>
+        <a th:href="@{/auctions/list}" class="btn btn-active-auctions btn-navigation me-2">
+            <i class="fas fa-gavel me-2"></i>Active Auctions
+        </a>
     </div>
 
     <div class="auction-grid">
-        <div class="auction-card" th:each="product : ${products}">
+        <div class="auction-card" th:each="product : ${endedProducts}">
             <div class="auction-image">
                 <img th:src="${product.imageUrl}" alt="Product Image">
                 <span class="badge-auction">
-                    <i class="fas fa-gavel"></i> Active Auction
+                    <i class="fas fa-hourglass-end"></i> Auction Ended
                 </span>
-                <a th:if="${#authentication.name == product.owner.username && !bidService.hasAnyBids(product)}"
-                   th:href="@{/auctions/edit/{productId}(productId=${product.id})}"
-                   class="edit-auction-button">
-                    <i class="fas fa-edit"></i>
-                </a>
             </div>
 
             <div class="auction-content">
@@ -227,16 +215,12 @@
 
                 <div class="price-section">
                     <div>
-                        <div class="text-muted">Current Bid:</div>
+                        <div class="text-muted">Final Price:</div>
                         <div class="current-price" th:text="${'zł ' + product.price}">zł 0.00</div>
                     </div>
                 </div>
                 <hr>
                 <div class="auction-details">
-                    <span>
-                        <i class="fas fa-users"></i>
-                        <span th:text="${bidService.getBidCountForProduct(product)} + ' bids'">0 bids</span>
-                    </span>
 
                     <span>
                         <i class="fas fa-user"></i>
@@ -246,14 +230,27 @@
                     </span>
                 </div>
 
+                <div class="text-center mb-3" th:if="${bidService != null && bidService.getBidCountForProduct(product) > 0}">
+                    <span class="text-muted">Winner: </span>
+                    <span>Highest Bidder</span>
+                    <span class="winner-badge">
+                        <i class="fas fa-trophy"></i> Winner
+                    </span>
+                </div>
+
                 <form th:action="@{/auctions/{productId}(productId=${product.id})}" method="get">
-                    <button type="submit" class="bid-button">
-                        <i class="fas fa-gavel me-2"></i> Place Bid
+                    <button type="submit" class="view-button">
+                        <i class="fas fa-search me-2"></i> View Details
                     </button>
                 </form>
-
             </div>
         </div>
+    </div>
+
+    <div class="text-center py-5" th:if="${endedProducts.empty}">
+        <i class="fas fa-hourglass-end fa-3x text-muted mb-3"></i>
+        <h3 class="text-muted">No ended auctions found</h3>
+        <p>Check back later for completed auctions</p>
     </div>
 </div>
 <div th:replace="~{fragments/footer :: footer}"></div>
