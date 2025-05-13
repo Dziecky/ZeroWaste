@@ -71,6 +71,7 @@ public class AuctionController {
         return "product/auction-list";
     }
 
+
     @PostMapping("/bids/add")
     public String placeBid(@RequestParam Long productId, @RequestParam double amount, Authentication authentication) {
         String username = authentication.getName();
@@ -202,5 +203,15 @@ public class AuctionController {
         productService.saveProduct(updatedProduct);
         return "redirect:/auctions/list";
     }
+
+    @GetMapping("/ended-auctions")
+    public String listEndedAuctions(Model model) {
+        LocalDateTime now = LocalDateTime.now();
+        List<Product> endedAuctions = productService.getEndedAuctions(now);
+
+        model.addAttribute("endedProducts", endedAuctions);
+        return "product/ended-auctions";  // Widok dla zakończonych aukcji
+    }
+
 }
 
