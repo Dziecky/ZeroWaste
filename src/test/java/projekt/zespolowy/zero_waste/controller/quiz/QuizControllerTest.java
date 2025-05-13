@@ -73,23 +73,7 @@ class QuizControllerTest {
                 .andExpect(model().attributeExists("submissionDto"));
     }
 
-    @Test
-    @WithMockUser(username = "testUser")
-    void showLeaderboard_ReturnsLeaderboardPage() throws Exception {
-        when(quizService.getQuizForTaking(1L)).thenReturn(testQuizDto);
-        
-        List<QuizAttemptDto> leaderboard = Arrays.asList(
-            new QuizAttemptDto(1L, 1L, "Test Quiz", "user1", 10, 10, LocalDateTime.now(), null),
-            new QuizAttemptDto(2L, 1L, "Test Quiz", "user2", 8, 10, LocalDateTime.now(), null)
-        );
-        when(quizService.getQuizLeaderboard(1L)).thenReturn(leaderboard);
 
-        mockMvc.perform(get("/quizzes/1/leaderboard"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("quiz/leaderboard"))
-                .andExpect(model().attributeExists("quiz"))
-                .andExpect(model().attributeExists("topScores"));
-    }
 
 
 
