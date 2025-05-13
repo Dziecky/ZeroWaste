@@ -1,22 +1,21 @@
 package projekt.zespolowy.zero_waste.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import projekt.zespolowy.zero_waste.dto.ReviewDto;
-import projekt.zespolowy.zero_waste.entity.Review;
-import projekt.zespolowy.zero_waste.entity.Task;
-import projekt.zespolowy.zero_waste.entity.User;
-import projekt.zespolowy.zero_waste.entity.UserTask;
+import projekt.zespolowy.zero_waste.entity.*;
+import projekt.zespolowy.zero_waste.entity.enums.VoteType;
 import projekt.zespolowy.zero_waste.mapper.ReviewMapper;
-import projekt.zespolowy.zero_waste.repository.ReviewRepository;
-import projekt.zespolowy.zero_waste.repository.TaskRepository;
-import projekt.zespolowy.zero_waste.repository.UserRepository;
-import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
+import projekt.zespolowy.zero_waste.repository.*;
+import projekt.zespolowy.zero_waste.security.CustomUser;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -27,6 +26,7 @@ public class ReviewService implements IReviewService{
     private final UserTaskRepository userTaskRepository;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final VoteRepository voteRepository;
 
     @Override
     @Transactional
@@ -148,17 +148,30 @@ public class ReviewService implements IReviewService{
 
     public List<ReviewDto> getReviewsByTargetUserId(Long targetUserId) {
         List<Review> reviews = reviewRepository.findByTargetUserId(targetUserId);
+
+        CustomUser customUser = (CustomUser) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+        User currentUser = customUser.getUser();
+
         return reviews.stream()
-                .map(ReviewMapper::mapToReviewDto)
+                .map(review -> {
+                    String userVote = voteRepository.findByUserAndReview(currentUser, review)
+                            .map(v -> v.getVoteType().toString())
+                            .orElse(null);
+                    return ReviewMapper.mapToReviewDto(review, userVote);
+                })
                 .collect(Collectors.toList());
     }
+
+
     public List<ReviewDto> getReviewsWithZeroRatingByTargetUserId(Long targetUserId) {
         List<Review> reviews = reviewRepository.findByTargetUserId(targetUserId);
         return reviews.stream()
                 .filter(review -> review.getRating() == 0)
-                .map(ReviewMapper::mapToReviewDto)
+                .map(review -> ReviewMapper.mapToReviewDto(review, null))
                 .collect(Collectors.toList());
     }
+
 
 
     public List<Review> getReviewsByUser(User user) {
@@ -167,12 +180,21 @@ public class ReviewService implements IReviewService{
 
     public List<ReviewDto> getReviewsByUserId(Long userId) {
         List<Review> reviews = reviewRepository.findByUserId(userId);
-        List<ReviewDto> reviewDtos = new ArrayList<>();
-        for (Review review : reviews) {
-            reviewDtos.add(ReviewMapper.mapToReviewDto(review));
-        }
-        return reviewDtos;
+
+        CustomUser customUser = (CustomUser) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+        User currentUser = customUser.getUser();
+
+        return reviews.stream()
+                .map(review -> {
+                    String userVote = voteRepository.findByUserAndReview(currentUser, review)
+                            .map(v -> v.getVoteType().toString())
+                            .orElse(null);
+                    return ReviewMapper.mapToReviewDto(review, userVote);
+                })
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public Review getReviewById(Long id) {
@@ -183,24 +205,82 @@ public class ReviewService implements IReviewService{
 
     public List<ReviewDto> getAllReviews() {
         List<Review> reviews = reviewRepository.findAll();
-        List<ReviewDto> reviewDtos = new ArrayList<>();
-        for (Review review : reviews) {
-            reviewDtos.add(ReviewMapper.mapToReviewDto(review));
-        }
-        return reviewDtos;
-    }
-    public List<ReviewDto> getReviewsByTargetUserIdAndRating(Long targetUserId, int rating) {
-        return reviewRepository.findByTargetUserIdAndRating(targetUserId, rating)
-                .stream()
-                .map(this::convertToDto)
+
+        CustomUser customUser = (CustomUser) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+        User currentUser = customUser.getUser();
+
+        return reviews.stream()
+                .map(review -> {
+                    String userVote = voteRepository.findByUserAndReview(currentUser, review)
+                            .map(v -> v.getVoteType().toString())
+                            .orElse(null);
+                    return ReviewMapper.mapToReviewDto(review, userVote);
+                })
                 .collect(Collectors.toList());
     }
-    private ReviewDto convertToDto(Review review) {
-        return ReviewMapper.mapToReviewDto(review);
+
+    public List<ReviewDto> getReviewsByTargetUserIdAndRating(Long targetUserId, int rating) {
+        CustomUser customUser = (CustomUser) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+        User currentUser = customUser.getUser();
+
+        return reviewRepository.findByTargetUserIdAndRating(targetUserId, rating)
+                .stream()
+                .map(review -> {
+                    String userVote = voteRepository.findByUserAndReview(currentUser, review)
+                            .map(v -> v.getVoteType().toString())
+                            .orElse(null);
+                    return ReviewMapper.mapToReviewDto(review, userVote);
+                })
+                .collect(Collectors.toList());
     }
+
+    private ReviewDto convertToDto(Review review) {
+        return ReviewMapper.mapToReviewDto(review, null); // lub usuń metodę jeśli zbędna
+    }
+
 
     public Review findById(Long reviewId) {
         return reviewRepository.findById(reviewId).orElse(null);
+    }
+
+    public void vote(Long reviewId, Long userId, boolean isUpvote) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        // Sprawdź czy użytkownik już głosował
+        Optional<Vote> existingVote = voteRepository.findByUserAndReview(user, review);
+
+        if (existingVote.isPresent()) {
+            Vote vote = existingVote.get();
+            // Jeśli głos jest taki sam jak poprzedni - anuluj
+            if ((isUpvote && vote.getVoteType() == VoteType.UP) ||
+                    (!isUpvote && vote.getVoteType() == VoteType.DOWN)) {
+                // Usuń głos
+                voteRepository.delete(vote);
+                review.setVotes(review.getVotes() - (isUpvote ? 1 : -1));
+            } else {
+                // Zmień głos
+                vote.setVoteType(isUpvote ? VoteType.UP : VoteType.DOWN);
+                voteRepository.save(vote);
+                review.setVotes(review.getVotes() + (isUpvote ? 2 : -2));
+            }
+        } else {
+            // Nowy głos
+            Vote vote = new Vote();
+            vote.setUser(user);
+            vote.setReview(review);
+            vote.setVoteType(isUpvote ? VoteType.UP : VoteType.DOWN);
+            voteRepository.save(vote);
+
+            review.setVotes((review.getVotes() == null ? 0 : review.getVotes()) + (isUpvote ? 1 : -1));
+        }
+
+        reviewRepository.save(review);
     }
 
 }
