@@ -374,6 +374,11 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    public Long getCurrentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return findByUsername(auth.getName()).getId();
+    }
+
     public Set<AdviceDTO> getReadAdvices() {
         User currentUser = getUser();
         return currentUser.getReadAdvices().stream()
