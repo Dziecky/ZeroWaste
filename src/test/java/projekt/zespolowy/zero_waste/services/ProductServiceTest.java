@@ -18,9 +18,7 @@ import projekt.zespolowy.zero_waste.repository.ProductRepository;
 import projekt.zespolowy.zero_waste.services.ProductServiceImpl;
 
 import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 
@@ -391,6 +389,58 @@ class ProductServiceTest {
     void testGetLowestPriceInLast30Days_whenProductIdIsNull_thenThrowException() {
         assertThrows(IllegalArgumentException.class, () -> productService.getLowestPriceInLast30Days(null));
     }
+
+    @Test
+    void testGetEndedAuctions_returnsEndedAuctions() {
+        LocalDateTime now = LocalDateTime.now();
+
+        Product product1 = new Product();
+        product1.setId(1L);
+        product1.setName("Auction 1");
+
+        Product product2 = new Product();
+        product2.setId(2L);
+        product2.setName("Auction 2");
+
+        List<Product> endedAuctions = Arrays.asList(product1, product2);
+
+        when(productRepository.findByAuctionTrueAndAvailableTrueAndEndDateBefore(now)).thenReturn(endedAuctions);
+
+        List<Product> result = productService.getEndedAuctions(now);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("Auction 1", result.get(0).getName());
+        assertEquals("Auction 2", result.get(1).getName());
+
+        verify(productRepository, times(1)).findByAuctionTrueAndAvailableTrueAndEndDateBefore(now);
+    }
+
+
+    @Test
+    void testGetEndedAuctions_returnsEmptyList() {
+        LocalDateTime now = LocalDateTime.now();
+        when(productRepository.findByAuctionTrueAndAvailableTrueAndEndDateBefore(now)).thenReturn(Collections.emptyList());
+
+        List<Product> result = productService.getEndedAuctions(now);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(productRepository, times(1)).findByAuctionTrueAndAvailableTrueAndEndDateBefore(now);
+    }
+    @Test
+    void testGetEndedAuctions_returnsNullFromRepository() {
+        LocalDateTime now = LocalDateTime.now();
+        when(productRepository.findByAuctionTrueAndAvailableTrueAndEndDateBefore(now)).thenReturn(null);
+
+        List<Product> result = productService.getEndedAuctions(now);
+
+        assertNull(result);
+        verify(productRepository, times(1)).findByAuctionTrueAndAvailableTrueAndEndDateBefore(now);
+    }
+
+
 
 
 }
