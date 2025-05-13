@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Newsletter</title>
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+        <link th:href="@{styles/main.css}" rel="stylesheet"/>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+        <script src="/scripts/navbar.js" defer></script>
+    <style>
+        /* Style dla karuzeli (diy.html) używającej Swipera */
+        .swiper-container {
+            width: 100%; /* Ustaw szerokość kontenera Swipera */
+            height: 400px; /* Ustaw wysokość (dostosuj) */
+            margin-top: 50px;
+            padding: 0 50px; /* Dodaj padding, jeśli używasz strzałek nawigacyjnych wewnątrz */
+            box-sizing: border-box; /* Uwzględnij padding w szerokości */
+        }
+
+        .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+            background: #fff;
+            display: flex; /* Użyj flexbox do centrowania zawartości slajdu */
+            flex-direction: column; /* Ułóż elementy w slajdzie pionowo */
+            justify-content: center; /* Wyśrodkuj pionowo */
+            align-items: center; /* Wyśrodkuj poziomo */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden; /* Ukryj elementy wystające poza slajd */
+            cursor: pointer; /* Wskazuje, że slajd jest klikalny */
+        }
+
+        .diy-slide-content {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* Zajmij całą szerokość slajdu */
+        }
+
+        .slide-images {
+            display: flex; /* Ułóż obrazki "Przed" i "Po" obok siebie w slajdzie */
+            gap: 5px; /* Mniejszy odstęp */
+            margin-bottom: 10px;
+            width: 100%; /* Zajmij całą szerokość contentu */
+            height: 200px; /* Stała wysokość dla pary obrazków */
+            overflow: hidden; /* Ukryj przekroczenia */
+            border-radius: 4px;
+        }
+        .slide-images img {
+            width: 50%; /* Każdy obrazek zajmuje połowę */
+            height: 100%; /* Wypełnij wysokość kontenera */
+            object-fit: cover; /* Przytnij obraz */
+        }
+        .slide-images img:first-child {
+            border-right: 1px solid #eee; /* Delikatna linia między obrazkami */
+        }
+
+
+        .diy-slide-content p {
+            font-size: 1em;
+            color: #555;
+            margin-bottom: 10px;
+            flex-grow: 1; /* Pozwól opisowi zająć dostępną przestrzeń */
+        }
+
+        .read-more-link {
+            display: inline-block;
+            margin-top: auto; /* Przypnij link do dołu, jeśli używasz flexbox na .diy-slide-content */
+            padding: 8px 15px;
+            background-color: #17a2b8;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .read-more-link:hover {
+            background-color: #138496;
+        }
+
+        /* Style dla strzałek nawigacyjnych (opcjonalne) */
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: #007bff; /* Kolor strzałek */
+        }
+        /* Style dla paginacji (opcjonalne) */
+        .swiper-pagination-bullet {
+            background-color: #007bff;
+        }
+
+
+        /* Możesz dodać style dla przycisków Add/Edit/Delete gdzieś poza karuzelą */
+        .management-links {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .management-links a {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+        .management-links a:hover {
+            background-color: #218838;
+        }
+
+
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+    <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
+    <script src="/scripts/navbar.js" defer></script>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="carousel-container">
+    <h2>Projekty Zero-Waste DIY</h2>
+
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" th:each="project : ${diyProjects}">
+                <div class="diy-slide-content">
+                    <div class="slide-images">
+                        <img th:src="@{${project.beforeImageUrl}}" alt="Przed - ${project.description}">
+                        <img th:src="@{${project.afterImageUrl}}" alt="Po - ${project.description}">
+                    </div>
+                    <p th:text="${project.description}"></p>
+
+                    <a th:href="@{/diy/details/{id}(id=${project.id})}" class="read-more-link">Czytaj więcej</a>
+
+                </div>
+            </div>
+        </div>
+        <div class="swiper-pagination"></div>
+
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+    <div class="management-links">
+        <a th:href="@{/diy/manage}">Przejdź do zarządzania</a>
+    </div>
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+    // Zainicjalizuj Swipera
+    var swiper = new Swiper('.swiper-container', {
+        // Konfiguracja Swipera (dostosuj)
+        slidesPerView: 1, // Domyślnie 1 slajd na małych ekranach
+        spaceBetween: 30, // Odstęp między slajdami
+        loop: true, // Zapętlenie karuzeli
+        pagination: {
+            el: '.swiper-pagination', // Element dla paginacji (kropki)
+            clickable: true, // Klikalne kropki paginacji
+        },
+        navigation: { // Strzałki nawigacyjne
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        // Ustawienia responsywności
+        breakpoints: {
+            640: { // Od 640px szerokości
+                slidesPerView: 2,
+                spaceBetween: 20,
+            },
+            768: { // Od 768px szerokości
+                slidesPerView: 3,
+                spaceBetween: 40,
+            },
+            1024: { // Od 1024px szerokości
+                slidesPerView: 4,
+                spaceBetween: 50,
+            },
+        },
+        // Inne opcjonalne ustawienia (odkomentuj jeśli chcesz)
+        centeredSlides: true, // Aktywny slajd na środku
+        autoplay: { // Autoodtwarzanie
+            delay: 3000, // Co 3 sekundy
+            disableOnInteraction: false, // Nie zatrzymuj po interakcji użytkownika
+        },
+    });
+
+    // Jeśli chcesz, aby kliknięcie DOWOLNEGO MIEJSCA na slajdzie przekierowywało,
+    // a nie tylko linku "Czytaj więcej", użyj kodu JS poniżej
+    // Pamiętaj, aby usunąć th:onclick z elementu swiper-slide jeśli dodajesz ten listener w JS
+    /*
+    swiper.on('click', function(event) {
+        // Sprawdź, czy kliknięcie było na slajdzie
+        const clickedSlide = event.target.closest('.swiper-slide');
+        if (clickedSlide) {
+             // Znajdź link "Czytaj więcej" w tym slajdzie i przejdź do jego adresu
+             const readMoreLink = clickedSlide.querySelector('.read-more-link');
+             if (readMoreLink && readMoreLink.href) {
+                 window.location.href = readMoreLink.href;
+             }
+             // ALBO, jeśli nie masz linku "Czytaj więcej", a dane są w slajdzie (np. data atrybuty)
+             // const projectId = clickedSlide.getAttribute('data-project-id'); // Wymaga dodania th:attr="data-project-id=${project.id}" do swiper-slide
+             // if (projectId) {
+             //      window.location.href = '/diy/' + projectId;
+             // }
+        }
+    });
+    */
+
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script crossorigin="anonymous" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
