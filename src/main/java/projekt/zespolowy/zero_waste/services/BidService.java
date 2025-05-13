@@ -87,4 +87,9 @@ public class BidService {
         return !getBidsForProduct(product).isEmpty();
     }
 
+    public int getBidCountForProduct(Product product) {
+        return getBidsForProduct(product).size();
+    }
+
+
 }

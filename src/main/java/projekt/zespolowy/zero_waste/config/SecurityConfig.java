@@ -56,7 +56,8 @@ public class SecurityConfig {
                                 "/food",
                                 "/food/search",
                                 "/faq",
-                                "/about")
+                                "/about",
+                                "/products/ended-auctions")
                         .permitAll()
 
                         .anyRequest().authenticated()

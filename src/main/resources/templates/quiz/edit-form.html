@@ -26,15 +26,21 @@
             display: flex;
             align-items: center;
             margin-bottom: 10px;
+            gap: 10px;
         }
         .answer-row input[type='text'] {
-            flex-grow: 1;
-            margin-right: 10px;
+            flex: 0 1 60%;
+            margin-right: 0;
         }
-         .answer-row .form-check-input {
-            margin-left: 5px;
-            margin-right: 5px;
-         }
+        .answer-row .form-check {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            margin: 0 10px;
+        }
+        .answer-row .form-check-input {
+            margin: 0 5px;
+        }
         .remove-btn {
             margin-left: 10px;
         }
@@ -86,7 +92,7 @@
             <div th:each="question, qStat : *{questions}" class="question-section">
                 <input type="hidden" th:field="*{questions[__${qStat.index}__].id}" /> <!-- Keep track of existing IDs -->
                 <h5>Question <span th:text="${qStat.index + 1}"></span></h5>
-                 <button type="button" class="btn btn-sm btn-danger float-right remove-question-btn">Remove Question</button>
+                 <button type="button" class="action-button delete float-right remove-question-btn">Remove Question</button>
                  <div class="form-group">
                     <label th:for="'questionText' + ${qStat.index}">Question Text</label>
                     <input type="text" th:id="'questionText' + ${qStat.index}" class="form-control" th:field="*{questions[__${qStat.index}__].text}" required>
@@ -111,21 +117,21 @@
                                    required>
                              <label class="form-check-label">Correct</label>
                         </div>
-                        <button type="button" class="btn btn-sm btn-danger remove-answer-btn">Remove</button>
+                        <button type="button" class="action-button delete remove-answer-btn">Remove</button>
                     </div>
                 </div>
-                <button type="button" class="btn btn-sm btn-success add-answer-btn mt-2">Add Answer</button>
+                <button type="button" class="action-button edit add-answer-btn mt-2">Add Answer</button>
             </div>
         </div>
         
         <div th:if="${#fields.hasErrors('questions')}" th:errors="*{questions}" class="error-message mt-2"></div>
 
-        <button type="button" id="add-question-btn" class="btn btn-secondary mt-3">Add Question</button>
+        <button type="button" id="add-question-btn" class="action-button mt-3">Add Question</button>
 
         <hr>
 
-        <button type="submit" class="btn btn-primary">Update Quiz</button>
-        <a th:href="@{/quizzes}" class="btn btn-link">Cancel</a>
+        <button type="submit" class="submit-button">Update Quiz</button>
+        <a th:href="@{/quizzes}" class="btn-link">Cancel</a>
 
     </form>
 

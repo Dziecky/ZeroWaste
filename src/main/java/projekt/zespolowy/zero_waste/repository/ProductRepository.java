@@ -48,4 +48,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByOwner(User owner);
 
     long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    List<Product> findByAuctionTrueAndAvailableTrueAndEndDateAfter(LocalDateTime now);
+
+    List<Product> findByAuctionTrueAndAvailableTrueAndEndDateBefore(LocalDateTime endDate);
 }

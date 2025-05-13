@@ -181,7 +181,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public List<Product> getAuctionProducts() {
-        return productRepository.findByAuctionTrueAndAvailableTrue();
+        LocalDateTime now = LocalDateTime.now();
+        return productRepository.findByAuctionTrueAndAvailableTrueAndEndDateAfter(now);
     }
     public List<Product> getProductsNotOnAuction() {
         return productRepository.findByAuctionFalseAndAvailableTrue();
@@ -297,6 +298,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteAllByUser(User user) {
         productRepository.deleteByOwner(user);
+    }
+
+
+    public List<Product> getEndedAuctions(LocalDateTime now) {
+        return productRepository.findByAuctionTrueAndAvailableTrueAndEndDateBefore(now);
     }
 
 
