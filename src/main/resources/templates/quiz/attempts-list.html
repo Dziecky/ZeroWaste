@@ -132,6 +132,7 @@
     
     <div class="mt-4">
         <a th:href="@{/quizzes}" class="action-button">Back to Quiz List</a>
+        <a th:href="@{/quizzes/{id}/leaderboard(id=${quizId})}" class="action-button">View Leaderboard</a>
         <a th:href="@{/quizzes/{id}(id=${quizId})}" class="submit-button" th:if="${attempts != null and not attempts.isEmpty()}">Take Quiz Again</a>
     </div>
 

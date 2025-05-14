@@ -142,6 +142,7 @@
     <!-- Leaderboard -->
     <div class="leaderboard-card">
         <h2 class="leaderboard-title">Top Scorers</h2>
+        <p class="text-center text-muted mb-4">Showing best score per user</p>
         
         <div th:if="${topScores == null or topScores.isEmpty()}" class="empty-state">
             <p>No attempts have been made on this quiz yet.</p>

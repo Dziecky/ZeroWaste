@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Comparator;
 
 @Service
 @RequiredArgsConstructor
@@ -428,5 +430,35 @@ public class QuizService {
             attempt.getCompletedAt(),
             null // No detailed results in list view
         );
+    }
+
+    // Method to get leaderboard data for a quiz
+    @Transactional(readOnly = true)
+    public List<QuizAttemptDto> getQuizLeaderboard(Long quizId) {
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new EntityNotFoundException("Quiz not found with id: " + quizId));
+        
+        // Get all attempts for this quiz
+        List<QuizAttempt> allAttempts = quizAttemptRepository.findByQuizOrderByScoreDescCompletedAtAsc(quiz);
+        
+        // Filter to keep only the highest score per user
+        Map<String, QuizAttemptDto> bestUserScores = new HashMap<>();
+        
+        allAttempts.stream()
+                .map(this::mapAttemptToDtoWithoutDetails)
+                .forEach(attempt -> {
+                    String username = attempt.getUsername();
+                    if (!bestUserScores.containsKey(username) || 
+                        bestUserScores.get(username).getScore() < attempt.getScore()) {
+                        bestUserScores.put(username, attempt);
+                    }
+                });
+        
+        // Convert map to list, sort by score (desc) and limit to top 10
+        return bestUserScores.values().stream()
+                .sorted(Comparator.comparing(QuizAttemptDto::getScore).reversed()
+                       .thenComparing(QuizAttemptDto::getCompletedAt))
+                .limit(10)
+                .collect(Collectors.toList());
     }
 } 
