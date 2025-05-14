@@ -56,6 +56,10 @@ public class Article {
 
     @ManyToMany(mappedBy = "readArticles")
     private Set<User> readByUsers;
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ArticleComment> comments = new HashSet<>();
+
     @PrePersist
     public void onCreate() {
         createdAt = LocalDateTime.now();
