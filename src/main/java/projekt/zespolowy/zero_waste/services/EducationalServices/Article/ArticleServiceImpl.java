@@ -6,23 +6,24 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import projekt.zespolowy.zero_waste.dto.ArticleCommentDTO;
 import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
+import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleComment;
 import projekt.zespolowy.zero_waste.entity.Task;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.UserTask;
 import projekt.zespolowy.zero_waste.entity.enums.ActivityType;
 import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
-import projekt.zespolowy.zero_waste.repository.ArticleRepository;
-import projekt.zespolowy.zero_waste.repository.TaskRepository;
-import projekt.zespolowy.zero_waste.repository.UserRepository;
-import projekt.zespolowy.zero_waste.repository.UserTaskRepository;
+import projekt.zespolowy.zero_waste.repository.*;
 import projekt.zespolowy.zero_waste.services.ActivityLogService;
 import projekt.zespolowy.zero_waste.services.TagService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,8 +42,11 @@ public class ArticleServiceImpl implements ArticleService {
     private final UserTaskRepository userTaskRepository;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final ArticleCommentRepository commentRepository;
+
+
     @Autowired
-    public ArticleServiceImpl(ArticleRepository articleRepository, ArticleMapper articleMapper, TagService tagService, UserService userService, UserTaskRepository userTaskRepository, TaskRepository taskRepository, UserRepository userRepository) {
+    public ArticleServiceImpl(ArticleRepository articleRepository, ArticleMapper articleMapper, TagService tagService, UserService userService, UserTaskRepository userTaskRepository, TaskRepository taskRepository, UserRepository userRepository, ArticleCommentRepository commentRepository) {
         this.articleRepository = articleRepository;
         this.articleMapper = articleMapper;
         this.tagService = tagService;
@@ -51,6 +55,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Override
@@ -214,5 +219,59 @@ public class ArticleServiceImpl implements ArticleService {
         return article.getReadByUsers().size();
     }
 
+    @Override
+    @Transactional
+    public ArticleComment addComment(Long articleId, ArticleCommentDTO commentDTO) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new RuntimeException("Article not found"));
 
+        User user = userService.getUser();
+
+        ArticleComment comment = new ArticleComment();
+        comment.setContent(commentDTO.getContent());
+        comment.setAuthor(user);
+        comment.setArticle(article);
+
+        return commentRepository.save(comment);
+    }
+
+    @Override
+    public List<ArticleCommentDTO> getComments(Long articleId) {
+        return commentRepository.findByArticleIdOrderByCreatedAtDesc(articleId)
+                .stream()
+                .map(comment -> {
+                    ArticleCommentDTO dto = new ArticleCommentDTO();
+                    dto.setId(comment.getId());
+                    dto.setContent(comment.getContent());
+                    dto.setCreatedAt(comment.getCreatedAt());
+                    dto.setAuthorUsername(comment.getAuthor().getUsername());
+                    return dto;
+                })
+                .toList();
+    }
+
+    @Override
+    public void deleteComment(Long commentId, User currentUser) {
+        ArticleComment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        if (!comment.getAuthor().equals(currentUser)) {
+            throw new RuntimeException("You are not allowed to delete this comment");
+        }
+
+        commentRepository.delete(comment);
+    }
+
+    @Override
+    public void editComment(Long commentId, String newContent, User currentUser) {
+        ArticleComment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        if (!comment.getAuthor().equals(currentUser)) {
+            throw new RuntimeException("You are not allowed to edit this comment");
+        }
+
+        comment.setContent(newContent);
+        commentRepository.save(comment);
+    }
 }
