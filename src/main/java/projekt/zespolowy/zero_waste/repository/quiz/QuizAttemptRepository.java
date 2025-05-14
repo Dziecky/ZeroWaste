@@ -22,6 +22,9 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
     // Find the latest attempt for a specific quiz by a specific user
     Optional<QuizAttempt> findTopByUserAndQuizOrderByCompletedAtDesc(User user, Quiz quiz);
 
+    // Find top attempts for a quiz ordered by score (for leaderboard)
+    List<QuizAttempt> findByQuizOrderByScoreDescCompletedAtAsc(Quiz quiz);
+
     // Override findById or create a new method to use the Entity Graph
     @Override
     @EntityGraph(value = "QuizAttempt.withDetails")

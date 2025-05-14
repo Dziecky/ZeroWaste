@@ -211,6 +211,27 @@ public class QuizController {
         return "redirect:/quizzes";
     }
 
+    // Display the leaderboard for a specific quiz
+    @GetMapping("/{id}/leaderboard")
+    public String showQuizLeaderboard(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            // Get the quiz for basic information
+            QuizDto quizDto = quizService.getQuizForTaking(id);
+            model.addAttribute("quiz", quizDto);
+            
+            // Get the top scores for this quiz
+            model.addAttribute("topScores", quizService.getQuizLeaderboard(id));
+            
+            return "quiz/leaderboard"; // Thymeleaf view: templates/quiz/leaderboard.html
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Quiz not found.");
+            return "redirect:/quizzes";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error loading leaderboard: " + e.getMessage());
+            return "redirect:/quizzes";
+        }
+    }
+
     // --- Exception Handling (Optional: Can use @ControllerAdvice) ---
     // Example: Handle specific exceptions locally if needed
     /*

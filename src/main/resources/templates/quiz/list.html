@@ -99,6 +99,7 @@
             <div class="action-buttons">
                 <a th:href="@{/quizzes/{id}(id=${quiz.id})}" class="action-button">Take Quiz</a>
                 <a th:href="@{/quizzes/{id}/attempts(id=${quiz.id})}" class="action-button">View My Attempts</a>
+                <a th:href="@{/quizzes/{id}/leaderboard(id=${quiz.id})}" class="action-button">Leaderboard</a>
                 <!-- Only show edit/delete if user is the creator -->
                 <th:block th:if="${#authentication?.name == quiz.creatorUsername}"> 
                      <a th:href="@{/quizzes/{id}/edit(id=${quiz.id})}" class="action-button edit">Edit</a>
