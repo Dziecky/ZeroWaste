@@ -70,6 +70,17 @@
     </div>
 </main>
 
+<div id="chatbox">
+    <div class="header">
+        Chat with our AI ChatBot!
+        <button id="close-chat">&times;</button>
+    </div>
+    <div id="messages"></div>
+    <input id="input" placeholder="Ask your question..." />
+</div>
+
+<button id="chat-toggle">💬</button>
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -145,5 +156,6 @@
         }
     });
 </script>
+<script src="/scripts/chatbot.js"></script>
 </body>
 </html>
