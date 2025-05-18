@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import projekt.zespolowy.zero_waste.dto.ArticleCommentDTO;
 import projekt.zespolowy.zero_waste.dto.ArticleDTO;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.Article;
 import projekt.zespolowy.zero_waste.entity.EducationalEntities.Articles.ArticleCategory;
@@ -17,6 +18,7 @@ import projekt.zespolowy.zero_waste.mapper.ArticleMapper;
 import projekt.zespolowy.zero_waste.services.EducationalServices.Article.ArticleService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -113,7 +115,12 @@ public class ArticleController {
             articleDTO.setLikesCount(article.getLikedByUsers().size());
             articleDTO.setReadByCurrentUser(article.getReadByUsers().contains(currentUser));
             articleDTO.setReadsCount(article.getReadByUsers().size());
+
+            List<ArticleCommentDTO> comments = articleService.getComments(id);
+
             model.addAttribute("articleDTO", articleDTO);
+            model.addAttribute("comments", comments);
+            model.addAttribute("newComment", new ArticleCommentDTO());
             return "Educational/Articles/article_view";
         } else {
             return "redirect:/articles";
@@ -127,5 +134,31 @@ public class ArticleController {
         return "redirect:" + referer;
     }
 
+    @PostMapping("/{id}/comments")
+    @PreAuthorize("isAuthenticated()")
+    public String addComment(@PathVariable("id") Long articleId,
+                             @ModelAttribute("newComment") ArticleCommentDTO commentDTO,
+                             @RequestHeader("Referer") String referer) {
+        articleService.addComment(articleId, commentDTO);
+        return "redirect:" + referer;
+    }
 
+    @PostMapping("/{articleId}/comments/{commentId}/delete")
+    @PreAuthorize("isAuthenticated()")
+    public String deleteComment(@PathVariable Long articleId,
+                                @PathVariable Long commentId,
+                                @RequestHeader("Referer") String referer) {
+        articleService.deleteComment(commentId, userService.getUser());
+        return "redirect:" + referer;
+    }
+
+    @PostMapping("/{articleId}/comments/{commentId}/edit")
+    @PreAuthorize("isAuthenticated()")
+    public String editComment(@PathVariable Long articleId,
+                              @PathVariable Long commentId,
+                              @RequestParam("editedContent") String editedContent,
+                              @RequestHeader("Referer") String referer) {
+        articleService.editComment(commentId, editedContent, userService.getUser());
+        return "redirect:" + referer;
+    }
 }

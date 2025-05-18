@@ -8,10 +8,11 @@
                                                                           crossorigin="anonymous">
 
     <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+    <link th:href="@{/styles/articleComment.css}" rel="stylesheet"/>
     <link th:href="@{/styles/navbar.css}" rel="stylesheet"/>
 
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100" style="padding-top: 80px;">
 <div th:replace="~{fragments/header :: header}"></div>
 
 <main role="main" class="flex-shrink-0">
@@ -51,6 +52,50 @@
                     </div>
                 </div>
 
+                <hr>
+
+                <div class="container mt-4">
+                    <h4>Komentarze</h4>
+
+                    <form th:action="@{/articles/{id}/comments(id=${articleDTO.id})}" method="post" class="mt-4">
+                        <div class="form-group">
+                            <label for="commentContent">Dodaj komentarz:</label>
+                            <textarea id="commentContent" class="form-control" th:field="${newComment.content}" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-bottom: 20px;">Dodaj komentarz</button>
+                    </form>
+
+                    <div th:if="${comments != null and !comments.isEmpty()}">
+                        <div class="list-group mb-4">
+                            <div th:each="comment : ${comments}" class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <strong th:text="${comment.authorUsername}">Użytkownik</strong>
+                                    <small class="text-muted" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</small>
+                                </div>
+                                <p class="mt-2" style="margin-bottom: 20px;" th:text="${comment.content}">Treść komentarza</p>
+
+                                <div th:if="${comment.authorUsername == #authentication.name}">
+                                    <button id="editButton" class="btn btn-secondary">Edytuj</button>
+
+                                    <form id="editForm" th:action="@{|/articles/${articleDTO.id}/comments/${comment.id}/edit|}" method="post" class="edit-form">
+                                        <input type="text" name="editedContent" th:placeholder="${comment.content}" required class="form-input">
+                                        <button type="submit" class="btn btn-success">Zapisz</button>
+                                    </form>
+
+                                    <form th:action="@{|/articles/${articleDTO.id}/comments/${comment.id}/delete|}" method="post" class="delete-form" style="margin-top: 10px;">
+                                        <button type="submit" class="btn btn-danger">Usuń</button>
+                                    </form>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${comments == null or comments.isEmpty()}">
+                        <p class="text-muted">Brak komentarzy. Bądź pierwszy!</p>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -82,6 +127,19 @@
                 }).catch(error => console.error("Error submitting like:", error));
             });
         });
+    });
+
+    document.getElementById('editButton').addEventListener('click', function() {
+        var editForm = document.getElementById('editForm');
+        var button = document.getElementById('editButton');
+
+        if (editForm.style.display === 'none' || editForm.style.display === '') {
+            editForm.style.display = 'block';
+            button.textContent = 'Anuluj';
+        } else {
+            editForm.style.display = 'none';
+            button.textContent = 'Edytuj';
+        }
     });
 </script>
 
