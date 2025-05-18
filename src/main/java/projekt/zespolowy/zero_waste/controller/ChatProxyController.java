@@ -19,7 +19,7 @@ public class ChatProxyController {
     @PostMapping
     public ResponseEntity<String> forwardPrompt(@RequestBody Map<String, String> body) {
         String prompt = body.get("prompt");
-        String fullPrompt = "You are an online ecommerce shop assistant for shop named 'Zero Waste'. Reply for the following prompt: " + prompt;
+        String fullPrompt = "You are an online ecommerce shop assistant for shop named 'Zero Waste'. Reply briefly for the following prompt: " + prompt;
 
         String requestJson = """
             {
