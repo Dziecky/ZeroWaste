@@ -84,9 +84,6 @@ public class ReportService {
         productService.deleteProduct(r.getTargetId());
         r.setStatus(ReportStatus.RESOLVED);
         reportRepo.save(r);
-        logService.log(UserService.getUser().getId(), ActivityType.ITEM_REMOVED, r.getTargetId(), Map.of(
-                "reportId", reportId, "Deleted Product", r.getTargetId()
-        ));
     }
 
     @Transactional
@@ -113,9 +110,6 @@ public class ReportService {
         // oznaczamy zgłoszenie jako przetworzone
         r.setStatus(ReportStatus.RESOLVED);
         reportRepo.save(r);
-        logService.log(UserService.getUser().getId(), ActivityType.ITEM_REMOVED, r.getTargetId(), Map.of(
-                "reportId", reportId, "Deleted Product", r.getTargetId()
-        ));
     }
 
 }
