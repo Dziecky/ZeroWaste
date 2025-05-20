@@ -9,7 +9,13 @@
 <body>
 
 <!--<div th:replace="~{fragments/header :: header}"></div>-->
-
+<div th:if="${param.error}">
+    <div class="alert alert-danger"
+         th:text="${param.error[0] == 'blocked'
+                 ? 'Your account has been blocked. Please contact support.'
+                 : 'Invalid username or password.'}">
+    </div>
+</div>
 <div class="container d-flex justify-content-center mt-5">
     <div class="card shadow-lg" style="width: 28rem;">
         <div class="card-body">
