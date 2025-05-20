@@ -62,17 +62,28 @@ public class ReportService {
 
     @Transactional
     public void blockUser(Long reportId) {
+        // Znajdź główne zgłoszenie i weryfikuj typ
         Report r = reportRepo.findById(reportId)
                 .orElseThrow(() -> new IllegalArgumentException("Brak zgłoszenia"));
         if (r.getType() != ReportType.USER) throw new IllegalStateException();
+
+        // Zablokuj użytkownika
         User u = userRepo.findById(r.getTargetId())
                 .orElseThrow(() -> new IllegalArgumentException("Brak użytkownika"));
         u.setEnabled(false);
         userRepo.save(u);
-        r.setStatus(ReportStatus.RESOLVED);
-        reportRepo.save(r);
+
+        // Zaktualizuj wszystkie zgłoszenia o tym samym typie i targetId
+        List<Report> all = reportRepo.findByTypeAndTargetId(ReportType.USER, r.getTargetId());
+        for (Report rep : all) {
+            rep.setStatus(ReportStatus.RESOLVED);
+        }
+        reportRepo.saveAll(all);
+
+        // Logowanie akcji (z użyciem oryginalnego ID wywołania)
         logService.log(UserService.getUser().getId(), ActivityType.USER_BLOCKED, u.getId(), Map.of(
-                "reportId", reportId, "Blocked User", u.getUsername()
+                "reportId", reportId,
+                "Blocked User", u.getUsername()
         ));
     }
 
@@ -81,35 +92,47 @@ public class ReportService {
         Report r = reportRepo.findById(reportId)
                 .orElseThrow(() -> new IllegalArgumentException("Brak zgłoszenia"));
         if (r.getType() != ReportType.PRODUCT) throw new IllegalStateException();
-        productService.deleteProduct(r.getTargetId());
-        r.setStatus(ReportStatus.RESOLVED);
-        reportRepo.save(r);
+
+        // Usuń produkt, jeśli istnieje
+        productRepo.findById(r.getTargetId()).ifPresent(p ->
+                productService.deleteProduct(p.getId())
+        );
+
+        // Zaktualizuj wszystkie zgłoszenia o tym samym typie i targetId
+        List<Report> all = reportRepo.findByTypeAndTargetId(ReportType.PRODUCT, r.getTargetId());
+        for (Report rep : all) {
+            rep.setStatus(ReportStatus.RESOLVED);
+        }
+        reportRepo.saveAll(all);
     }
 
     @Transactional
     public void deleteProductAndBlockOwner(Long reportId) {
         Report r = reportRepo.findById(reportId)
                 .orElseThrow(() -> new IllegalArgumentException("Brak zgłoszenia"));
-        if (r.getType() != ReportType.PRODUCT) throw new IllegalStateException("To nie jest zgłoszenie produktu");
+        if (r.getType() != ReportType.PRODUCT)
+            throw new IllegalStateException("To nie jest zgłoszenie produktu");
 
-        // pobierz produkt przed usunięciem, aby znać właściciela
-        Product p = productRepo.findById(r.getTargetId())
-                .orElseThrow(() -> new IllegalArgumentException("Brak produktu"));
-        User owner = p.getOwner(); // albo p.getUser(), w zależności od relacji w encji
+        // Jeśli produkt istnieje, pobierz właściciela i zablokuj go
+        productRepo.findById(r.getTargetId()).ifPresent(p -> {
+            User owner = p.getOwner();
+            owner.setEnabled(false);
+            userRepo.save(owner);
+            logService.log(UserService.getUser().getId(), ActivityType.USER_BLOCKED, owner.getId(), Map.of(
+                    "reportId", reportId,
+                    "Blocked User", owner.getUsername()
+            ));
 
-        // blokujemy użytkownika
-        owner.setEnabled(false);
-        userRepo.save(owner);
-        logService.log(UserService.getUser().getId(), ActivityType.USER_BLOCKED, owner.getId(), Map.of(
-                "reportId", reportId, "Blocked User", owner.getUsername()
-        ));
+            // Usuń produkt
+            productService.deleteProduct(p.getId());
+        });
 
-        // usuwamy produkt
-        productService.deleteProduct(r.getTargetId());
-
-        // oznaczamy zgłoszenie jako przetworzone
-        r.setStatus(ReportStatus.RESOLVED);
-        reportRepo.save(r);
+        // Zaktualizuj wszystkie zgłoszenia o tym samym typie i targetId
+        List<Report> all = reportRepo.findByTypeAndTargetId(ReportType.PRODUCT, r.getTargetId());
+        for (Report rep : all) {
+            rep.setStatus(ReportStatus.RESOLVED);
+        }
+        reportRepo.saveAll(all);
     }
 
 }

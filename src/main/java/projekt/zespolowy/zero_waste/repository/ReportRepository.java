@@ -12,4 +12,5 @@ import java.util.List;
 public interface ReportRepository extends JpaRepository<Report, Long> {
     Page<Report> findByStatus(ReportStatus status, Pageable pageable);
     List<Report> findByType(ReportType type);
+    List<Report> findByTypeAndTargetId(ReportType reportType, Long targetId);
 }
