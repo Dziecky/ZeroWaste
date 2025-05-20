@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import projekt.zespolowy.zero_waste.entity.Product;
 import projekt.zespolowy.zero_waste.entity.Report;
 import projekt.zespolowy.zero_waste.entity.User;
+import projekt.zespolowy.zero_waste.entity.enums.ActivityType;
 import projekt.zespolowy.zero_waste.entity.enums.ReportStatus;
 import projekt.zespolowy.zero_waste.entity.enums.ReportType;
 import projekt.zespolowy.zero_waste.repository.ProductRepository;
@@ -15,6 +16,7 @@ import projekt.zespolowy.zero_waste.repository.ReportRepository;
 import projekt.zespolowy.zero_waste.repository.UserRepository;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ReportService {
@@ -22,16 +24,18 @@ public class ReportService {
     private final UserRepository userRepo;
     private final ProductRepository productRepo;
     private final ProductService productService;
+    private final ActivityLogService logService;
 
     @Autowired
     public ReportService(ReportRepository reportRepo,
                          UserRepository userRepo,
                          ProductRepository productRepo,
-                         ProductService productService) {
+                         ProductService productService, ActivityLogService logService) {
         this.reportRepo = reportRepo;
         this.userRepo = userRepo;
         this.productRepo = productRepo;
         this.productService = productService;
+        this.logService = logService;
     }
 
     public void createReport(ReportType type, Long targetId, User reporter, String reason) {
@@ -41,6 +45,11 @@ public class ReportService {
         r.setReporter(reporter);
         r.setReason(reason);
         reportRepo.save(r);
+        logService.log(UserService.getUser().getId(), ActivityType.ITEM_REMOVED, r.getId(), Map.of(
+                "type", type,
+                "targetId", targetId,
+                "reason", reason
+        ));
     }
 
     public Page<Report> getNewReports(int page, int size) {
@@ -62,6 +71,9 @@ public class ReportService {
         userRepo.save(u);
         r.setStatus(ReportStatus.RESOLVED);
         reportRepo.save(r);
+        logService.log(UserService.getUser().getId(), ActivityType.USER_BLOCKED, u.getId(), Map.of(
+                "reportId", reportId, "Blocked User", u.getUsername()
+        ));
     }
 
     @Transactional
@@ -72,6 +84,9 @@ public class ReportService {
         productService.deleteProduct(r.getTargetId());
         r.setStatus(ReportStatus.RESOLVED);
         reportRepo.save(r);
+        logService.log(UserService.getUser().getId(), ActivityType.ITEM_REMOVED, r.getTargetId(), Map.of(
+                "reportId", reportId, "Deleted Product", r.getTargetId()
+        ));
     }
 
     @Transactional
@@ -88,6 +103,9 @@ public class ReportService {
         // blokujemy użytkownika
         owner.setEnabled(false);
         userRepo.save(owner);
+        logService.log(UserService.getUser().getId(), ActivityType.USER_BLOCKED, owner.getId(), Map.of(
+                "reportId", reportId, "Blocked User", owner.getUsername()
+        ));
 
         // usuwamy produkt
         productService.deleteProduct(r.getTargetId());
@@ -95,6 +113,9 @@ public class ReportService {
         // oznaczamy zgłoszenie jako przetworzone
         r.setStatus(ReportStatus.RESOLVED);
         reportRepo.save(r);
+        logService.log(UserService.getUser().getId(), ActivityType.ITEM_REMOVED, r.getTargetId(), Map.of(
+                "reportId", reportId, "Deleted Product", r.getTargetId()
+        ));
     }
 
 }
