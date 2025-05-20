@@ -25,7 +25,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"reviews"}) // Exclude the reviews field from toString()
-public class User {
+public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -65,6 +65,11 @@ public class User {
     private AuthProvider provider;
     @Column
     private String imageUrl;
+
+    @Column(name = "enabled", columnDefinition = "boolean default true")
+    private boolean enabled = true; // Domyślnie użytkownik jest aktywowany
+
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Advice> advices;
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -130,6 +135,7 @@ public class User {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(() -> role.name());
     }
+
 }
 
 
