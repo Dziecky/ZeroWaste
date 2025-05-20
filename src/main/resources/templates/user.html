@@ -36,6 +36,15 @@
                 </h2>
                 <p class="username" th:text="${user.username}"></p>
             </div>
+            <!-- Przycisk Zgłoś użytkownika -->
+            <div sec:authorize="isAuthenticated()"
+                 th:if="${user.username != #authentication.name}">
+                <button class="btn btn-outline-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#reportUserModal">
+                    <i class="bi bi-flag-fill"></i> Report this user
+                </button>
+            </div>
         </div>
 
         <div class="profile-details">
@@ -293,6 +302,29 @@
                 </div>
             </div>
         </div>
+    </div>
+<!-- Modal Zgłoś użytkownika -->
+<div class="modal fade" id="reportUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form th:action="@{/reports/create}" method="post" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Report this user</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="type" value="USER"/>
+                <input type="hidden" name="targetId" th:value="${user.id}"/>
+                <div class="form-group">
+                    <label for="userReportReason">Reason for notification</label>
+                    <textarea id="userReportReason" name="reason" class="form-control" rows="3" required
+                              placeholder="Describe what is wrong ..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger">Send a notification</button>
+            </div>
+        </form>
     </div>
 </div>
 
