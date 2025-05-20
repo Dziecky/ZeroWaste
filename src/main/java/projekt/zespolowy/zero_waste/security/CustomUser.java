@@ -64,10 +64,10 @@ public class CustomUser implements UserDetails, OidcUser {
 //        return user.isCredentialsNonExpired();
 //    }
 //
-//    @Override
-//    public boolean isEnabled() {
-//        return user.isEnabled();
-//    }
+    @Override
+    public boolean isEnabled() {
+        return user.isEnabled();
+    }
 
     // Metody z interfejsu OidcUser
     @Override

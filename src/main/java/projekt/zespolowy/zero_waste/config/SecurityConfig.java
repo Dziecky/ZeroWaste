@@ -1,5 +1,6 @@
 package projekt.zespolowy.zero_waste.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,9 @@ import projekt.zespolowy.zero_waste.services.UserService;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    @Autowired
+    private CustomAuthFailureHandler customAuthFailureHandler;
 
     // Bean kodera haseł
     @Bean
@@ -65,6 +69,7 @@ public class SecurityConfig {
                 .userDetailsService(userService)
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .failureHandler(customAuthFailureHandler)
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/", true)
                         .permitAll()
