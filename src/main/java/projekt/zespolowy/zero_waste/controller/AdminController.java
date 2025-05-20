@@ -1,5 +1,6 @@
 package projekt.zespolowy.zero_waste.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -8,11 +9,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import projekt.zespolowy.zero_waste.entity.Refund;
+import projekt.zespolowy.zero_waste.entity.Report;
 import projekt.zespolowy.zero_waste.entity.User;
 import projekt.zespolowy.zero_waste.entity.enums.RefundStatus;
 import projekt.zespolowy.zero_waste.entity.enums.UserRole;
 import projekt.zespolowy.zero_waste.services.AdminService;
 import projekt.zespolowy.zero_waste.services.RefundService;
+import projekt.zespolowy.zero_waste.services.ReportService;
 import projekt.zespolowy.zero_waste.services.UserService;
 
 import java.time.DayOfWeek;
@@ -28,11 +31,14 @@ public class AdminController {
     private final UserService userService;
     private final RefundService refundService;
     private final AdminService adminService;
+    private final ReportService reportService;
 
-    public AdminController(UserService userService, RefundService refundService, AdminService adminService) {
+    @Autowired
+    public AdminController(UserService userService, RefundService refundService, AdminService adminService, ReportService reportService) {
         this.userService = userService;
         this.refundService = refundService;
         this.adminService = adminService;
+        this.reportService = reportService;
     }
 
     // Wyświetlenie listy użytkowników
@@ -125,6 +131,47 @@ public class AdminController {
         model.addAttribute("nextWeek", weekStart.plusWeeks(1));
 
         return "User/admin/admin-stats";
+    }
+
+    @GetMapping("/reports")
+    public String showReports(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "NEW") String status,
+            Model model
+    ) {
+        Page<Report> reportPage;
+        if ("RESOLVED".equalsIgnoreCase(status)) {
+            reportPage = reportService.getResolvedReports(page - 1, size);
+        } else {
+            reportPage = reportService.getNewReports(page - 1, size);
+        }
+        model.addAttribute("reports", reportPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", reportPage.getTotalPages());
+        model.addAttribute("size", size);
+        model.addAttribute("baseUrl", "/admin/reports");
+        model.addAttribute("status", status.toUpperCase());
+        return "User/admin/admin-reports";
+    }
+
+    @PostMapping("/reports/resolve")
+    public String resolveReport(@RequestParam Long reportId, @RequestParam String action, RedirectAttributes redirectAttributes) {
+        try {
+            if ("blockUser".equals(action)) {
+                reportService.blockUser(reportId);
+                redirectAttributes.addFlashAttribute("success", "Użytkownik został zablokowany.");
+            } else if ("deleteProduct".equals(action)) {
+                reportService.deleteProduct(reportId);
+                redirectAttributes.addFlashAttribute("success", "Produkt został usunięty.");
+            } else if ("deleteProductAndBlockOwner".equals(action)) {
+                reportService.deleteProductAndBlockOwner(reportId);
+                redirectAttributes.addFlashAttribute("success", "Produkt został usunięty, a właściciel zablokowany.");
+            }
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/reports";
     }
 }
 
