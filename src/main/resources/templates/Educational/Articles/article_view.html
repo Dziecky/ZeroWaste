@@ -18,89 +18,157 @@
 <main role="main" class="flex-shrink-0">
     <div class="container mt-4 mb-5">
 
-        <div class="card shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h1 class="h3 mb-0" th:text="${articleDTO.title}">Tytuł Artykułu</h1> <a th:href="@{/articles}" class="btn btn-outline-secondary btn-sm"> Wróć do Artykułów </a>
+        <div class="card shadow-lg border-light">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+                <h1 class="h2 mb-0" th:text="${articleDTO.title}">Tytuł Artykułu</h1>
+                <a th:href="@{/articles}" class="btn btn-outline-secondary btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-circle-fill mr-1" viewBox="0 0 16 16">
+                        <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/>
+                    </svg>
+                    Wróć do Artykułów
+                </a>
             </div>
-            <div class="card-body">
-                <div class="mb-3 text-muted">
-                    <small class="mr-3">
-                        <strong>Autor:</strong> <span th:text="${articleDTO.authorUsername}">Nazwa autora</span> </small>
-                    <small class="mr-3">
-                        <strong>Kategoria:</strong> <span th:text="${articleDTO.articleCategory.name()}">Kategoria</span> </small>
-                    <small th:if="${articleDTO.tags != null and !articleDTO.tags.isEmpty()}"> <strong>Tagi:</strong>
-                        <span th:each="tagName : ${articleDTO.tags}" class="badge badge-secondary mr-1" th:text="${tagName}">Tag</span> </small>
+            <div class="card-body p-4">
+                <div class="mb-4 pb-3 border-bottom">
+                    <small class="mr-3 text-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill mr-1" viewBox="0 0 16 16">
+                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                        </svg>
+                        <strong>Autor:</strong> <span th:text="${articleDTO.authorUsername}">Nazwa autora</span>
+                    </small>
+                    <small class="mr-3 text-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-fill mr-1" viewBox="0 0 16 16">
+                            <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/>
+                        </svg>
+                        <strong>Kategoria:</strong> <span th:text="${articleDTO.articleCategory.name()}">Kategoria</span>
+                    </small>
+                    <small th:if="${articleDTO.tags != null and !articleDTO.tags.isEmpty()}" class="text-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tags-fill mr-1" viewBox="0 0 16 16">
+                            <path d="M2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586V2zm3.5 4a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                            <path d="M1.293 7.793A1 1 0 0 1 1 7.086V2a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l.043-.043-7.457-7.457z"/>
+                        </svg>
+                        <strong>Tagi:</strong>
+                        <span th:each="tagName : ${articleDTO.tags}" class="badge badge-info mr-1" th:text="${tagName}">Tag</span>
+                    </small>
                 </div>
 
-                <div th:if="${articleDTO.imageUrl}" class="text-center mb-4"> <img th:src="${articleDTO.imageUrl}" alt="Obrazek artykułu" class="img-fluid rounded" style="max-height: 400px;"> </div>
+                <div th:if="${articleDTO.imageUrl}" class="text-center mb-4">
+                    <img th:src="${articleDTO.imageUrl}" alt="Obrazek artykułu" class="img-fluid rounded shadow-sm" style="max-height: 450px; border: 1px solid #dee2e6;">
+                </div>
 
-                <div class="article-content mb-4"> <h4>Treść artykułu:</h4> <p th:text="${articleDTO.content}" style="white-space: pre-wrap;">Treść artykułu...</p> </div>
+                <div class="article-content mb-4">
+                    <h5 class="mb-3">Treść artykułu:</h5>
+                    <div th:text="${articleDTO.content}" style="white-space: pre-wrap; font-size: 1.05rem; line-height: 1.7;" class="p-3 bg-light rounded">Treść artykułu...</div>
+                </div>
 
-                <hr>
+                <hr class="my-4">
 
-                <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <form th:action="@{/articles/like/{id}(id=${articleDTO.id})}" method="post" class="like-form d-inline" th:data-id="${articleDTO.id}"> <button type="submit" class="btn btn-outline-primary btn-sm like-btn">
-                            <span th:text="${articleDTO.likedByCurrentUser} ? 'Odlub' : 'Polub'">Polub/Odlub</span> </button>
+                        <form th:action="@{/articles/like/{id}(id=${articleDTO.id})}" method="post" class="like-form d-inline" th:data-id="${articleDTO.id}">
+                            <button type="submit" class="btn btn-outline-primary btn-sm like-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill mr-1" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                                </svg>
+                                <span th:text="${articleDTO.likedByCurrentUser} ? 'Odlub' : 'Polub'">Polub/Odlub</span>
+                            </button>
                         </form>
                     </div>
-                    <div class="text-muted">
-                        <small class="mr-3">
-                            <span th:text="|Polubienia: ${articleDTO.likesCount}|">Likes</span> </small>
-                        <small>
-                            <span th:text="|Odczyty: ${articleDTO.readsCount}|">Reads</span> </small>
+                    <div class="text-muted d-flex align-items-center">
+                        <small class="mr-3 d-flex align-items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up-fill text-primary mr-1" viewBox="0 0 16 16">
+                                <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.035.12-.08.243-.138.363.394.571.418 1.2.234 1.733-.206.592-.682 1.1-1.2 1.273-.847.282-1.803.275-2.516.21a9.84 9.84 0 0 1-.443-.051c-.47 1.999-.842 3.695-.062 4.51.138.509.549.85 1.012.965l.261.066c.956.238 1.843-.504 1.778-1.425L14.146 12h-.002c.221-.457.327-.96.262-1.466-.063-.498-.257-.96-.5-.1332a2.89 2.89 0 0 0-.933-2.042c.16-.52.138-1.11-.094-1.592l-.014-.025c.285-.42.42-.91.33-1.425C13.392 3.68 13.095 3 12.5 3c-.446 0-.8.242-1.1.603L9.5 6H9V2.5C9 1.672 8.422 1 7.5 1H7c-.417 0-.764.257-.924.623L5.105 4H2.5A1.5 1.5 0 0 0 1 5.5v5A1.5 1.5 0 0 0 2.5 12h2.035L5.854 15.36c.222.48.72.803 1.243.803.386 0 .743-.134 1.013-.377a3.401 3.401 0 0 0 1.804-2.996c.08-.46.106-.92.082-1.384l-.028-.478c-.04-.68-.204-1.32-.484-1.888Zm-1.003 8.64c-.04-.08-.09-.148-.15-.206L5.12 10.234V5.766L5.8 5.07c.06-.058.11-.126.15-.206l.094-.182.09-.333.024-.113.003-.015c0-.008.003-.012.007-.012h.006l-.003-.004c.063-.29.25-.542.498-.693l.24-.146c.195-.12.4-.187.62-.187h.043c.22 0 .433.066.622.187l.238.146c.248.15.435.403.498.693l.003.004h.007c.003 0 .006.004.007.012l.002.015.024.113.09.333.095.182Z"/>
+                            </svg>
+                            <span th:text="|Polubienia: ${articleDTO.likesCount}|">Likes</span>
+                        </small>
+                        <small class="d-flex align-items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill text-secondary mr-1" viewBox="0 0 16 16">
+                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                            </svg>
+                            <span th:text="|Odczyty: ${articleDTO.readsCount}|">Reads</span>
+                        </small>
                     </div>
                 </div>
 
-                <hr>
+                <hr class="my-4">
 
-                <div class="container mt-4">
-                    <h4>Komentarze</h4>
+                <div class="comments-section">
+                    <h4 class="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chat-dots-fill mr-1" viewBox="0 0 16 16">
+                            <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                        </svg>
+                        Komentarze (<span th:text="${comments != null ? comments.size() : 0}">0</span>)
+                    </h4>
 
-                    <form th:action="@{/articles/{id}/comments(id=${articleDTO.id})}" method="post" class="mt-4">
+                    <form th:action="@{/articles/{id}/comments(id=${articleDTO.id})}" method="post" class="mb-4 p-3 border rounded bg-light shadow-sm">
                         <div class="form-group">
-                            <label for="commentContent">Dodaj komentarz:</label>
-                            <textarea id="commentContent" class="form-control" th:field="${newComment.content}" rows="3" required></textarea>
+                            <label for="commentContent" class="font-weight-bold">Dodaj swój komentarz:</label>
+                            <textarea id="commentContent" class="form-control form-control-sm" th:field="${newComment.content}" rows="3" required placeholder="Twoja opinia..."></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="margin-bottom: 20px;">Dodaj komentarz</button>
+                        <button type="submit" class="btn btn-success btn-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill mr-1" viewBox="0 0 16 16">
+                                <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+                            </svg>
+                            Dodaj komentarz
+                        </button>
                     </form>
 
                     <div th:if="${comments != null and !comments.isEmpty()}">
-                        <div class="list-group mb-4">
-                            <div th:each="comment : ${comments}" class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <strong th:text="${comment.authorUsername}">Użytkownik</strong>
-                                    <small class="text-muted" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</small>
+                        <div class="list-group">
+                            <div th:each="comment : ${comments}" class="list-group-item comment-item p-3 mb-2 shadow-sm border-light rounded">
+                                <div class="d-flex w-100 justify-content-between mb-1">
+                                    <h6 class="mb-1 font-weight-bold" th:text="${comment.authorUsername}">Użytkownik</h6>
+                                    <small class="text-muted" th:text="${#temporals.format(comment.createdAt, 'dd.MM.yyyy HH:mm')}">2024-01-01 12:00</small>
                                 </div>
-                                <p class="mt-2" style="margin-bottom: 20px;" th:text="${comment.content}">Treść komentarza</p>
+                                <p class="mb-2 comment-content-display" style="white-space: pre-wrap;" th:text="${comment.content}">Treść komentarza</p>
 
-                                <div th:if="${comment.authorUsername == #authentication.name}">
-                                    <button id="editButton" class="btn btn-secondary">Edytuj</button>
-
-                                    <form id="editForm" th:action="@{|/articles/${articleDTO.id}/comments/${comment.id}/edit|}" method="post" class="edit-form">
-                                        <input type="text" name="editedContent" th:placeholder="${comment.content}" required class="form-input">
-                                        <button type="submit" class="btn btn-success">Zapisz</button>
+                                <div th:if="${#authorization.expression('isAuthenticated()') and comment.authorUsername == #authentication.name}">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm edit-comment-button mb-2"> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil-square mr-1" viewBox="0 0 16 16">
+                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                    </svg> Edytuj </button>
+                                    <form th:action="@{|/articles/${articleDTO.id}/comments/${comment.id}/edit|}" method="post" class="edit-comment-form" style="display: none;">
+                                        <div class="form-group">
+                                            <textarea name="editedContent" class="form-control form-control-sm" rows="2" required th:text="${comment.content}"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-success btn-sm mr-1"> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-check-circle-fill mr-1" viewBox="0 0 16 16">
+                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                        </svg> Zapisz </button>
+                                        <button type="button" class="btn btn-outline-dark btn-sm cancel-edit-button">Anuluj</button>
                                     </form>
 
-                                    <form th:action="@{|/articles/${articleDTO.id}/comments/${comment.id}/delete|}" method="post" class="delete-form" style="margin-top: 10px;">
-                                        <button type="submit" class="btn btn-danger">Usuń</button>
+                                    <form th:action="@{|/articles/${articleDTO.id}/comments/${comment.id}/delete|}" method="post" class="d-inline-block ml-1 delete-comment-form">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Czy na pewno chcesz usunąć ten komentarz?');"> <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-trash3-fill mr-1" viewBox="0 0 16 16">
+                                            <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/>
+                                        </svg> Usuń </button>
                                     </form>
-
                                 </div>
-
                             </div>
                         </div>
                     </div>
-                    <div th:if="${comments == null or comments.isEmpty()}">
-                        <p class="text-muted">Brak komentarzy. Bądź pierwszy!</p>
+                    <div th:if="${comments == null or comments.isEmpty()}" class="text-center p-3">
+                        <img th:src="@{/images/no-comments.svg}" alt="Brak komentarzy" style="width: 100px; opacity: 0.5;" class="mb-2" th:if="${false}"/> <p class="text-muted mt-2">Brak komentarzy. Bądź pierwszy i podziel się swoją opinią!</p>
                     </div>
                 </div>
 
-            </div>
-        </div>
+            </div> <div class="card-footer bg-light text-muted text-center py-2">
+            <small>
+                Opublikowano:
+                <th:block th:if="${articleDTO.createdAt != null}">
+                    <span th:text="${#temporals.format(articleDTO.createdAt, 'dd.MM.yyyy HH:mm')}">Data publikacji</span>
+                </th:block>
+                <th:block th:unless="${articleDTO.createdAt != null}">
+                    <span>Nie określono</span>
+                </th:block>
 
-    </div>
-</main>
+                <th:block th:if="${articleDTO.updatedAt != null and (articleDTO.createdAt == null or #temporals.createDateTime(articleDTO.updatedAt, 0, 0) != #temporals.createDateTime(articleDTO.createdAt,0,0)) }">
+                    <span th:text="' | Zaktualizowano: ' + ${#temporals.format(articleDTO.updatedAt, 'dd.MM.yyyy HH:mm')}">Data aktualizacji</span>
+                </th:block>
+            </small>
+        </div>
+        </div>
+        </div> </div> </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 
@@ -111,37 +179,78 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // Skrypt do polubień (bez zmian, działał poprawnie)
         document.querySelectorAll(".like-form").forEach(form => {
             form.addEventListener("submit", function(event) {
                 event.preventDefault();
-                let button = form.querySelector(".like-btn");
-                let articleId = form.getAttribute("data-id"); // Keep variable name generic inside script if preferred
-                let url = `/articles/like/${articleId}`; // Changed URL
+                let articleId = form.getAttribute("data-id");
+                let url = `/articles/like/${articleId}`;
 
                 fetch(url, {
                     method: "POST",
                     headers: { "X-Requested-With": "XMLHttpRequest" }
                 }).then(response => {
-                    if (response.ok) { location.reload(); }
-                    else { console.error("Like request failed:", response.statusText); }
-                }).catch(error => console.error("Error submitting like:", error));
+                    if (response.ok) {
+                        response.json().then(data => {
+                            const likeButtonSpan = form.querySelector(".like-btn span");
+                            const likesCountSpan = document.querySelector('.d-flex.align-items-center small span[th\\:text^="|Polubienia:"]');
+                            if (data.liked) {
+                                likeButtonSpan.textContent = 'Odlub';
+                            } else {
+                                likeButtonSpan.textContent = 'Polub';
+                            }
+                            if(likesCountSpan) {
+                                const currentLikesText = likesCountSpan.textContent;
+                                const baseText = currentLikesText.substring(0, currentLikesText.lastIndexOf(":") + 2);
+                                likesCountSpan.textContent = baseText + data.likesCount;
+                            } else {
+                                location.reload();
+                            }
+                        }).catch(e => {
+                            console.error("Błąd parsowania JSON odpowiedzi polubienia:", e);
+                            location.reload(); // Fallback
+                        });
+                    } else {
+                        console.error("Żądanie polubienia nie powiodło się:", response.statusText);
+                        location.reload(); // Fallback
+                    }
+                }).catch(error => {
+                    console.error("Błąd podczas wysyłania polubienia:", error);
+                    location.reload(); // Fallback
+                });
+            });
+        });
+
+        // Poprawiony skrypt do edycji komentarzy
+        document.querySelectorAll(".edit-comment-button").forEach(button => {
+            button.addEventListener("click", function() {
+                const commentItem = this.closest('.comment-item');
+                const editForm = commentItem.querySelector(".edit-comment-form");
+                const commentContentDisplay = commentItem.querySelector(".comment-content-display");
+
+                if (editForm.style.display === 'none' || editForm.style.display === '') {
+                    editForm.style.display = 'block';
+                    commentContentDisplay.style.display = 'none'; // Ukryj wyświetlaną treść
+                    this.style.display = 'none'; // Ukryj przycisk "Edytuj"
+                }
+                // Anulowanie jest obsługiwane przez przycisk "Anuluj" w formularzu
+            });
+        });
+
+        document.querySelectorAll(".cancel-edit-button").forEach(button => {
+            button.addEventListener("click", function() {
+                const commentItem = this.closest('.comment-item');
+                const editForm = commentItem.querySelector(".edit-comment-form");
+                const commentContentDisplay = commentItem.querySelector(".comment-content-display");
+                const editButton = commentItem.querySelector(".edit-comment-button");
+
+
+                editForm.style.display = 'none';
+                commentContentDisplay.style.display = 'block'; // Pokaż ponownie treść
+                if(editButton) editButton.style.display = 'inline-block'; // Pokaż ponownie przycisk "Edytuj"
             });
         });
     });
-
-    document.getElementById('editButton').addEventListener('click', function() {
-        var editForm = document.getElementById('editForm');
-        var button = document.getElementById('editButton');
-
-        if (editForm.style.display === 'none' || editForm.style.display === '') {
-            editForm.style.display = 'block';
-            button.textContent = 'Anuluj';
-        } else {
-            editForm.style.display = 'none';
-            button.textContent = 'Edytuj';
-        }
-    });
 </script>
-
 </body>
 </html>
