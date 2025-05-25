@@ -17,24 +17,65 @@
 <div th:replace="~{fragments/header :: header}"></div>
 
 
-<div class="container mt-5">
-    <h1>Your Liked Advices</h1>
-    <ul class="list-group">
-        <li th:each="advice : ${likedAdvices}" class="list-group-item">
-            <h5 th:text="${advice.title}">Advice Title</h5>
-            <p th:text="'Author: ' + ${advice.authorUsername}">Author</p>
-            <p th:text="'Category: ' + ${advice.adviceCategory}">Category</p>
-            <p th:text="'Tags: ' + ${advice.tags}">Tags</p>
+<main role="main" class="flex-shrink-0 py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+            <h1 class="h2">Twoje Polubione Porady</h1>
+        </div>
 
-            <a th:href="@{/advices/{id}(id=${advice.id})}" class="btn btn-link">Read More</a>
-            <form th:action="@{/advices/like/{id}(id=${advice.id})}" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-link">
-                    <i class="fas fa-star"></i>
-                </button>
-            </form>
-        </li>
-    </ul>
-</div>
+        <div th:if="${likedAdvices == null or likedAdvices.isEmpty()}" class="alert alert-info shadow-sm" role="alert">
+            <h4 class="alert-heading">Brak polubionych porad!</h4>
+            <p>Wygląda na to, że nie masz jeszcze żadnych polubionych porad.</p>
+            <hr>
+            <p class="mb-0">Przejrzyj dostępne <a th:href="@{/advices}" class="alert-link">porady</a> i dodaj coś do ulubionych!</p>
+        </div>
+
+        <div th:if="${likedAdvices != null and not likedAdvices.isEmpty()}" class="row">
+            <div th:each="advice : ${likedAdvices}" class="col-lg-6 mb-4">
+                <div class="card h-100 shadow-hover">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">
+                            <a th:href="@{/advices/{id}(id=${advice.id})}" th:text="${advice.title}" class="text-decoration-none">Tytuł Porady</a>
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted font-italic" th:text="'Autor: ' + ${advice.authorUsername}">Autor</h6>
+
+                        <div class="mb-2">
+                            <small class="text-muted">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-fill mr-1" viewBox="0 0 16 16">
+                                    <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/>
+                                </svg>
+                                <strong>Kategoria:</strong> <span th:text="${advice.adviceCategory}">Kategoria</span>
+                            </small>
+                        </div>
+
+                        <div class="mb-3" th:if="${advice.tags != null and !#strings.isEmpty(advice.tags)}">
+                            <small class="text-muted">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tags-fill mr-1" viewBox="0 0 16 16">
+                                    <path d="M2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586V2zm3.5 4a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+                                    <path d="M1.293 7.793A1 1 0 0 1 1 7.086V2a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l.043-.043-7.457-7.457z"/>
+                                </svg>
+                                <strong>Tagi:</strong>
+                                <span th:each="tag : ${#strings.arraySplit(advice.tags, ',')}"
+                                      class="badge badge-info mr-1" th:text="${#strings.trim(tag)}">Tag</span>
+                            </small>
+                        </div>
+
+                        <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+                            <a th:href="@{/advices/{id}(id=${advice.id})}" class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-book-reader mr-1"></i> Czytaj więcej
+                            </a>
+                            <form th:action="@{/advices/like/{id}(id=${advice.id})}" method="post" style="display:inline-block;" class="like-toggle-form" th:attr="data-advice-id=${advice.id}">
+                                <button type="submit" class="btn btn-warning btn-sm" title="Odlub tę poradę">
+                                    <i class="fas fa-star-slash mr-1"></i> Odlub
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
 
 <!-- Dodaj Font Awesome JS -->
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -45,5 +86,6 @@
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
         src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
