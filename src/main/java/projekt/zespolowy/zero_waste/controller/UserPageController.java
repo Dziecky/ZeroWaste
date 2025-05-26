@@ -13,8 +13,9 @@ import projekt.zespolowy.zero_waste.security.CustomUser;
 import projekt.zespolowy.zero_waste.services.ProductServiceImpl;
 import projekt.zespolowy.zero_waste.services.ReviewService;
 import projekt.zespolowy.zero_waste.services.UserService;
-
+import org.springframework.data.domain.Page;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,15 +35,20 @@ public class UserPageController {
     }
 
     @GetMapping("/{id}")
-    public String accountDetails(@PathVariable("id") Long userId, Model model) {
+    public String accountDetails(
+            @PathVariable("id") Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) Integer rating,
+            Model model) {
+
         User user = userService.findById(userId);
         if (user == null) {
             return "redirect:/error";
         }
 
-        List<ReviewDto> reviewsAboutUser = reviewService.getReviewsByTargetUserId(userId);
-
-        System.out.println(userService.userAverageRatingComparisonToAll(user));
+        // Pobierz recenzje z paginacją
+        Page<ReviewDto> reviewsPage = reviewService.getReviewsByTargetUserIdPaginated(userId, page, size);
 
         // Get the current user's ID
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -50,7 +56,7 @@ public class UserPageController {
         Long currentUserId = customUser.getUser().getId();
 
         // Create the review ownership map
-        Map<Long, Boolean> reviewOwnership = reviewsAboutUser.stream()
+        Map<Long, Boolean> reviewOwnership = reviewsPage.getContent().stream()
                 .collect(Collectors.toMap(ReviewDto::getId, r -> r.getUserId().equals(currentUserId)));
 
         model.addAttribute("auctionCount", productServiceImpl.getProductsCountByUserIdAndAuction(userId, true));
@@ -58,15 +64,12 @@ public class UserPageController {
         model.addAttribute("allCount", productServiceImpl.getProductsCountByUserId(userId));
         model.addAttribute("user", user);
         model.addAttribute("currentUserId", currentUserId);
-        model.addAttribute("reviewsAboutUser", reviewsAboutUser);
+        model.addAttribute("reviewsPage", reviewsPage); // Zmieniamy na reviewsPage zamiast reviewsAboutUser
         model.addAttribute("averageRating", user.getAverageRating());
         model.addAttribute("averageRatingComparisonToAll", userService.userAverageRatingComparisonToAll(user));
         model.addAttribute("newReview", new Review());
         model.addAttribute("reviewOwnership", reviewOwnership);
         model.addAttribute("role", customUser.getUser().getRole().toString());
-//        model.addAttribute("votes", reviewService.getVotes())
-//        //
-//        System.out.println(customUser.getUser().getRole());
 
         PrivacyOptions phoneVisible = user.getPrivacySettings().getPhoneVisible();
         PrivacyOptions emailVisible = user.getPrivacySettings().getEmailVisible();
@@ -75,21 +78,30 @@ public class UserPageController {
         model.addAttribute("phoneVisible", phoneVisible.toString());
         model.addAttribute("emailVisible", emailVisible.toString());
         model.addAttribute("surnameVisible", surnameVisible.toString());
+        model.addAttribute("selectedRating", rating);
+        model.addAttribute("pageSizes", List.of(5, 10, 20, 50));
+        model.addAttribute("currentSize", size);
         return "user";
     }
 
     @GetMapping("/{id}/filter-reviews")
-    public String filterReviews(@PathVariable Long id, @RequestParam(required = false) Integer rating, Model model) {
+    public String filterReviews(
+            @PathVariable Long id,
+            @RequestParam(required = false) Integer rating,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model) {
+
         User user = userService.findById(id);
         if (user == null) {
             return "redirect:/error";
         }
 
-        List<ReviewDto> reviewsAboutUser;
+        Page<ReviewDto> reviewsPage;
         if (rating != null && rating >= 1 && rating <= 5) {
-            reviewsAboutUser = reviewService.getReviewsByTargetUserIdAndRating(id, rating);
+            reviewsPage = reviewService.getReviewsByTargetUserIdAndRatingPaginated(id, rating, page, size);
         } else {
-            reviewsAboutUser = reviewService.getReviewsByTargetUserId(id);
+            reviewsPage = reviewService.getReviewsByTargetUserIdPaginated(id, page, size);
         }
 
         // Get the current user's ID
@@ -98,21 +110,16 @@ public class UserPageController {
         Long currentUserId = customUser.getUser().getId();
 
         // Create the review ownership map
-        Map<Long, Boolean> reviewOwnership = reviewsAboutUser.stream()
+        Map<Long, Boolean> reviewOwnership = reviewsPage.getContent().stream()
                 .collect(Collectors.toMap(ReviewDto::getId, r -> r.getUserId().equals(currentUserId)));
 
-        // Create the review about map
-        Map<Long, Long> reviewAbout = reviewsAboutUser.stream()
-                .collect(Collectors.toMap(ReviewDto::getId, ReviewDto::getTargetUserId));
-
-
         model.addAttribute("user", user);
-        model.addAttribute("reviewsAboutUser", reviewsAboutUser);
+        model.addAttribute("reviewsPage", reviewsPage); // Zmieniamy na reviewsPage
         model.addAttribute("averageRating", user.getAverageRating());
         model.addAttribute("selectedRating", rating);
         model.addAttribute("newReview", new Review());
-        model.addAttribute("reviewOwnership", reviewOwnership); // Add this line
-        model.addAttribute("reviewAbout", reviewAbout); // Add this line
+        model.addAttribute("reviewOwnership", reviewOwnership);
+        model.addAttribute("currentSize", size);
 
         return "user";
     }

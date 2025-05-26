@@ -129,7 +129,7 @@
         </div>
     </form>
 
-    <!-- Formularz do filtrowania -->
+     Formularz do filtrowania
     <form action="#" th:action="@{/user/{id}/filter-reviews(id=${user.id})}" method="get" class="filter-form">
         <div class="filter-wrapper">
             <label for="rating" class="filter-label">Filter by rating:</label>
@@ -144,15 +144,47 @@
             <button type="submit" class="submit-button">Filter</button>
         </div>
     </form>
+<!--    <div class="filter-section">-->
+<!--        <form th:action="@{/user/{id}/filter-reviews(id=${user.id})}" method="get" class="filter-form">-->
+<!--            <input type="hidden" name="page" th:value="${reviewsPage.number}">-->
+<!--            <input type="hidden" name="size" th:value="${reviewsPage.size}">-->
+
+<!--            <label for="rating-filter">Filter by rating:</label>-->
+<!--            <select id="rating-filter" name="rating" onchange="this.form.submit()">-->
+<!--                <option value="">All ratings</option>-->
+<!--                <option th:each="i : ${#numbers.sequence(5, 1)}"-->
+<!--                        th:value="${i}"-->
+<!--                        th:text="${i + ' stars'}"-->
+<!--                        th:selected="${selectedRating != null and selectedRating == i}"></option>-->
+<!--            </select>-->
+<!--        </form>-->
+<!--    </div>-->
 
 
     <!-- Lista recenzji -->
     <div class="reviews-container">
         <h2 class="reviews-title">User Reviews</h2>
 
-        <div th:if="${reviewsAboutUser != null and not #lists.isEmpty(reviewsAboutUser)}">
+        <!-- Filter section -->
+        <div class="filter-section">
+            <form th:action="@{/user/{id}/filter-reviews(id=${user.id})}" method="get" class="filter-form">
+                <input type="hidden" name="page" th:value="${reviewsPage.number}">
+                <input type="hidden" name="size" th:value="${reviewsPage.size}">
+
+                <label for="rating-filter">Filter by rating:</label>
+                <select id="rating-filter" name="rating" onchange="this.form.submit()">
+                    <option value="">All ratings</option>
+                    <option th:each="i : ${#numbers.sequence(5, 1)}"
+                            th:value="${i}"
+                            th:text="${i + ' stars'}"
+                            th:selected="${selectedRating != null and selectedRating == i}"></option>
+                </select>
+            </form>
+        </div>
+
+        <div th:if="${reviewsPage != null and not reviewsPage.empty}">
             <div class="review-list">
-                <div th:each="review : ${reviewsAboutUser}" th:if="${review.rating != 0}" class="review-card">
+                <div th:each="review : ${reviewsPage.content}" th:if="${review.rating != 0}" class="review-card">
                     <div class="review-header">
                         <div class="user-info">
                             <span class="username" th:text="${review.username}"></span>
@@ -163,9 +195,8 @@
                         </div>
                         <div class="rating-display">
                             <div class="stars">
-                                <!-- Usuwamy duplikaty i zostawiamy tylko jedną pętlę dla gwiazdek -->
-                                <span th:each="i : ${#numbers.sequence(1, 5)}"
-                                      th:class="${i <= review.rating ? 'star' : 'star empty'}">★</span>
+                            <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                  th:class="${i <= review.rating ? 'star' : 'star empty'}">★</span>
                             </div>
                             <span class="rating-text" th:text="${review.rating + '/5'}"></span>
                         </div>
@@ -198,11 +229,10 @@
                             </div>
                             <button type="submit" class="submit-button">Save Changes</button>
                         </form>
-
                     </div>
 
                     <div class="review-actions">
-<!--                        VOTES                                    -->
+                        <!-- VOTES -->
                         <div class="vote-section">
                             Current votes:
                             <span th:text="${review.votes}"></span>
@@ -243,12 +273,13 @@
                             return confirm("Are you sure you want to delete this review?");
                         }
                     </script>
+
                     <!-- Responses section -->
                     <div class="responses-section">
-                        <div th:each="response : ${reviewsAboutUser}"
+                        <div th:each="response : ${reviewsPage.content}"
                              th:if="${review.id == response.parentReviewId}"
                              class="response-card">
-                            <!-- Wyświetlanie odpowiedzi -->
+                            <!-- Display response -->
                             <div th:if="${reviewToEdit == null or reviewToEdit.id != response.id}">
                                 <div class="response-header">
                                     <span class="username" th:text="${response.username}"></span>
@@ -257,7 +288,7 @@
                                 <p class="response-content" th:text="${response.content}"></p>
                             </div>
 
-                            <!-- Formularz edycji odpowiedzi -->
+                            <!-- Edit response form -->
                             <form th:if="${reviewToEdit != null and reviewToEdit.id == response.id}"
                                   th:action="@{/user/{id}/reviews/{reviewId}/edit(id=${user.id}, reviewId=${response.id})}"
                                   method="post"
@@ -267,7 +298,7 @@
                                 <button type="submit" class="submit-button">Save Changes</button>
                             </form>
 
-                            <!-- Przyciski akcji -->
+                            <!-- Action buttons -->
                             <div class="response-actions"
                                  th:with="isOwner=${reviewOwnership != null and reviewOwnership.get(response.id)? true : false}">
                                 <div th:if="${isOwner or role == 'ROLE_ADMIN'}" class="action-buttons">
@@ -287,22 +318,120 @@
                         </div>
                     </div>
 
-                        <!-- Add response form -->
-                        <div th:with="isAboutCurrentUser=${review.targetUserId == currentUserId}" class="add-response-section">
-                            <form th:if="${isAboutCurrentUser}"
-                                  th:action="@{/user/{id}/reviews/{reviewId}/response(id=${user.id}, reviewId=${review.id})}"
-                                  method="post"
-                                  th:object="${newReview}"
-                                  class="response-form">
-                                <textarea th:field="*{content}" placeholder="Add your response..." required class="response-textarea"></textarea>
-                                <button type="submit" class="submit-button">Respond</button>
-                            </form>
-                        </div>
+                    <!-- Add response form -->
+                    <div th:with="isAboutCurrentUser=${review.targetUserId == currentUserId}" class="add-response-section">
+                        <form th:if="${isAboutCurrentUser}"
+                              th:action="@{/user/{id}/reviews/{reviewId}/response(id=${user.id}, reviewId=${review.id})}"
+                              method="post"
+                              th:object="${newReview}"
+                              class="response-form">
+                            <textarea th:field="*{content}" placeholder="Add your response..." required class="response-textarea"></textarea>
+                            <button type="submit" class="submit-button">Respond</button>
+                        </form>
                     </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <!-- Pagination -->
+            <div class="pagination">
+                <!-- Pierwsza strona -->
+                <a th:href="@{/user/{id}(id=${user.id}, page=0, size=${currentSize}, rating=${selectedRating})}"
+                   th:class="${reviewsPage.first} ? 'disabled' : ''">«</a>
+
+                <!-- Poprzednia strona -->
+                <a th:href="@{/user/{id}(id=${user.id}, page=${reviewsPage.number - 1}, size=${currentSize}, rating=${selectedRating})}"
+                   th:class="${reviewsPage.first} ? 'disabled' : ''">‹</a>
+
+                <!-- Numery stron -->
+                <span th:each="i : ${#numbers.sequence(0, reviewsPage.totalPages - 1)}">
+                    <a th:href="@{/user/{id}(id=${user.id}, page=${i}, size=${currentSize}, rating=${selectedRating})}"
+                       th:text="${i + 1}"
+                       th:class="${reviewsPage.number == i} ? 'active' : ''"></a>
+                </span>
+
+                <!-- Następna strona -->
+                <a th:href="@{/user/{id}(id=${user.id}, page=${reviewsPage.number + 1}, size=${currentSize}, rating=${selectedRating})}"
+                   th:class="${reviewsPage.last} ? 'disabled' : ''">›</a>
+
+                <!-- Ostatnia strona -->
+                <a th:href="@{/user/{id}(id=${user.id}, page=${reviewsPage.totalPages - 1}, size=${currentSize}, rating=${selectedRating})}"
+                   th:class="${reviewsPage.last} ? 'disabled' : ''">»</a>
+
+                <!-- Selektor rozmiaru strony -->
+                <div class="page-size-selector">
+                    <span>Items per page: </span>
+                    <select onchange="location = this.value;">
+                        <option th:each="sizeOption : ${pageSizes}"
+                                th:value="@{/user/{id}(id=${user.id}, page=0, size=${sizeOption}, rating=${selectedRating})}"
+                                th:text="${sizeOption}"
+                                th:selected="${currentSize == sizeOption}"></option>
+                    </select>
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+        .pagination {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .pagination a {
+            color: #333;
+            padding: 8px 16px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            margin: 0 4px;
+            border-radius: 4px;
+        }
+
+        .pagination a.active {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+
+        .pagination a:hover:not(.active):not(.disabled) {
+            background-color: #ddd;
+        }
+
+        .pagination a.disabled {
+            color: #ccc;
+            pointer-events: none;
+            cursor: default;
+        }
+
+        .page-size-selector {
+            margin-left: 20px;
+        }
+
+        .page-size-selector select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .filter-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #rating-filter {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+    </style>
 <!-- Modal Zgłoś użytkownika -->
 <div class="modal fade" id="reportUserModal" tabindex="-1">
     <div class="modal-dialog">

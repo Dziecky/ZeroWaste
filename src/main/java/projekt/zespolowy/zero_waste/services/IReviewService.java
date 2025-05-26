@@ -1,6 +1,8 @@
 package projekt.zespolowy.zero_waste.services;
 
 
+import org.springframework.data.domain.Page;
+import projekt.zespolowy.zero_waste.dto.ReviewDto;
 import projekt.zespolowy.zero_waste.entity.Review;
 import projekt.zespolowy.zero_waste.entity.User;
 
@@ -16,5 +18,7 @@ public interface IReviewService {
 
     Review getReviewById(Long id);
 //    List<ReviewDto> getReviewsByUserId(Long userId);
+    Page<ReviewDto> getReviewsByTargetUserIdPaginated(Long userId, int page, int size);
 
+    Page<ReviewDto> getReviewsByTargetUserIdAndRatingPaginated(Long userId, Integer rating, int page, int size);
 }
