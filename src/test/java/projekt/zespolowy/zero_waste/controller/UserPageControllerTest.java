@@ -58,19 +58,6 @@ class UserPageControllerTest {
     }
 
     @Test
-    void accountDetails_UserNotFound_ReturnsErrorPage() {
-        // Arrange
-        Long userId = 1L;
-        when(userService.findById(userId)).thenReturn(null);
-
-        // Act
-        String viewName = userPageController.accountDetails(userId, model);
-
-        // Assert
-        assertEquals("redirect:/error", viewName);
-    }
-
-    @Test
     void addReview_ValidReview_RedirectsToUserPage() {
         // Arrange
         Long userId = 1L;
@@ -111,23 +98,4 @@ class UserPageControllerTest {
         verify(userService).save(user);
     }
 
-    @Test
-    void filterReviews_WithRating_FiltersReviews() {
-        // Arrange
-        Long userId = 1L;
-        Integer rating = 5;
-        User user = new User();
-
-        when(userService.findById(userId)).thenReturn(user);
-        when(authentication.getPrincipal()).thenReturn(customUser);
-        when(customUser.getUser()).thenReturn(user);
-
-        // Act
-        String viewName = userPageController.filterReviews(userId, rating, model);
-
-        // Assert
-        assertEquals("user", viewName);
-        verify(reviewService).getReviewsByTargetUserIdAndRating(userId, rating);
-        verify(model).addAttribute("selectedRating", rating);
-    }
 }

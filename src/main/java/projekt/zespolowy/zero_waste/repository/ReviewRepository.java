@@ -1,5 +1,7 @@
 package projekt.zespolowy.zero_waste.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import projekt.zespolowy.zero_waste.entity.Review;
 import projekt.zespolowy.zero_waste.entity.User;
@@ -14,6 +16,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByUserId(Long userId);
     List<Review> findByTargetUserId(Long targetUserId);
     List<Review> findByTargetUserIdAndRating(Long targetUserId, int rating);
-
+    Page<Review> findByTargetUserId(Long userId, Pageable pageable);
+    Page<Review> findByTargetUserIdAndRating(Long userId, Integer rating, Pageable pageable);
     List<Review> findByParentReview(Review review);
 }
