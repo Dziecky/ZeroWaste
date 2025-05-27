@@ -357,6 +357,8 @@
                     </label>
                 </div>
             </div>
+
+
             <div class="col-md-3" sec:authorize="isAuthenticated()">
                 <div class="d-flex gap-2 justify-content-end">
                     <a href="/products/recently-viewed" class="btn btn-info">Recently Viewed</a>
@@ -375,6 +377,11 @@
             <a sec:authorize="isAuthenticated()" href="/products/favorites" class="btn btn-outline-danger">
                 <i class="bi bi-heart-fill"></i> Favorite
             </a>
+            <div class="text-end mb-3">
+                <a href="/products/random" class="btn btn-primary">
+                    <i class="bi bi-shuffle"></i> Random Item
+                </a>
+            </div>
         </div>
     </form>
 

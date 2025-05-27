@@ -51,4 +51,6 @@ public interface ProductService {
     void deleteAllByUser(User user);
  List<Product> getEndedAuctions(LocalDateTime endDate);
 
+ Optional<Long> getRandomProductId();
+
 }
