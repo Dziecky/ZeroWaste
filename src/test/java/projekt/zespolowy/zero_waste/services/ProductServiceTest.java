@@ -439,7 +439,61 @@ class ProductServiceTest {
         assertNull(result);
         verify(productRepository, times(1)).findByAuctionTrueAndAvailableTrueAndEndDateBefore(now);
     }
+    @Test
+    void testGetRandomProductId_whenProductsExist() {
+        Product product1 = new Product();
+        product1.setId(1L);
+        Product product2 = new Product();
+        product2.setId(2L);
+        Product product3 = new Product();
+        product3.setId(3L);
 
+        List<Product> products = Arrays.asList(product1, product2, product3);
+        when(productRepository.findAll()).thenReturn(products);
+
+        Optional<Long> result = productService.getRandomProductId();
+
+        assertTrue(result.isPresent());
+        assertTrue(Arrays.asList(1L, 2L, 3L).contains(result.get()));
+        verify(productRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetRandomProductId_whenNoProductsExist() {
+        when(productRepository.findAll()).thenReturn(Collections.emptyList());
+
+        Optional<Long> result = productService.getRandomProductId();
+
+        assertFalse(result.isPresent());
+        assertTrue(result.isEmpty());
+        verify(productRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetRandomProductId_whenSingleProductExists() {
+        Product product = new Product();
+        product.setId(42L);
+
+        List<Product> products = Collections.singletonList(product);
+        when(productRepository.findAll()).thenReturn(products);
+
+        Optional<Long> result = productService.getRandomProductId();
+
+        assertTrue(result.isPresent());
+        assertEquals(42L, result.get());
+        verify(productRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetRandomProductId_whenRepositoryThrowsException() {
+        when(productRepository.findAll()).thenThrow(new RuntimeException("Error"));
+
+        assertThrows(RuntimeException.class, () -> {
+            productService.getRandomProductId();
+        });
+
+        verify(productRepository, times(1)).findAll();
+    }
 
 
 
