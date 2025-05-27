@@ -305,5 +305,15 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByAuctionTrueAndAvailableTrueAndEndDateBefore(now);
     }
 
+    public Optional<Long> getRandomProductId() {
+        List<Product> allProducts = productRepository.findAll();
+        if (allProducts.isEmpty()) {
+            return Optional.empty();
+        }
+        int randomIndex = new Random().nextInt(allProducts.size());
+        return Optional.of(allProducts.get(randomIndex).getId());
+    }
+
+
 
 }
