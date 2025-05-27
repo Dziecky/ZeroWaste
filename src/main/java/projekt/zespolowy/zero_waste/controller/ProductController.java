@@ -209,5 +209,12 @@ public class ProductController {
         return "/product/favorite-products";
     }
 
+    @GetMapping("/random")
+    public String redirectToRandomProduct() {
+        return productService.getRandomProductId()
+                .map(id -> "redirect:/products/view/" + id)
+                .orElse("redirect:/products/list");
+    }
+
 
 }

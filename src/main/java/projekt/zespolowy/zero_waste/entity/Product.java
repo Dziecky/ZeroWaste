@@ -71,12 +71,9 @@ public class Product {
     private Set<Bid> bids = new HashSet<>();
 
     @PrePersist
-    @PreUpdate
-    public void onCreate() {
+    public void prePersist() {
         createdAt = LocalDateTime.now();
         available = true;
     }
-
-
 
 }
